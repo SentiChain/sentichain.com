@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sentence Vectorizer and Signature Verifier</title>
     <style>
-        /* Your existing CSS styles */
+        /* Existing CSS Styles */
         body {
             font-family: Arial, sans-serif;
             background-color: #f2f2f2;
@@ -63,6 +63,7 @@
             border: 1px solid #ccc;
             border-radius: 4px;
             resize: vertical;
+            font-family: monospace; /* Ensures consistent spacing */
         }
         button.submit-btn {
             background-color: #4CAF50;
@@ -122,6 +123,12 @@
         #results {
             display: none;
         }
+        /* Styles for textarea to mimic read-only display */
+        textarea[readonly] {
+            background-color: #f4f4f4;
+            border: 1px solid #ccc;
+            cursor: default;
+        }
     </style>
 </head>
 <body>
@@ -133,6 +140,7 @@
     <div class="tab">
         <button class="tablinks active" onclick="openTab(event, 'VectorizeSign')">Vectorize & Sign</button>
         <button class="tablinks" onclick="openTab(event, 'VerifySignature')">Verify Signature</button>
+        <button class="tablinks" onclick="openTab(event, 'PublicKey')">Public Key</button> <!-- New Tab Button -->
     </div>
 
     <!-- Vectorize & Sign Tab Content -->
@@ -181,6 +189,25 @@
         </form>
         <div id="verifySignatureResult" class="result" style="display: none;"></div>
     </div>
+
+    <!-- Public Key Tab Content -->
+    <div id="PublicKey" class="tabcontent">
+        <button id="getPublicKeyBtn" class="submit-btn">Get Public Key</button>
+        <div id="publicKeyResult" class="result" style="display: none; margin-top: 20px;">
+            <!-- Copy Feedback -->
+            <div class="copy-feedback" id="copyFeedbackPublicKey">Copied!</div>
+            
+            <!-- Error Message -->
+            <div id="publicKeyErrorMessage" class="error" style="display: none;"></div>
+            
+            <!-- Public Key Display -->
+            <p>
+                <strong>Public Key:</strong>
+            </p>
+            <textarea id="publicKeyOutput" readonly rows="8"></textarea>
+            <button type="button" class="copy-btn" onclick="copyToClipboard('publicKeyOutput')">Copy Public Key</button>
+        </div>
+    </div>
 </div>
 
 <script>
@@ -208,7 +235,15 @@
 
     // Function to copy text to clipboard
     function copyToClipboard(elementId) {
-        const text = document.getElementById(elementId).innerText;
+        let text;
+        if (elementId === 'publicKeyOutput') {
+            // For textarea, use value
+            text = document.getElementById(elementId).value;
+        } else {
+            // For span elements, use innerText
+            text = document.getElementById(elementId).innerText;
+        }
+
         navigator.clipboard.writeText(text).then(() => {
             // Show feedback
             if (elementId === 'vectorOutput') {
@@ -220,6 +255,11 @@
                 document.getElementById('copyFeedbackSignature').style.display = 'block';
                 setTimeout(() => {
                     document.getElementById('copyFeedbackSignature').style.display = 'none';
+                }, 2000);
+            } else if (elementId === 'publicKeyOutput') {
+                document.getElementById('copyFeedbackPublicKey').style.display = 'block';
+                setTimeout(() => {
+                    document.getElementById('copyFeedbackPublicKey').style.display = 'none';
                 }, 2000);
             }
         }).catch(err => {
@@ -437,6 +477,60 @@
             // Display error message
             resultDiv.classList.add('error');
             resultDiv.innerHTML = `Error: ${error.message}`;
+        });
+    });
+
+    // Public Key Button Handling
+    document.getElementById('getPublicKeyBtn').addEventListener('click', function() {
+        const publicKeyResultDiv = document.getElementById('publicKeyResult');
+        const publicKeyOutput = document.getElementById('publicKeyOutput');
+        const publicKeyErrorMessage = document.getElementById('publicKeyErrorMessage');
+
+        // Clear previous results and errors
+        publicKeyResultDiv.classList.remove('error');
+        publicKeyErrorMessage.style.display = 'none';
+        publicKeyOutput.value = '';
+
+        // Display loading message
+        publicKeyResultDiv.style.display = 'block';
+        publicKeyOutput.value = 'Fetching public key...';
+
+        // Define the API endpoint
+        const PUBLIC_KEY_URL = "http://18.169.100.1:80/get_vectorizer_public_key";
+
+        // Fetch the public key
+        fetch(PUBLIC_KEY_URL, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`Error fetching public key: ${response.status} ${response.statusText}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log('Public Key Response:', data); // Debugging line
+
+            if (!data.public_key) {
+                throw new Error('Public key not found in the response.');
+            }
+
+            // Replace actual newline characters with \n
+            let publicKeyFormatted = data.public_key.replace(/\n/g, '\\n');
+
+            // Display the public key as a single-line string with \n
+            publicKeyOutput.value = publicKeyFormatted;
+        })
+        .catch(error => {
+            console.error('Get Public Key Error:', error); // Debugging line
+            // Display error message
+            publicKeyResultDiv.classList.add('error');
+            publicKeyErrorMessage.innerText = `Error: ${error.message}`;
+            publicKeyErrorMessage.style.display = 'block';
+            publicKeyOutput.value = '';
         });
     });
 </script>
