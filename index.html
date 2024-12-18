@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sentence Vectorizer and Signature Verifier</title>
+    <style>
+        /* Your existing CSS styles */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f2f2f2;
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            background-color: #fff;
+            padding: 25px;
+            margin: auto;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+        }
+        /* Navigation Tabs */
+        .tab {
+            overflow: hidden;
+            border-bottom: 1px solid #ccc;
+            margin-bottom: 20px;
+        }
+        .tab button {
+            background-color: inherit;
+            float: left;
+            border: none;
+            outline: none;
+            cursor: pointer;
+            padding: 14px 16px;
+            transition: background-color 0.3s;
+            font-size: 17px;
+        }
+        .tab button:hover {
+            background-color: #ddd;
+        }
+        .tab button.active {
+            background-color: #4CAF50;
+            color: white;
+        }
+        /* Tab Content */
+        .tabcontent {
+            display: none;
+        }
+        /* Shared Styles */
+        label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 8px;
+        }
+        textarea, input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            resize: vertical;
+        }
+        button.submit-btn {
+            background-color: #4CAF50;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 100%;
+            font-size: 16px;
+        }
+        button.submit-btn:hover {
+            background-color: #45a049;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #e7f3fe;
+            border-left: 6px solid #2196F3;
+            border-radius: 4px;
+            word-wrap: break-word;
+            position: relative;
+        }
+        .error {
+            background-color: #fdecea;
+            border-left: 6px solid #f44336;
+        }
+        .copy-btn {
+            background-color: #2196F3;
+            color: white;
+            border: none;
+            padding: 6px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-left: 10px;
+            font-size: 14px;
+        }
+        .copy-btn:hover {
+            background-color: #0b7dda;
+        }
+        .copy-feedback {
+            position: absolute;
+            top: -20px;
+            right: 10px;
+            background-color: #4CAF50;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            display: none;
+        }
+        #processingMessage {
+            display: none;
+            font-style: italic;
+            margin-bottom: 10px;
+        }
+        #results {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Sentence Vectorizer & Signature Verifier</h1>
+
+    <!-- Navigation Tabs -->
+    <div class="tab">
+        <button class="tablinks active" onclick="openTab(event, 'VectorizeSign')">Vectorize & Sign</button>
+        <button class="tablinks" onclick="openTab(event, 'VerifySignature')">Verify Signature</button>
+    </div>
+
+    <!-- Vectorize & Sign Tab Content -->
+    <div id="VectorizeSign" class="tabcontent" style="display: block;">
+        <form id="vectorizeSignForm">
+            <label for="sentence">Enter your sentence:</label>
+            <input type="text" id="sentence" name="sentence" placeholder="e.g., I like to eat apple" required>
+            <button type="submit" class="submit-btn">Submit</button>
+        </form>
+        <div id="vectorizeSignResult" class="result" style="display: none;">
+            <!-- Copy Feedback -->
+            <div class="copy-feedback" id="copyFeedbackVector">Copied!</div>
+            <div class="copy-feedback" id="copyFeedbackSignature">Copied!</div>
+            
+            <!-- Processing Message -->
+            <div id="processingMessage">Processing...</div>
+            
+            <!-- Error Message -->
+            <div id="errorMessage" class="error" style="display: none;"></div>
+            
+            <!-- Results -->
+            <div id="results">
+                <h2>Results:</h2>
+                <p>
+                    <strong>Vector:</strong> <span id="vectorOutput">[0, 1, 2]</span>
+                    <button type="button" class="copy-btn" onclick="copyToClipboard('vectorOutput')">Copy Vector</button>
+                </p>
+                <p>
+                    <strong>Signature:</strong> <span id="signatureOutput">abcdef123456</span>
+                    <button type="button" class="copy-btn" onclick="copyToClipboard('signatureOutput')">Copy Signature</button>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Verify Signature Tab Content -->
+    <div id="VerifySignature" class="tabcontent">
+        <form id="verifySignatureForm">
+            <label for="vector">Enter your vector (e.g., [0.0, 1.0, 2.0]):</label>
+            <input type="text" id="vector" name="vector" placeholder='e.g., [0.0, 1.0, 2.0]' required>
+            
+            <label for="signature">Enter your signature:</label>
+            <input type="text" id="signature" name="signature" placeholder="e.g., abcdef123456" required>
+            
+            <button type="submit" class="submit-btn">Verify</button>
+        </form>
+        <div id="verifySignatureResult" class="result" style="display: none;"></div>
+    </div>
+</div>
+
+<script>
+    // Tab functionality
+    function openTab(evt, tabName) {
+        // Declare all variables
+        var i, tabcontent, tablinks;
+
+        // Get all elements with class="tabcontent" and hide them
+        tabcontent = document.getElementsByClassName("tabcontent");
+        for (i = 0; i < tabcontent.length; i++) {
+            tabcontent[i].style.display = "none";
+        }
+
+        // Get all elements with class="tablinks" and remove the class "active"
+        tablinks = document.getElementsByClassName("tablinks");
+        for (i = 0; i < tablinks.length; i++) {
+            tablinks[i].className = tablinks[i].className.replace(" active", "");
+        }
+
+        // Show the current tab, and add an "active" class to the button that opened the tab
+        document.getElementById(tabName).style.display = "block";
+        evt.currentTarget.className += " active";
+    }
+
+    // Function to copy text to clipboard
+    function copyToClipboard(elementId) {
+        const text = document.getElementById(elementId).innerText;
+        navigator.clipboard.writeText(text).then(() => {
+            // Show feedback
+            if (elementId === 'vectorOutput') {
+                document.getElementById('copyFeedbackVector').style.display = 'block';
+                setTimeout(() => {
+                    document.getElementById('copyFeedbackVector').style.display = 'none';
+                }, 2000);
+            } else if (elementId === 'signatureOutput') {
+                document.getElementById('copyFeedbackSignature').style.display = 'block';
+                setTimeout(() => {
+                    document.getElementById('copyFeedbackSignature').style.display = 'none';
+                }, 2000);
+            }
+        }).catch(err => {
+            console.error('Failed to copy: ', err);
+        });
+    }
+
+    /**
+     * Serialize the vector, preserving -0.0 values
+     * @param {Array<number>} vector - The original vector
+     * @returns {string} - The serialized vector as a string
+     */
+    function serializeVector(vector) {
+        return "[" + vector.map(n => {
+            if (Object.is(n, -0)) {
+                return '-0.0';
+            }
+            return (Number.isInteger(n) ? n.toFixed(1) : n);
+        }).join(", ") + "]";
+    }
+
+    // Vectorize & Sign Form Handling
+    document.getElementById('vectorizeSignForm').addEventListener('submit', function(event) {
+        event.preventDefault(); // Prevent the form from submitting the traditional way
+
+        const sentenceInput = document.getElementById('sentence');
+        const sentence = sentenceInput.value.trim();
+        const resultDiv = document.getElementById('vectorizeSignResult');
+        const processingMessage = document.getElementById('processingMessage');
+        const resultsDiv = document.getElementById('results');
+        const errorMessageDiv = document.getElementById('errorMessage');
+
+        // Clear previous results and errors
+        resultDiv.classList.remove('error');
+        processingMessage.style.display = 'none';
+        resultsDiv.style.display = 'none';
+        errorMessageDiv.style.display = 'none';
+        document.getElementById('vectorOutput').innerText = '';
+        document.getElementById('signatureOutput').innerText = '';
+
+        if (sentence === "") {
+            errorMessageDiv.innerText = 'Please enter a sentence.';
+            errorMessageDiv.style.display = 'block';
+            resultDiv.style.display = 'block';
+            return;
+        }
+
+        // Display loading message
+        processingMessage.style.display = 'block';
+        resultDiv.style.display = 'block';
+
+        // Define the API endpoint
+        const BASE_URL = "http://18.169.100.1:80/vectorize_and_sign";
+
+        // Send the POST request to the server
+        fetch(BASE_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ sentence: sentence })
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`Server error: ${response.status} ${response.statusText}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log('Vectorize & Sign Response:', data); // Debugging line
+
+            // Ensure the response has the expected fields
+            if (!data.vector || !data.signature) {
+                throw new Error('Invalid response format from server.');
+            }
+
+            // Serialize the vector without modifying -0.0
+            const serializedVector = serializeVector(data.vector);
+
+            // Populate the vector and signature in the DOM
+            document.getElementById('vectorOutput').innerText = serializedVector;
+            document.getElementById('signatureOutput').innerText = data.signature;
+
+            // Optionally, populate the Verify Signature form fields automatically
+            document.getElementById('vector').value = serializedVector;
+            document.getElementById('signature').value = data.signature;
+
+            // Hide processing message and show results
+            processingMessage.style.display = 'none';
+            resultsDiv.style.display = 'block';
+        })
+        .catch(error => {
+            console.error('Vectorize & Sign Error:', error); // Debugging line
+            // Display error message
+            errorMessageDiv.innerText = `Error: ${error.message}`;
+            errorMessageDiv.style.display = 'block';
+            processingMessage.style.display = 'none';
+            resultsDiv.style.display = 'none';
+        });
+    });
+
+    // Verify Signature Form Handling
+    document.getElementById('verifySignatureForm').addEventListener('submit', function(event) {
+        event.preventDefault(); // Prevent the form from submitting the traditional way
+
+        const vectorInput = document.getElementById('vector');
+        const signatureInput = document.getElementById('signature');
+        const vectorText = vectorInput.value.trim();
+        const signature = signatureInput.value.trim();
+        const resultDiv = document.getElementById('verifySignatureResult');
+
+        // Clear previous results and errors
+        resultDiv.style.display = 'none';
+        resultDiv.classList.remove('error');
+        resultDiv.innerHTML = '';
+
+        // Input validation
+        if (vectorText === "" || signature === "") {
+            resultDiv.classList.add('error');
+            resultDiv.innerHTML = 'Please enter both vector and signature.';
+            resultDiv.style.display = 'block';
+            return;
+        }
+
+        let vector;
+        try {
+            vector = JSON.parse(vectorText);
+            if (!Array.isArray(vector)) {
+                throw new Error('Vector must be a list.');
+            }
+            // Optional: Ensure all elements are numbers
+            for (let i = 0; i < vector.length; i++) {
+                if (typeof vector[i] !== 'number') {
+                    throw new Error('All elements in the vector must be numbers.');
+                }
+            }
+        } catch (e) {
+            resultDiv.classList.add('error');
+            resultDiv.innerHTML = 'Vector must be in valid list format (e.g., [0.0, 1.0, 2.0]).';
+            resultDiv.style.display = 'block';
+            return;
+        }
+
+        // Serialize the vector without modifying -0.0
+        const serializedVector = serializeVector(vector);
+
+        // Parse the serialized vector back to maintain -0.0
+        const parsedVector = vector.map(n => {
+            if (n === 0 && (1 / n === -Infinity)) {
+                return -0.0;
+            }
+            return n;
+        });
+
+        // Display loading message
+        resultDiv.innerHTML = 'Verifying...';
+        resultDiv.style.display = 'block';
+
+        // Define the API endpoints
+        const PUBLIC_KEY_URL = "http://18.169.100.1:80/get_vectorizer_public_key";
+        const VERIFY_URL = "http://18.169.100.1:80/verify_vector_signature";
+
+        // Fetch the public key first
+        fetch(PUBLIC_KEY_URL, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`Error fetching public key: ${response.status} ${response.statusText}`);
+            }
+            return response.json();
+        })
+        .then(publicKeyData => {
+            console.log('Public Key Data:', publicKeyData); // Debugging line
+            const public_key = publicKeyData.public_key;
+            if (!public_key) {
+                throw new Error('Public key not found.');
+            }
+
+            // Now send the verification request
+            console.log('Sending verification with:', { vector: parsedVector, signature: signature, public_key: public_key }); // Debugging line
+            return fetch(VERIFY_URL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ vector: parsedVector, signature: signature, public_key: public_key })
+            });
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`Verification server error: ${response.status} ${response.statusText}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log('Verify Signature Response:', data); // Debugging line
+
+            // Ensure the response has the expected field
+            if (typeof data.is_valid !== 'boolean') {
+                throw new Error('Invalid response format from server.');
+            }
+
+            // Display the verification result
+            resultDiv.innerHTML = `
+                <h2>Verification Result:</h2>
+                <p><strong>Is Valid:</strong> ${data.is_valid ? '✅ Signature is valid.' : '❌ Signature is invalid.'}</p>
+            `;
+        })
+        .catch(error => {
+            console.error('Verify Signature Error:', error); // Debugging line
+            // Display error message
+            resultDiv.classList.add('error');
+            resultDiv.innerHTML = `Error: ${error.message}`;
+        });
+    });
+</script>
+
+</body>
+</html>
