@@ -23,7 +23,7 @@
             overflow-y: auto;
         }
 
-        /* HERO SECTION (Black Hole) */
+        /* HERO SECTION (BLACK HOLE) */
         .hero-section {
             position: relative;
             width: 100%;
@@ -66,92 +66,138 @@
             }
         }
 
-        /* SHIP SECTION (Introduction) */
-        .ship-section {
+        /* INTRO SECTION WITH ROCKET */
+        .intro-section {
             position: relative;
             min-height: 100vh;
-            background: linear-gradient(to bottom right, #01010a 40%, #000 100%);
-            padding: 100px 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-        }
-
-        /* A viewport (window) looking into space */
-        .ship-viewport {
-            width: 300px;
-            height: 300px;
-            border-radius: 50%;
-            border: 2px solid #00FFC8;
-            overflow: hidden;
-            margin-bottom: 50px;
-            position: relative;
-        }
-
-        /* A planet image or gradient to show a distant world */
-        .ship-viewport::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: radial-gradient(circle at 30% 30%, #2f2f74, #06061a 80%);
-        }
-
-        /* Holographic panel for mission briefing */
-        .holo-panel {
-            background: rgba(0, 255, 200, 0.05);
-            border: 1px solid #00FFC8;
-            padding: 20px;
-            max-width: 600px;
+            background: #000;
+            color: #fff;
             text-align: center;
-            border-radius: 10px;
-            box-shadow: 0 0 20px #00FFC8;
-            position: relative;
+            padding: 100px 20px;
         }
 
-        .holo-panel h2 {
-            font-size: 2.5rem;
-            margin-bottom: 20px;
-            text-transform: uppercase;
+        .intro-section h2 {
+            font-size: 3rem;
             color: #00FFC8;
+            margin-bottom: 40px;
+            text-transform: uppercase;
             text-shadow: 0 0 10px #00FFC8;
+            animation: blink 2s infinite;
         }
 
-        .holo-panel p {
+        @keyframes blink {
+            0%, 50%, 100% {opacity: 1;}
+            25%, 75% {opacity: 0.6;}
+        }
+
+        .intro-section p {
             font-size: 1.2rem;
             line-height: 1.6;
             color: #ccc;
+            max-width: 800px;
+            margin: 0 auto 60px auto;
         }
 
-        /* Tooltip styling for holographic terms */
-        .holo-panel p span[data-tooltip] {
+        .rocket-wrapper {
             position: relative;
-            cursor: help;
-            color: #00FFC8;
-            text-decoration: underline;
+            display: inline-block;
         }
 
-        .holo-panel p span[data-tooltip]:hover::after {
-            content: attr(data-tooltip);
+        .rocket {
+            width: 150px;
+            cursor: default;
+            transition: all 0.3s ease;
+        }
+
+        /* LAYER LABEL BOXES */
+        .layer-box {
             position: absolute;
-            bottom: 100%;
-            left: 50%;
-            transform: translateX(-50%);
-            background: #111;
-            color: #00FFC8;
-            padding: 5px 10px;
-            font-size: 0.9rem;
-            white-space: nowrap;
-            border-radius: 3px;
+            background: rgba(0,255,200,0.1);
             border: 1px solid #00FFC8;
-            box-shadow: 0 0 5px #00FFC8;
+            padding: 20px;
+            width: 350px;
+            box-shadow: 0 0 10px #00FFC8;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            line-height: 1.8;
+            text-align: left;
         }
 
-        /* NETWORK METRICS - MISSION CONTROL */
+        .layer-box h3 {
+            color: #00FFC8;
+            margin-bottom: 10px;
+            font-size: 1.3rem;
+        }
+
+        .layer-line {
+            position: absolute;
+            background: #00FFC8;
+        }
+
+        .layer-point {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: #00FFC8;
+            border-radius: 50%;
+        }
+
+        /* Layer 3 (Top, Left) */
+        /* Rocket approx top edge at y=20%, left edge around x=35px */
+        .layer3-box {
+            top: 10%;
+            left: -420px; /* box to the left */
+        }
+        .layer3-line {
+            top: 20.5%;
+            left: -70px;
+            width: 148px;
+            height: 2px;
+        }
+        .layer3-point {
+            top: 19.5%;
+            left: 70px; /* pointer at rocket edge */
+        }
+
+        /* Layer 2 (Middle, Right) */
+        /* Right edge around x=70px */
+        .layer2-box {
+            top: 45%;
+            left: 220px; /* box on the right */
+        }
+        .layer2-line {
+            top: 54.5%;
+            left: 70px; 
+            width: 148px;
+            height: 2px;
+        }
+        .layer2-point {
+            top: 53.5%;
+            left: 70px; 
+        }
+
+        /* Layer 1 (Bottom, Left) */
+        /* Similar to layer3 */
+        .layer1-box {
+            top: 75%;
+            left: -420px;
+        }
+        .layer1-line {
+            top: 82.5%;
+            left: -70px;
+            width: 148px;
+            height: 2px;
+        }
+        .layer1-point {
+            top: 81.5%;
+            left: 70px;
+        }
+
+        /* NETWORK METRICS SECTION */
         .metrics-section {
             background: #000;
             padding: 100px 20px;
-            min-height: 100vh;
+            min-height: 60vh;
             text-align: center;
             position: relative;
         }
@@ -164,46 +210,45 @@
             text-shadow: 0 0 10px #00FFC8;
         }
 
-        .metrics-grid {
+        .metrics-container {
             display: flex;
-            flex-wrap: wrap;
             justify-content: center;
-            gap: 40px;
-            position: relative;
+            gap: 100px;
+            flex-wrap: wrap;
         }
 
-        /* Futuristic hex panels */
-        .metric-panel {
+        .metric-box {
             width: 200px;
-            height: 230px;
-            background: rgba(0,255,200,0.05);
+            height: 200px;
+            background: rgba(0,255,200,0.08);
             border: 1px solid #00FFC8;
             border-radius: 10px;
             position: relative;
-            overflow: hidden;
             box-shadow: 0 0 15px #00FFC8;
             display: flex;
             flex-direction: column;
-            align-items: center;
             justify-content: center;
-            padding: 20px;
+            align-items: center;
+            transition: transform 0.3s ease;
         }
 
-        .metric-panel h3 {
+        .metric-box:hover {
+            transform: scale(1.05);
+        }
+
+        .metric-box h3 {
             font-size: 1.5rem;
-            margin-bottom: 15px;
+            margin-bottom: 10px;
             color: #00FFC8;
             text-shadow: 0 0 5px #00FFC8;
         }
 
-        .metric-panel p {
+        .metric-box p {
             font-size: 1.2rem;
             color: #ccc;
-            margin-bottom: 20px;
         }
 
-        /* Placeholder animated lines (like a scanning effect) */
-        .metric-panel::before {
+        .metric-box::before {
             content: '';
             position: absolute;
             top: 0; left: 0; right: 0; bottom: 0;
@@ -212,9 +257,22 @@
             opacity: 0.1;
         }
 
-        @keyframes scan {
-            0% {transform: translateX(-100%)}
-            100% {transform: translateX(100%)}
+        footer {
+            background: #000;
+            color: #ccc;
+            text-align: center;
+            padding: 40px 0;
+            font-size: 0.9rem;
+        }
+
+        footer a {
+            color: #00FFC8;
+            text-decoration: none;
+            margin: 0 10px;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
         }
 
     </style>
@@ -228,50 +286,89 @@
         </div>
     </section>
 
-    <!-- Spaceship Section (Introduction) -->
-    <section class="ship-section">
-        <div class="ship-viewport"></div>
-        <div class="holo-panel">
-            <h2>Mission Briefing</h2>
-            <p>
-                Welcome aboard the <span data-tooltip="Your vessel through the sentiment cosmos.">Sentiment Voyager</span>.  
-                We’ve locked onto the <span data-tooltip="A distributed ledger capturing emotion-driven data.">SentiChain</span>, 
-                a living network that collects and redistributes the emotional currents from countless social feeds.<br><br>
-                Each block, forged in under a minute, anchors vital data into a Consensus Root, ensuring 
-                immutable integrity within this galaxy of sentiment.<br><br>
-                Layer 2 intelligence panels decode these signals, projecting 
-                <span data-tooltip="Actionable strategies from collective feelings.">market-shifting insights</span> 
-                before your very eyes.<br><br>
-                Meanwhile, Layer 3 event markets let you harness these emotional tides, trading on future 
-                <span data-tooltip="Where tomorrow’s sentiment trends meet today’s investment.">emotional surges</span> 
-                and shaping the destiny of entire financial ecosystems.<br><br>
-                Prepare yourself, traveler—what you sense here can influence empires of value.
-            </p>
+    <section class="intro-section">
+        <h2>Mission Briefing</h2>
+        <p>
+            The SentiChain ecosystem is built in layers, like a rocket. Each layer strengthens the foundation of sentiment data, 
+            refines it into insights, and culminates in strategic foresight.
+        </p>
+
+        <div class="rocket-wrapper">
+            <!-- SVG Rocket -->
+            <svg class="rocket" viewBox="0 0 100 300" xmlns="http://www.w3.org/2000/svg">
+                <!-- Layer 3 (Top) - Command Module -->
+                <path class="layer3" d="M50 10 
+                                         C45 10 35 30 35 50 
+                                         L35 90 
+                                         L65 90 
+                                         L65 50 
+                                         C65 30 55 10 50 10 Z"
+                      fill="#111" stroke="#00FFC8" stroke-width="2"/>
+
+                <!-- Layer 2 (Middle) - Body -->
+                <rect class="layer2" x="30" y="90" width="40" height="120" fill="#111" stroke="#00FFC8" stroke-width="2" rx="8"/>
+
+                <!-- Layer 1 (Bottom) - Thruster/Engine -->
+                <path class="layer1" d="M30 210 
+                                         L70 210 
+                                         L70 230 
+                                         C70 250 60 270 50 270 
+                                         C40 270 30 250 30 230 
+                                         Z"
+                      fill="#111" stroke="#00FFC8" stroke-width="2"/>
+            </svg>
+
+            <!-- Layer 3 Content (Top, Left) -->
+            <div class="layer-box layer3-box">
+                <h3>Layer 3</h3>
+                Prediction markets leverage upcoming emotional surges.<br>
+                Invest based on sentiment forecasts shaping tomorrow's economy.
+            </div>
+            <div class="layer-line layer3-line"></div>
+            <div class="layer-point layer3-point"></div>
+
+            <!-- Layer 2 Content (Middle, Right) -->
+            <div class="layer-box layer2-box">
+                <h3>Layer 2</h3>
+                Intelligence dashboards refine raw sentiment into actionable insights,<br>
+                illuminating how collective emotions drive market movements.
+            </div>
+            <div class="layer-line layer2-line"></div>
+            <div class="layer-point layer2-point"></div>
+
+            <!-- Layer 1 Content (Bottom, Left) -->
+            <div class="layer-box layer1-box">
+                <h3>Layer 1</h3>
+                The core foundation anchors sentiment data with one-minute block forging,<br>
+                ensuring integrity and trust at the network’s core.
+            </div>
+            <div class="layer-line layer1-line"></div>
+            <div class="layer-point layer1-point"></div>
         </div>
     </section>
 
-    <!-- Network Metrics (Mission Control) -->
+    <!-- NETWORK METRICS SECTION -->
     <section class="metrics-section">
-        <h2>Mission Control: SentiChain Status</h2>
-        <div class="metrics-grid">
-            <div class="metric-panel">
+        <h2>Network Status</h2>
+        <div class="metrics-container">
+            <div class="metric-box">
                 <h3>Blocks</h3>
-                <p>Coming Soon</p>
+                <p id="blockCount">0</p>
             </div>
-            <div class="metric-panel">
+            <div class="metric-box">
                 <h3>Block Time</h3>
-                <p>Coming Soon</p>
-            </div>
-            <div class="metric-panel">
-                <h3>Transactions</h3>
-                <p>Coming Soon</p>
-            </div>
-            <div class="metric-panel">
-                <h3>Active Nodes</h3>
-                <p>Coming Soon</p>
+                <p>~1 minute</p>
             </div>
         </div>
     </section>
+
+    <footer>
+        <p>&copy; 2024 SentiChain</p>
+        <p>
+            <a href="terms.html">Terms</a> | 
+            <a href="conditions.html">Conditions</a>
+        </p>
+    </footer>
 
     <script>
         const canvas = document.getElementById('animationCanvas');
@@ -307,7 +404,6 @@
             }
 
             reset() {
-                // Start stars closer so they appear immediately.
                 const angle = random(0, Math.PI * 2);
                 const distance = random(canvas.width * 0.3, canvas.width * 0.5);
                 this.x = blackHole.x + Math.cos(angle) * distance;
@@ -319,7 +415,7 @@
                 this.vx = dx * 0.001;
                 this.vy = dy * 0.001;
                 this.size = random(1, 3);
-                this.brightness = random(0.7, 1); // Make them a bit brighter initially
+                this.brightness = random(0.7, 1);
                 this.exploding = false;
                 this.explodeTimer = 0;
             }
@@ -500,6 +596,32 @@
         }
 
         animate();
+
+        // Replace this URL with your actual API endpoint if needed
+        const blockCountElement = document.getElementById('blockCount');
+        let currentCount = 0;
+
+        fetch("http://18.169.100.1:5000/get_chain_length?network=mainnet")
+          .then(res => res.json())
+          .then(data => {
+              const targetCount = data.chain_length;
+              const increment = () => {
+                  if (currentCount < targetCount) {
+                      currentCount++;
+                      blockCountElement.textContent = currentCount;
+                      requestAnimationFrame(increment);
+                  } else {
+                      blockCountElement.textContent = targetCount;
+                  }
+              };
+              increment();
+          })
+          .catch(err => {
+              // If API fails, show a placeholder
+              blockCountElement.textContent = "N/A";
+              console.error(err);
+          });
+
     </script>
 </body>
 </html>
