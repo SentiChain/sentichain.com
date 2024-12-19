@@ -192,6 +192,30 @@
             cursor: default;
         }
 
+        /* Scrollable Vector Output */
+        .vector-output {
+            max-height: 200px;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            background-color: #2C2C2C;
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+
+        /* Scrollable Signature Output */
+        .signature-output {
+            max-height: 100px;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            background-color: #2C2C2C;
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+
         /* Responsive Design */
         @media (max-width: 768px) {
             .sidebar {
@@ -232,7 +256,7 @@
     <!-- Main Content -->
     <div class="main-content">
         <div class="container">
-            <h1>Sentence Vectorizer & Signature Verifier</h1>
+            <h1>Vectorizer</h1>
 
             <!-- Vectorize & Sign Tab Content -->
             <div id="VectorizeSign" class="tabcontent" style="display: block;">
@@ -242,8 +266,10 @@
                     <button type="submit" class="submit-btn">Submit</button>
                 </form>
                 <div id="vectorizeSignResult" class="result" style="display: none;">
-                    <!-- Copy Feedback -->
+                    <!-- Copy Feedback for Vector -->
                     <div class="copy-feedback" id="copyFeedbackVector">Copied!</div>
+                    
+                    <!-- Copy Feedback for Signature -->
                     <div class="copy-feedback" id="copyFeedbackSignature">Copied!</div>
                     
                     <!-- Processing Message -->
@@ -252,17 +278,18 @@
                     <!-- Error Message -->
                     <div id="errorMessage" class="error" style="display: none;"></div>
                     
-                    <!-- Results -->
-                    <div id="results">
-                        <h2>Results:</h2>
-                        <p>
-                            <strong>Vector:</strong> <span id="vectorOutput">[0, 1, 2]</span>
-                            <button type="button" class="copy-btn" onclick="copyToClipboard('vectorOutput')">Copy</button>
-                        </p>
-                        <p>
-                            <strong>Signature:</strong> <span id="signatureOutput">abcdef123456</span>
-                            <button type="button" class="copy-btn" onclick="copyToClipboard('signatureOutput')">Copy</button>
-                        </p>
+                    <!-- Vector Output -->
+                    <div id="vectorResults" style="display: none;">
+                        <h2>Vector:</h2>
+                        <div class="vector-output" id="vectorOutput">[0, 1, 2]</div>
+                        <button type="button" class="copy-btn" onclick="copyToClipboard('vectorOutput')">Copy Vector</button>
+                    </div>
+
+                    <!-- Signature Output -->
+                    <div id="signatureResults" style="display: none; margin-top: 20px;">
+                        <h2>Signature:</h2>
+                        <div class="signature-output" id="signatureOutput">abcdef123456</div>
+                        <button type="button" class="copy-btn" onclick="copyToClipboard('signatureOutput')">Copy Signature</button>
                     </div>
                 </div>
             </div>
@@ -326,17 +353,19 @@
                 // For textarea, use value
                 text = document.getElementById(elementId).value;
             } else {
-                // For span elements, use innerText
+                // For div or other elements, use innerText
                 text = document.getElementById(elementId).innerText;
             }
 
             navigator.clipboard.writeText(text).then(() => {
                 // Show feedback
                 const feedback = document.getElementById('copyFeedback' + capitalizeFirstLetter(elementId.replace('Output', '')));
-                feedback.classList.add('show');
-                setTimeout(() => {
-                    feedback.classList.remove('show');
-                }, 2000);
+                if (feedback) {
+                    feedback.classList.add('show');
+                    setTimeout(() => {
+                        feedback.classList.remove('show');
+                    }, 2000);
+                }
             }).catch(err => {
                 console.error('Failed to copy: ', err);
             });
@@ -369,13 +398,15 @@
             const sentence = sentenceInput.value.trim();
             const resultDiv = document.getElementById('vectorizeSignResult');
             const processingMessage = document.getElementById('processingMessage');
-            const resultsDiv = document.getElementById('results');
+            const vectorResultsDiv = document.getElementById('vectorResults');
+            const signatureResultsDiv = document.getElementById('signatureResults');
             const errorMessageDiv = document.getElementById('errorMessage');
 
             // Clear previous results and errors
             resultDiv.classList.remove('error');
             processingMessage.style.display = 'none';
-            resultsDiv.style.display = 'none';
+            vectorResultsDiv.style.display = 'none';
+            signatureResultsDiv.style.display = 'none';
             errorMessageDiv.style.display = 'none';
             document.getElementById('vectorOutput').innerText = '';
             document.getElementById('signatureOutput').innerText = '';
@@ -429,7 +460,8 @@
 
                 // Hide processing message and show results
                 processingMessage.style.display = 'none';
-                resultsDiv.style.display = 'block';
+                vectorResultsDiv.style.display = 'block';
+                signatureResultsDiv.style.display = 'block';
             })
             .catch(error => {
                 console.error('Vectorize & Sign Error:', error); // Debugging line
@@ -437,7 +469,8 @@
                 errorMessageDiv.innerText = `Error: ${error.message}`;
                 errorMessageDiv.style.display = 'block';
                 processingMessage.style.display = 'none';
-                resultsDiv.style.display = 'none';
+                vectorResultsDiv.style.display = 'none';
+                signatureResultsDiv.style.display = 'none';
             });
         });
 
