@@ -360,9 +360,12 @@
                 </form>
 
                 <div id="blockExplorerResult" class="result block-explorer-result" style="display: none;">
-                    <!-- Copy Feedback for Block Hash -->
-                    <div class="copy-feedback" id="copyFeedbackBlockHash">Copied!</div>
-                    
+                    <!-- Copy Feedbacks -->
+                    <div class="copy-feedback" id="copyFeedbackHash">Copied!</div>
+                    <div class="copy-feedback" id="copyFeedbackPreviousHash">Copied!</div>
+                    <div class="copy-feedback" id="copyFeedbackConsensusRoot">Copied!</div>
+                    <div class="copy-feedback" id="copyFeedbackValidator">Copied!</div>
+
                     <!-- Processing Message -->
                     <div id="blockProcessingMessage">Fetching block data...</div>
                     
@@ -372,10 +375,13 @@
                     <!-- Block Information -->
                     <div id="blockInfo" style="display: none;">
                         <h2>Block Information:</h2>
+                        <p><strong>Block Number:</strong> <span id="blockNumberInfo">100</span></p>
                         <p><strong>Hash:</strong> <span id="blockHash">abc123</span> <button type="button" class="copy-btn" onclick="copyToClipboard('blockHash')">Copy Hash</button></p>
-                        <p><strong>Number:</strong> <span id="blockNumberInfo">100</span></p>
+                        <p><strong>Previous Hash:</strong> <span id="blockPreviousHash">prev123</span> <button type="button" class="copy-btn" onclick="copyToClipboard('blockPreviousHash')">Copy Previous Hash</button></p>
+                        <p><strong>Consensus Root:</strong> <span id="blockConsensusRoot">consensus123</span> <button type="button" class="copy-btn" onclick="copyToClipboard('blockConsensusRoot')">Copy Consensus Root</button></p>
                         <p><strong>Timestamp:</strong> <span id="blockTimestamp">2024-04-27 12:00:00</span></p>
-                        <p><strong>Transactions:</strong> <span id="blockTransactions">10</span></p>
+                        <p><strong>Transactions:</strong> <pre id="blockTransactions" style="white-space: pre-wrap;">{"tx1": {}, "tx2": {}}</pre></p>
+                        <p><strong>Validator:</strong> <span id="blockValidator">validator123</span> <button type="button" class="copy-btn" onclick="copyToClipboard('blockValidator')">Copy Validator</button></p>
                         <!-- Add more fields as needed -->
                     </div>
                 </div>
@@ -408,13 +414,27 @@
                 // For textarea, use value
                 text = document.getElementById(elementId).value;
             } else {
-                // For div or span elements, use innerText
-                text = document.getElementById(elementId).innerText;
+                // For div or span elements, use innerText or innerHTML
+                const element = document.getElementById(elementId);
+                if (element.tagName.toLowerCase() === 'pre') {
+                    text = element.innerText;
+                } else {
+                    text = element.innerText;
+                }
             }
 
             navigator.clipboard.writeText(text).then(() => {
-                // Show feedback
-                const feedback = document.getElementById('copyFeedback' + capitalizeFirstLetter(elementId.replace('Output', '')));
+                // Determine the feedback ID based on the element being copied
+                let feedbackId;
+                if (elementId.startsWith('block')) {
+                    // Remove 'block' prefix and capitalize the first letter
+                    const suffix = elementId.replace('block', '');
+                    feedbackId = 'copyFeedback' + suffix.charAt(0).toUpperCase() + suffix.slice(1);
+                } else {
+                    feedbackId = 'copyFeedback' + capitalizeFirstLetter(elementId.replace('Output', ''));
+                }
+
+                const feedback = document.getElementById(feedbackId);
                 if (feedback) {
                     feedback.classList.add('show');
                     setTimeout(() => {
@@ -443,6 +463,12 @@
                 }
                 return (Number.isInteger(n) ? n.toFixed(1) : n);
             }).join(", ") + "]";
+        }
+
+        // Function to format UNIX timestamp to human-readable date
+        function formatTimestamp(timestamp) {
+            const date = new Date(timestamp * 1000); // Convert to milliseconds
+            return date.toLocaleString();
         }
 
         // Vectorize & Sign Form Handling
@@ -686,7 +712,7 @@
                     throw new Error('Public key not found in the response.');
                 }
 
-                // Replace actual newline characters with \n
+                // Replace actual newline characters with \n for display
                 let publicKeyFormatted = data.public_key.replace(/\n/g, '\\n');
 
                 // Display the public key as a single-line string with \n
@@ -717,6 +743,9 @@
             const blockNumberInfoSpan = document.getElementById('blockNumberInfo');
             const blockTimestampSpan = document.getElementById('blockTimestamp');
             const blockTransactionsSpan = document.getElementById('blockTransactions');
+            const blockConsensusRootSpan = document.getElementById('blockConsensusRoot');
+            const blockPreviousHashSpan = document.getElementById('blockPreviousHash');
+            const blockValidatorSpan = document.getElementById('blockValidator');
             const blockErrorMessageDiv = document.getElementById('blockErrorMessage');
 
             // Clear previous results and errors
@@ -728,6 +757,9 @@
             blockNumberInfoSpan.innerText = '';
             blockTimestampSpan.innerText = '';
             blockTransactionsSpan.innerText = '';
+            blockConsensusRootSpan.innerText = '';
+            blockPreviousHashSpan.innerText = '';
+            blockValidatorSpan.innerText = '';
 
             // Input validation
             if (!network) {
@@ -770,18 +802,38 @@
             .then(data => {
                 console.log('Get Block By Number Response:', data); // Debugging line
 
-                if (!data.block) {
-                    throw new Error('Invalid response format from server.');
+                // Ensure the response has the 'block' object
+                if (!('block' in data)) {
+                    throw new Error('Missing "block" data in response.');
                 }
 
                 const block = data.block;
 
+                // Validate the required fields within the 'block' object
+                const requiredFields = ['block_number', 'consensus_root', 'hash', 'previous_hash', 'timestamp', 'transactions', 'validator'];
+                for (let field of requiredFields) {
+                    if (!(field in block)) {
+                        throw new Error(`Missing field in response: ${field}`);
+                    }
+                }
+
                 // Populate the block information in the DOM
-                blockHashSpan.innerText = block.hash || 'N/A';
-                blockNumberInfoSpan.innerText = block.number !== undefined ? block.number : 'N/A';
-                blockTimestampSpan.innerText = block.timestamp || 'N/A';
-                blockTransactionsSpan.innerText = block.transactions !== undefined ? block.transactions : 'N/A';
-                // Add more fields as needed based on block structure
+                blockNumberInfoSpan.innerText = block.block_number;
+                blockHashSpan.innerText = block.hash;
+                blockPreviousHashSpan.innerText = block.previous_hash;
+                blockConsensusRootSpan.innerText = block.consensus_root;
+
+                // Format timestamp
+                blockTimestampSpan.innerText = formatTimestamp(block.timestamp);
+
+                // Display transactions as a formatted JSON string
+                if (typeof block.transactions === 'object') {
+                    blockTransactionsSpan.innerText = JSON.stringify(block.transactions, null, 2);
+                } else {
+                    blockTransactionsSpan.innerText = block.transactions;
+                }
+
+                blockValidatorSpan.innerText = block.validator;
 
                 // Show the block information
                 processingMessage.style.display = 'none';
