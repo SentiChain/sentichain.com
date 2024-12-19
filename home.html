@@ -20,10 +20,10 @@
             background-color: #000;
             color: #fff;
             overflow-x: hidden;
-            overflow-y: auto; /* Allow scrolling */
+            overflow-y: auto;
         }
 
-        /* Hero Section with the Canvas Animation */
+        /* HERO SECTION (Black Hole) */
         .hero-section {
             position: relative;
             width: 100%;
@@ -66,79 +66,155 @@
             }
         }
 
-        /* Introduction Section */
-        .intro-section {
+        /* SHIP SECTION (Introduction) */
+        .ship-section {
             position: relative;
-            padding: 100px 20px;
-            background: #000;
-            color: #fff;
-            text-align: center;
             min-height: 100vh;
+            background: linear-gradient(to bottom right, #01010a 40%, #000 100%);
+            padding: 100px 20px;
             display: flex;
             flex-direction: column;
+            align-items: center;
             justify-content: center;
         }
 
-        .intro-section h2 {
-            font-size: 3rem;
-            color: #00FFC8;
-            text-shadow: 0 0 8px #00FFC8, 0 0 15px #00FFC8;
-            margin-bottom: 40px;
-            letter-spacing: 2px;
+        /* A viewport (window) looking into space */
+        .ship-viewport {
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            border: 2px solid #00FFC8;
+            overflow: hidden;
+            margin-bottom: 50px;
+            position: relative;
+        }
+
+        /* A planet image or gradient to show a distant world */
+        .ship-viewport::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at 30% 30%, #2f2f74, #06061a 80%);
+        }
+
+        /* Holographic panel for mission briefing */
+        .holo-panel {
+            background: rgba(0, 255, 200, 0.05);
+            border: 1px solid #00FFC8;
+            padding: 20px;
+            max-width: 600px;
+            text-align: center;
+            border-radius: 10px;
+            box-shadow: 0 0 20px #00FFC8;
+            position: relative;
+        }
+
+        .holo-panel h2 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
             text-transform: uppercase;
-            animation: flicker 3s infinite;
+            color: #00FFC8;
+            text-shadow: 0 0 10px #00FFC8;
         }
 
-        .intro-section p {
-            font-size: 1.3rem;
-            line-height: 1.8;
-            max-width: 800px;
-            margin: 0 auto;
+        .holo-panel p {
+            font-size: 1.2rem;
+            line-height: 1.6;
             color: #ccc;
-            font-weight: 300;
         }
 
-        /* Add a subtle "futuristic" feel: a faint grid or glitch effect */
-        .intro-section::before {
+        /* Tooltip styling for holographic terms */
+        .holo-panel p span[data-tooltip] {
+            position: relative;
+            cursor: help;
+            color: #00FFC8;
+            text-decoration: underline;
+        }
+
+        .holo-panel p span[data-tooltip]:hover::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #111;
+            color: #00FFC8;
+            padding: 5px 10px;
+            font-size: 0.9rem;
+            white-space: nowrap;
+            border-radius: 3px;
+            border: 1px solid #00FFC8;
+            box-shadow: 0 0 5px #00FFC8;
+        }
+
+        /* NETWORK METRICS - MISSION CONTROL */
+        .metrics-section {
+            background: #000;
+            padding: 100px 20px;
+            min-height: 100vh;
+            text-align: center;
+            position: relative;
+        }
+
+        .metrics-section h2 {
+            font-size: 2.5rem;
+            color: #00FFC8;
+            margin-bottom: 40px;
+            text-transform: uppercase;
+            text-shadow: 0 0 10px #00FFC8;
+        }
+
+        .metrics-grid {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 40px;
+            position: relative;
+        }
+
+        /* Futuristic hex panels */
+        .metric-panel {
+            width: 200px;
+            height: 230px;
+            background: rgba(0,255,200,0.05);
+            border: 1px solid #00FFC8;
+            border-radius: 10px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 0 15px #00FFC8;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .metric-panel h3 {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            color: #00FFC8;
+            text-shadow: 0 0 5px #00FFC8;
+        }
+
+        .metric-panel p {
+            font-size: 1.2rem;
+            color: #ccc;
+            margin-bottom: 20px;
+        }
+
+        /* Placeholder animated lines (like a scanning effect) */
+        .metric-panel::before {
             content: '';
             position: absolute;
             top: 0; left: 0; right: 0; bottom: 0;
-            background: radial-gradient(circle at center, rgba(0,255,200,0.1) 0%, rgba(0,0,0,0) 80%);
-            pointer-events: none;
-            z-index: -1;
+            background: linear-gradient(to right, transparent, #00ffc8, transparent);
+            animation: scan 2s linear infinite;
+            opacity: 0.1;
         }
 
-        @keyframes flicker {
-            0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% {
-                opacity: 1;
-            }
-            20%, 24%, 55% {
-                opacity: 0.4;
-            }
-        }
-
-        /* Optional: add a subtle "typing" or glitch effect to paragraph text */
-        .intro-section p span {
-            display: inline-block;
-            animation: glitch 5s infinite;
-        }
-
-        @keyframes glitch {
-            0% {
-                opacity: 1;
-            }
-            10% {
-                opacity: 0.7;
-                transform: translateX(1px) skewX(2deg);
-            }
-            20% {
-                opacity: 0.9;
-                transform: translateX(-1px) skewX(-2deg);
-            }
-            30% {
-                opacity: 1;
-                transform: translateX(0) skewX(0deg);
-            }
+        @keyframes scan {
+            0% {transform: translateX(-100%)}
+            100% {transform: translateX(100%)}
         }
 
     </style>
@@ -152,17 +228,49 @@
         </div>
     </section>
 
-    <!-- Futuristic Introduction Section -->
-    <section class="intro-section">
-        <h2>Incoming Transmission</h2>
-        <p>
-            <span>Encrypted nodes hum in digital darkness:</span><br><br>
-            <span>Within SentiChain's lattice, raw emotion flows like code—captured from every distant social feed.</span><br><br>
-            <span>Blocks verify in a single heartbeat, forging a Consensus Root of trust that pulses through the network’s veins.</span><br><br>
-            <span>Layer 2 dashboards decode the whispers of the masses, transforming them into actionable, luminous insights.</span><br><br>
-            <span>Layer 3 prediction markets quantify the intangible spark of sentiment, letting you trade on tomorrow’s emotional surge.</span><br><br>
-            <span>Enter the hive of sentiment and shape the future of financial resonance.</span>
-        </p>
+    <!-- Spaceship Section (Introduction) -->
+    <section class="ship-section">
+        <div class="ship-viewport"></div>
+        <div class="holo-panel">
+            <h2>Mission Briefing</h2>
+            <p>
+                Welcome aboard the <span data-tooltip="Your vessel through the sentiment cosmos.">Sentiment Voyager</span>.  
+                We’ve locked onto the <span data-tooltip="A distributed ledger capturing emotion-driven data.">SentiChain</span>, 
+                a living network that collects and redistributes the emotional currents from countless social feeds.<br><br>
+                Each block, forged in under a minute, anchors vital data into a Consensus Root, ensuring 
+                immutable integrity within this galaxy of sentiment.<br><br>
+                Layer 2 intelligence panels decode these signals, projecting 
+                <span data-tooltip="Actionable strategies from collective feelings.">market-shifting insights</span> 
+                before your very eyes.<br><br>
+                Meanwhile, Layer 3 event markets let you harness these emotional tides, trading on future 
+                <span data-tooltip="Where tomorrow’s sentiment trends meet today’s investment.">emotional surges</span> 
+                and shaping the destiny of entire financial ecosystems.<br><br>
+                Prepare yourself, traveler—what you sense here can influence empires of value.
+            </p>
+        </div>
+    </section>
+
+    <!-- Network Metrics (Mission Control) -->
+    <section class="metrics-section">
+        <h2>Mission Control: SentiChain Status</h2>
+        <div class="metrics-grid">
+            <div class="metric-panel">
+                <h3>Blocks</h3>
+                <p>Coming Soon</p>
+            </div>
+            <div class="metric-panel">
+                <h3>Block Time</h3>
+                <p>Coming Soon</p>
+            </div>
+            <div class="metric-panel">
+                <h3>Transactions</h3>
+                <p>Coming Soon</p>
+            </div>
+            <div class="metric-panel">
+                <h3>Active Nodes</h3>
+                <p>Coming Soon</p>
+            </div>
+        </div>
     </section>
 
     <script>
@@ -199,32 +307,19 @@
             }
 
             reset() {
-                const edge = Math.floor(random(0, 4));
-                switch(edge) {
-                    case 0:
-                        this.x = random(0, canvas.width);
-                        this.y = -10;
-                        break;
-                    case 1:
-                        this.x = canvas.width + 10;
-                        this.y = random(0, canvas.height);
-                        break;
-                    case 2:
-                        this.x = random(0, canvas.width);
-                        this.y = canvas.height + 10;
-                        break;
-                    case 3:
-                        this.x = -10;
-                        this.y = random(0, canvas.height);
-                        break;
-                }
+                // Start stars closer so they appear immediately.
+                const angle = random(0, Math.PI * 2);
+                const distance = random(canvas.width * 0.3, canvas.width * 0.5);
+                this.x = blackHole.x + Math.cos(angle) * distance;
+                this.y = blackHole.y + Math.sin(angle) * distance;
 
-                this.vx = (blackHole.x - this.x) * 0.001;
-                this.vy = (blackHole.y - this.y) * 0.001;
+                const dx = blackHole.x - this.x;
+                const dy = blackHole.y - this.y;
 
+                this.vx = dx * 0.001;
+                this.vy = dy * 0.001;
                 this.size = random(1, 3);
-                this.brightness = random(0.5, 1);
-
+                this.brightness = random(0.7, 1); // Make them a bit brighter initially
                 this.exploding = false;
                 this.explodeTimer = 0;
             }
@@ -325,12 +420,8 @@
                 const maxAdditionalShrink = 0.4; 
                 const shrinkReduction = Math.min(this.growth / 200, maxAdditionalShrink);
                 const shrinkRatio = 0.5 + shrinkReduction;
-
                 this.targetRadius = (this.baseRadius + this.growth) * shrinkRatio;
                 this.shrinking = true;
-
-                this.ringHue = (this.ringHue + 10) % 360;
-                this.ringRotation += Math.PI / 20; 
             }
 
             draw() {
@@ -372,7 +463,6 @@
         }
 
         const blackHole = new BlackHole();
-
         const stars = [];
         const numStars = 200;
         for (let i = 0; i < numStars; i++) {
