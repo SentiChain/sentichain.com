@@ -2,175 +2,339 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SentiChain - Empowering Market Sentiments</title>
+    <title>SentiChain - Home</title>
     <style>
         /* Import Google Font */
-        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
 
-        /* Global Styles */
         * {
-            box-sizing: border-box;
             margin: 0;
             padding: 0;
+            box-sizing: border-box;
         }
 
-        body {
+        body, html {
+            width: 100%;
+            height: 100%;
+            overflow: hidden; 
             font-family: 'Roboto', sans-serif;
-            background-color: #121212;
-            color: #E0E0E0;
-            overflow-x: hidden;
+            background-color: #000;
+            color: #fff;
         }
 
-        /* Container */
-        .container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            text-align: center;
-            padding: 20px;
-        }
-
-        /* Logo */
-        .logo {
-            font-size: 4rem;
-            font-weight: 700;
-            color: #00FFC8;
-            margin-bottom: 20px;
-            animation: pulse 2s infinite;
-        }
-
-        /* Tagline */
-        .tagline {
-            font-size: 1.5rem;
-            margin-bottom: 40px;
-            max-width: 600px;
-        }
-
-        /* Call-to-Action Button */
-        .cta-button {
-            background: linear-gradient(45deg, #00FFC8, #007BFF);
-            border: none;
-            color: #121212;
-            padding: 15px 30px;
-            border-radius: 50px;
-            cursor: pointer;
-            font-size: 1rem;
-            font-weight: 500;
-            transition: background 0.3s, transform 0.2s;
-            text-decoration: none;
-        }
-
-        .cta-button:hover {
-            background: linear-gradient(45deg, #007BFF, #00FFC8);
-            transform: translateY(-2px);
-        }
-
-        /* Animated Background Elements */
-        .background-circle {
+        #animationCanvas {
             position: absolute;
-            border-radius: 50%;
-            opacity: 0.1;
-            animation: float 10s infinite;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #000;
         }
 
-        .circle1 {
-            width: 200px;
-            height: 200px;
-            background-color: #00FFC8;
-            top: -50px;
-            left: -50px;
-            animation-duration: 12s;
+        .overlay {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            height: 100%;
+            text-align: center;
         }
 
-        .circle2 {
-            width: 300px;
-            height: 300px;
-            background-color: #007BFF;
-            bottom: -100px;
-            right: -100px;
-            animation-duration: 15s;
+        .overlay h1 {
+            position: absolute;
+            top: 50%; 
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 4rem;
+            color: #00FFC8;
+            text-shadow: 0 0 10px #00FFC8, 0 0 20px #00FFC8;
+            cursor: pointer;
         }
 
-        .circle3 {
-            width: 150px;
-            height: 150px;
-            background-color: #FF5555;
-            top: 20%;
-            left: 70%;
-            animation-duration: 10s;
-        }
-
-        /* Keyframes for Animations */
-        @keyframes pulse {
-            0%, 100% {
-                transform: scale(1);
-                opacity: 1;
-            }
-            50% {
-                transform: scale(1.05);
-                opacity: 0.8;
-            }
-        }
-
-        @keyframes float {
-            0% {
-                transform: translateY(0) translateX(0);
-            }
-            50% {
-                transform: translateY(-20px) translateX(20px);
-            }
-            100% {
-                transform: translateY(0) translateX(0);
-            }
-        }
-
-        /* Responsive Design */
         @media (max-width: 768px) {
-            .logo {
-                font-size: 3rem;
-            }
-
-            .tagline {
-                font-size: 1.2rem;
-                max-width: 90%;
-            }
-
-            .cta-button {
-                padding: 12px 25px;
-                font-size: 0.9rem;
-            }
-
-            .background-circle {
-                display: none; /* Hide animated circles on smaller screens for performance */
+            .overlay h1 {
+                font-size: 2.5rem;
             }
         }
     </style>
 </head>
 <body>
 
-    <!-- Animated Background Circles -->
-    <div class="background-circle circle1"></div>
-    <div class="background-circle circle2"></div>
-    <div class="background-circle circle3"></div>
+    <canvas id="animationCanvas"></canvas>
 
-    <!-- Main Container -->
-    <div class="container">
-        <!-- Logo -->
-        <div class="logo">SentiChain</div>
-
-        <!-- Tagline -->
-        <div class="tagline">
-            Unlock the Power of Market Sentiments<br>
-            Harnessing Social Media Data to Drive Blockchain Insights
-        </div>
-
-        <!-- Call-to-Action Button -->
-        <a href="app.html" class="cta-button">Get Started</a>
+    <div class="overlay">
+        <h1 onclick="window.location.href='app.html'">SentiChain</h1>
     </div>
+
+    <script>
+        const canvas = document.getElementById('animationCanvas');
+        const ctx = canvas.getContext('2d');
+
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        window.addEventListener('resize', throttle(() => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            blackHole.x = canvas.width / 2;
+            blackHole.y = canvas.height / 2;
+        }, 200));
+
+        function random(min, max) {
+            return Math.random() * (max - min) + min;
+        }
+
+        function throttle(fn, wait) {
+            let time = Date.now();
+            return function() {
+                if ((time + wait - Date.now()) < 0) {
+                    fn();
+                    time = Date.now();
+                }
+            }
+        }
+
+        class Star {
+            constructor() {
+                this.reset();
+            }
+
+            reset() {
+                const edge = Math.floor(random(0, 4));
+                switch(edge) {
+                    case 0:
+                        this.x = random(0, canvas.width);
+                        this.y = -10;
+                        break;
+                    case 1:
+                        this.x = canvas.width + 10;
+                        this.y = random(0, canvas.height);
+                        break;
+                    case 2:
+                        this.x = random(0, canvas.width);
+                        this.y = canvas.height + 10;
+                        break;
+                    case 3:
+                        this.x = -10;
+                        this.y = random(0, canvas.height);
+                        break;
+                }
+
+                this.vx = (blackHole.x - this.x) * 0.001;
+                this.vy = (blackHole.y - this.y) * 0.001;
+
+                this.size = random(1, 3);
+                this.brightness = random(0.5, 1);
+
+                this.exploding = false;
+                this.explodeTimer = 0;
+            }
+
+            update() {
+                const dx = blackHole.x - this.x;
+                const dy = blackHole.y - this.y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+
+                const force = 1000 / (distance * distance + 100);
+                this.vx += (dx / distance) * force;
+                this.vy += (dy / distance) * force;
+
+                this.x += this.vx;
+                this.y += this.vy;
+
+                // Eat the star if close enough
+                if (distance < blackHole.currentRadius) {
+                    blackHole.growth += 0.5; 
+                    this.reset();
+                }
+
+                if (this.exploding) {
+                    this.vx += this.explodeVx;
+                    this.vy += this.explodeVy;
+                    this.explodeTimer--;
+                    if (this.explodeTimer <= 0) {
+                        this.exploding = false;
+                    }
+                }
+            }
+
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(255, 255, 255, ${this.brightness})`;
+                ctx.fill();
+            }
+
+            shockwave() {
+                const dx = this.x - blackHole.x;
+                const dy = this.y - blackHole.y;
+                const angle = Math.atan2(dy, dx);
+
+                const speed = 0.01 * random(2, 5);
+
+                this.explodeVx = Math.cos(angle) * speed;
+                this.explodeVy = Math.sin(angle) * speed;
+                this.exploding = true;
+                this.explodeTimer = 60;
+            }
+        }
+
+        class BlackHole {
+            constructor() {
+                this.x = canvas.width / 2;
+                this.y = canvas.height / 2;
+                this.baseRadius = 100;
+                this.growth = 0;
+                this._currentRadius = this.baseRadius;
+                this.color = '#000000';
+
+                this.shrinking = false;
+                this.hasShrunk = false;
+                this.targetRadius = this.baseRadius;
+
+                // Hue for the ring color
+                this.ringHue = 180; 
+
+                // Rotation angle for the ring
+                this.ringRotation = 0; 
+            }
+
+            get currentRadius() {
+                return this._currentRadius;
+            }
+
+            set currentRadius(value) {
+                this._currentRadius = value;
+            }
+
+            updateRadius() {
+                if (!this.shrinking && !this.hasShrunk) {
+                    this.targetRadius = this.baseRadius + this.growth;
+                }
+
+                const lerpSpeed = 0.05;
+                this._currentRadius += (this.targetRadius - this._currentRadius) * lerpSpeed;
+
+                if (this.shrinking) {
+                    if (Math.abs(this._currentRadius - this.targetRadius) < 0.5) {
+                        this.hasShrunk = true;
+                        this.shrinking = false;
+                    }
+                } else if (this.hasShrunk) {
+                    if (Math.abs(this._currentRadius - this.targetRadius) < 0.5) {
+                        this.hasShrunk = false;
+                    }
+                }
+            }
+
+            triggerExplosionShrink() {
+                const maxAdditionalShrink = 0.4; 
+                const shrinkReduction = Math.min(this.growth / 200, maxAdditionalShrink);
+                const shrinkRatio = 0.5 + shrinkReduction;
+
+                this.targetRadius = (this.baseRadius + this.growth) * shrinkRatio;
+                this.shrinking = true;
+
+                // Change hue on explosion
+                this.ringHue = (this.ringHue + 10) % 360;
+
+                // Optionally, we can also change rotation speed or angle on each explosion
+                // For a subtle effect, increment the rotation angle slightly
+                this.ringRotation += Math.PI / 20; 
+            }
+
+            draw() {
+                this.updateRadius();
+                const r = this._currentRadius;
+
+                // Increase brightness factor with size
+                const brightnessFactor = Math.min(0.2 + (r / 1000), 0.8);
+
+                // Scale the ring's thickness proportionally
+                const outerRingRadius = r * 1.3; 
+
+                // Save context state before transformations
+                ctx.save();
+                ctx.translate(this.x, this.y);
+
+                // Rotate the ring
+                this.ringRotation += 0.002; // Continuously rotate slightly each frame
+                ctx.rotate(this.ringRotation);
+
+                // Scale to create an elliptical shape
+                ctx.scale(1.1, 1);
+
+                // Create a radial gradient relative to transformed coordinates
+                const diskGradient = ctx.createRadialGradient(0, 0, r, 0, 0, outerRingRadius);
+                diskGradient.addColorStop(0, `hsla(${this.ringHue}, 100%, 50%, ${brightnessFactor})`);
+                diskGradient.addColorStop(1, 'rgba(0, 0, 0, 0)');
+
+                // Draw the gradient ring
+                ctx.beginPath();
+                ctx.arc(0, 0, outerRingRadius, 0, Math.PI * 2);
+                ctx.fillStyle = diskGradient;
+                ctx.fill();
+
+                // Reset scale and rotation to draw the black hole disk in a non-transformed way
+                ctx.restore();
+
+                // Draw the black hole disk (no transform)
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, r, 0, Math.PI * 2);
+                ctx.fillStyle = this.color;
+                ctx.fill();
+
+                // Draw a subtle stroke ring around the black hole
+                // We can also rotate/scale this if desired, but let's keep it stable for contrast
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, r * 1.1, 0, Math.PI * 2);
+                ctx.strokeStyle = `hsla(${this.ringHue}, 100%, 50%, 0.01)`;
+                ctx.lineWidth = 2;
+                ctx.stroke();
+            }
+        }
+
+        const blackHole = new BlackHole();
+
+        const stars = [];
+        const numStars = 200;
+        for (let i = 0; i < numStars; i++) {
+            stars.push(new Star());
+        }
+
+        let explosionInterval = 5000;
+        let lastExplosion = Date.now();
+        let animationRunning = true;
+
+        function animate() {
+            if (!animationRunning) return;
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            blackHole.draw();
+
+            stars.forEach(star => {
+                star.update();
+                star.draw();
+            });
+
+            const now = Date.now();
+            if (now - lastExplosion > explosionInterval) {
+                stars.forEach(star => star.shockwave());
+                blackHole.triggerExplosionShrink(); 
+                lastExplosion = now;
+            }
+
+            // Stop the animation if the black hole grows too large
+            if (blackHole.currentRadius > 500) {
+                animationRunning = false;
+                return;
+            }
+
+            requestAnimationFrame(animate);
+        }
+
+        animate();
+    </script>
 
 </body>
 </html>
