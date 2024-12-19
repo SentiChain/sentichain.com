@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sentence Vectorizer and Signature Verifier</title>
+    <title>Sentence Vectorizer, Signature Verifier & Block Explorer</title>
     <style>
         /* Import Google Font */
         @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
@@ -30,7 +30,6 @@
             width: 250px;
             background-color: #1E1E1E;
             padding-top: 30px;
-            /* Removed fixed positioning */
             transition: width 0.3s;
             flex-shrink: 0; /* Prevent sidebar from shrinking */
             height: 100vh;
@@ -105,7 +104,7 @@
             font-weight: 500;
         }
 
-        input[type="text"], textarea {
+        input[type="text"], textarea, select {
             width: 100%;
             padding: 12px 15px;
             margin-bottom: 20px;
@@ -118,7 +117,7 @@
             transition: box-shadow 0.3s;
         }
 
-        input[type="text"]:focus, textarea:focus {
+        input[type="text"]:focus, textarea:focus, select:focus {
             box-shadow: 0 0 10px #00FFC8;
         }
 
@@ -216,6 +215,20 @@
             margin-bottom: 10px;
         }
 
+        /* Block Explorer Specific Styles */
+        .block-explorer-form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .block-explorer-form label {
+            margin-top: 10px;
+        }
+
+        .block-explorer-result {
+            margin-top: 20px;
+        }
+
         /* Responsive Design */
         @media (max-width: 768px) {
             .sidebar {
@@ -251,12 +264,15 @@
         <a href="#" class="tablinks" onclick="openTab(event, 'PublicKey')">
             <i>🔑</i><span>Public Key</span>
         </a>
+        <a href="#" class="tablinks" onclick="openTab(event, 'BlockExplorer')">
+            <i>🔎</i><span>Block Explorer</span>
+        </a>
     </div>
 
     <!-- Main Content -->
     <div class="main-content">
         <div class="container">
-            <h1>Vectorizer</h1>
+            <h1>Sentence Vectorizer, Signature Verifier & Block Explorer</h1>
 
             <!-- Vectorize & Sign Tab Content -->
             <div id="VectorizeSign" class="tabcontent" style="display: block;">
@@ -326,6 +342,45 @@
                     <button type="button" class="copy-btn" onclick="copyToClipboard('publicKeyOutput')">Copy</button>
                 </div>
             </div>
+
+            <!-- Block Explorer Tab Content -->
+            <div id="BlockExplorer" class="tabcontent" style="display: none;">
+                <form id="blockExplorerForm" class="block-explorer-form">
+                    <label for="network">Select Network:</label>
+                    <select id="network" name="network" required>
+                        <option value="" disabled selected>Select a network</option>
+                        <option value="mainnet">Mainnet</option>
+                        <option value="testnet">Testnet</option>
+                    </select>
+
+                    <label for="blockNumber">Enter Block Number:</label>
+                    <input type="text" id="blockNumber" name="blockNumber" placeholder="e.g., 100" required>
+
+                    <button type="submit" class="submit-btn">Get Block</button>
+                </form>
+
+                <div id="blockExplorerResult" class="result block-explorer-result" style="display: none;">
+                    <!-- Copy Feedback for Block Hash -->
+                    <div class="copy-feedback" id="copyFeedbackBlockHash">Copied!</div>
+                    
+                    <!-- Processing Message -->
+                    <div id="blockProcessingMessage">Fetching block data...</div>
+                    
+                    <!-- Error Message -->
+                    <div id="blockErrorMessage" class="error" style="display: none;"></div>
+                    
+                    <!-- Block Information -->
+                    <div id="blockInfo" style="display: none;">
+                        <h2>Block Information:</h2>
+                        <p><strong>Hash:</strong> <span id="blockHash">abc123</span> <button type="button" class="copy-btn" onclick="copyToClipboard('blockHash')">Copy Hash</button></p>
+                        <p><strong>Number:</strong> <span id="blockNumberInfo">100</span></p>
+                        <p><strong>Timestamp:</strong> <span id="blockTimestamp">2024-04-27 12:00:00</span></p>
+                        <p><strong>Transactions:</strong> <span id="blockTransactions">10</span></p>
+                        <!-- Add more fields as needed -->
+                    </div>
+                </div>
+            </div>
+
         </div>
     </div>
 
@@ -353,7 +408,7 @@
                 // For textarea, use value
                 text = document.getElementById(elementId).value;
             } else {
-                // For div or other elements, use innerText
+                // For div or span elements, use innerText
                 text = document.getElementById(elementId).innerText;
             }
 
@@ -644,6 +699,102 @@
                 publicKeyErrorMessage.innerText = `Error: ${error.message}`;
                 publicKeyErrorMessage.style.display = 'block';
                 publicKeyOutput.value = '';
+            });
+        });
+
+        // Block Explorer Form Handling
+        document.getElementById('blockExplorerForm').addEventListener('submit', function(event) {
+            event.preventDefault(); // Prevent the form from submitting the traditional way
+
+            const networkSelect = document.getElementById('network');
+            const blockNumberInput = document.getElementById('blockNumber');
+            const network = networkSelect.value;
+            const blockNumber = blockNumberInput.value.trim();
+            const resultDiv = document.getElementById('blockExplorerResult');
+            const processingMessage = document.getElementById('blockProcessingMessage');
+            const blockInfoDiv = document.getElementById('blockInfo');
+            const blockHashSpan = document.getElementById('blockHash');
+            const blockNumberInfoSpan = document.getElementById('blockNumberInfo');
+            const blockTimestampSpan = document.getElementById('blockTimestamp');
+            const blockTransactionsSpan = document.getElementById('blockTransactions');
+            const blockErrorMessageDiv = document.getElementById('blockErrorMessage');
+
+            // Clear previous results and errors
+            resultDiv.classList.remove('error');
+            processingMessage.style.display = 'none';
+            blockInfoDiv.style.display = 'none';
+            blockErrorMessageDiv.style.display = 'none';
+            blockHashSpan.innerText = '';
+            blockNumberInfoSpan.innerText = '';
+            blockTimestampSpan.innerText = '';
+            blockTransactionsSpan.innerText = '';
+
+            // Input validation
+            if (!network) {
+                blockErrorMessageDiv.innerText = 'Please select a network.';
+                blockErrorMessageDiv.style.display = 'block';
+                resultDiv.style.display = 'block';
+                return;
+            }
+
+            if (blockNumber === "" || isNaN(blockNumber) || parseInt(blockNumber) < 0) {
+                blockErrorMessageDiv.innerText = 'Please enter a valid block number.';
+                blockErrorMessageDiv.style.display = 'block';
+                resultDiv.style.display = 'block';
+                return;
+            }
+
+            // Display loading message
+            processingMessage.style.display = 'block';
+            resultDiv.style.display = 'block';
+
+            // Define the API endpoint with query parameters
+            const GET_BLOCK_BY_NUMBER_URL = `http://18.169.100.1:80/get_block_by_number?network=${encodeURIComponent(network)}&block_number=${encodeURIComponent(parseInt(blockNumber))}`;
+
+            // Send the GET request to fetch the block by number
+            fetch(GET_BLOCK_BY_NUMBER_URL, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => {
+                if (response.status === 404) {
+                    throw new Error('Block not found.');
+                }
+                if (!response.ok) {
+                    throw new Error(`Server error: ${response.status} ${response.statusText}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('Get Block By Number Response:', data); // Debugging line
+
+                if (!data.block) {
+                    throw new Error('Invalid response format from server.');
+                }
+
+                const block = data.block;
+
+                // Populate the block information in the DOM
+                blockHashSpan.innerText = block.hash || 'N/A';
+                blockNumberInfoSpan.innerText = block.number !== undefined ? block.number : 'N/A';
+                blockTimestampSpan.innerText = block.timestamp || 'N/A';
+                blockTransactionsSpan.innerText = block.transactions !== undefined ? block.transactions : 'N/A';
+                // Add more fields as needed based on block structure
+
+                // Show the block information
+                processingMessage.style.display = 'none';
+                blockInfoDiv.style.display = 'block';
+            })
+            .catch(error => {
+                console.error('Block Explorer Error:', error); // Debugging line
+                // Display error message
+                resultDiv.classList.add('error');
+                blockErrorMessageDiv.innerText = `Error: ${error.message}`;
+                blockErrorMessageDiv.style.display = 'block';
+                processingMessage.style.display = 'none';
+                blockInfoDiv.style.display = 'none';
             });
         });
     </script>
