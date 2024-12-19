@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sentence Vectorizer, Signature Verifier & Block Explorer</title>
+    <title>SentiChain</title>
     <style>
         /* Import Google Font */
         @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
@@ -20,20 +20,22 @@
             font-family: 'Roboto', sans-serif;
             background-color: #121212;
             color: #E0E0E0;
-            display: flex;
-            min-height: 100vh;
-            margin: 0; /* Ensure no default margin */
+            margin: 0; /* Remove default margin */
+            /* Removed display: flex; */
         }
 
         /* Sidebar Navigation */
         .sidebar {
+            position: fixed; /* Fix the sidebar position */
+            top: 0;
+            left: 0;
             width: 250px;
+            height: 100vh;
             background-color: #1E1E1E;
             padding-top: 30px;
             transition: width 0.3s;
-            flex-shrink: 0; /* Prevent sidebar from shrinking */
-            height: 100vh;
             overflow: auto; /* Allow scrolling if content overflows */
+            /* z-index: 1000; Optional: Ensure sidebar is above other content */
         }
 
         .sidebar.collapsed {
@@ -71,15 +73,14 @@
 
         /* Main Content */
         .main-content {
-            flex: 1; /* Occupy remaining space */
+            margin-left: 250px; /* Offset for the fixed sidebar */
             padding: 40px 30px;
-            transition: margin-left 0.3s, width 0.3s;
-            width: calc(100% - 250px); /* Adjusted width */
+            transition: margin-left 0.3s;
         }
 
+        /* Adjust main-content margin when sidebar is collapsed */
         .sidebar.collapsed + .main-content {
             margin-left: 60px;
-            width: calc(100% - 60px); /* Adjusted width when sidebar is collapsed */
         }
 
         .container {
@@ -88,13 +89,6 @@
             border-radius: 12px;
             box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
             transition: background-color 0.3s;
-        }
-
-        h1 {
-            text-align: center;
-            color: #00FFC8;
-            margin-bottom: 30px;
-            font-weight: 700;
         }
 
         /* Forms */
@@ -131,6 +125,7 @@
             cursor: pointer;
             font-size: 16px;
             transition: background 0.3s, transform 0.2s;
+            width: 100%; /* Ensures all buttons have the same width */
         }
 
         .submit-btn:hover, .copy-btn:hover {
@@ -142,6 +137,7 @@
             padding: 8px 16px;
             margin-left: 10px;
             font-size: 14px;
+            width: 100%; /* Ensure copy buttons also have 100% width */
         }
 
         /* Result Boxes */
@@ -191,28 +187,32 @@
             cursor: default;
         }
 
-        /* Scrollable Vector Output */
-        .vector-output {
+        /* Scrollable Vector Output and Other Copyable Outputs */
+        .copyable-output {
             max-height: 200px;
             overflow-x: auto;
+            overflow-y: auto; /* Enable vertical scrollbar */
             white-space: pre-wrap;
             word-wrap: break-word;
             background-color: #2C2C2C;
             padding: 10px;
             border-radius: 8px;
             margin-bottom: 10px;
+            cursor: pointer; /* Indicate clickability */
         }
 
         /* Scrollable Signature Output */
         .signature-output {
             max-height: 100px;
             overflow-x: auto;
+            overflow-y: auto; /* Enable vertical scrollbar */
             white-space: pre-wrap;
             word-wrap: break-word;
             background-color: #2C2C2C;
             padding: 10px;
             border-radius: 8px;
             margin-bottom: 10px;
+            cursor: pointer; /* Indicate clickability */
         }
 
         /* Block Explorer Specific Styles */
@@ -323,6 +323,10 @@
                 width: 60px;
             }
 
+            .sidebar.collapsed {
+                width: 60px;
+            }
+
             .sidebar h2 {
                 display: none;
             }
@@ -332,8 +336,7 @@
             }
 
             .main-content {
-                margin-left: 60px;
-                width: calc(100% - 60px);
+                margin-left: 60px; /* Adjust for collapsed sidebar */
             }
 
             /* Adjust table for smaller screens */
@@ -345,6 +348,7 @@
             .submit-btn, .copy-btn {
                 padding: 10px 16px;
                 font-size: 14px;
+                width: 100%; /* Ensure buttons remain full width */
             }
 
             .block-info-grid {
@@ -376,14 +380,22 @@
             margin-bottom: 5px;
             color: #00FFC8;
         }
+
+        /* Spacing between h1 and first content in each tab */
+        .tabcontent h1 {
+            margin-bottom: 20px;
+        }
     </style>
 </head>
 <body>
 
     <!-- Sidebar Navigation -->
     <div class="sidebar">
-        <h2>Vectorizer</h2>
-        <a href="#" class="tablinks active" onclick="openTab(event, 'VectorizeSign')">
+        <h2>SentiChain</h2>
+        <a href="#" class="tablinks active" onclick="openTab(event, 'BlockExplorer')">
+            <i>🔎</i><span>Block Explorer</span>
+        </a>
+        <a href="#" class="tablinks" onclick="openTab(event, 'VectorizeSign')">
             <i>🔬</i><span>Vectorize & Sign</span>
         </a>
         <a href="#" class="tablinks" onclick="openTab(event, 'VerifySignature')">
@@ -392,87 +404,16 @@
         <a href="#" class="tablinks" onclick="openTab(event, 'PublicKey')">
             <i>🔑</i><span>Public Key</span>
         </a>
-        <a href="#" class="tablinks" onclick="openTab(event, 'BlockExplorer')">
-            <i>🔎</i><span>Block Explorer</span>
-        </a>
     </div>
 
     <!-- Main Content -->
     <div class="main-content">
         <div class="container">
-            <h1>Sentence Vectorizer, Signature Verifier & Block Explorer</h1>
-
-            <!-- Vectorize & Sign Tab Content -->
-            <div id="VectorizeSign" class="tabcontent" style="display: block;">
-                <form id="vectorizeSignForm">
-                    <label for="sentence">Enter your sentence:</label>
-                    <input type="text" id="sentence" name="sentence" placeholder="e.g., I like to eat apple" required>
-                    <button type="submit" class="submit-btn">Submit</button>
-                </form>
-                <div id="vectorizeSignResult" class="result" style="display: none;">
-                    <!-- Copy Feedback for Vector -->
-                    <div class="copy-feedback" id="copyFeedbackVector">Copied!</div>
-                    
-                    <!-- Copy Feedback for Signature -->
-                    <div class="copy-feedback" id="copyFeedbackSignature">Copied!</div>
-                    
-                    <!-- Processing Message -->
-                    <div id="processingMessage">Processing...</div>
-                    
-                    <!-- Error Message -->
-                    <div id="errorMessage" class="error" style="display: none;"></div>
-                    
-                    <!-- Vector Output -->
-                    <div id="vectorResults" style="display: none;">
-                        <h2>Vector:</h2>
-                        <div class="vector-output" id="vectorOutput">[0, 1, 2]</div>
-                        <button type="button" class="copy-btn" onclick="copyToClipboard('vectorOutput')">Copy Vector</button>
-                    </div>
-
-                    <!-- Signature Output -->
-                    <div id="signatureResults" style="display: none; margin-top: 20px;">
-                        <h2>Signature:</h2>
-                        <div class="signature-output" id="signatureOutput">abcdef123456</div>
-                        <button type="button" class="copy-btn" onclick="copyToClipboard('signatureOutput')">Copy Signature</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Verify Signature Tab Content -->
-            <div id="VerifySignature" class="tabcontent" style="display: none;">
-                <form id="verifySignatureForm">
-                    <label for="vector">Enter your vector (e.g., [0.0, 1.0, 2.0]):</label>
-                    <input type="text" id="vector" name="vector" placeholder='e.g., [0.0, 1.0, 2.0]' required>
-                    
-                    <label for="signature">Enter your signature:</label>
-                    <input type="text" id="signature" name="signature" placeholder="e.g., abcdef123456" required>
-                    
-                    <button type="submit" class="submit-btn">Verify</button>
-                </form>
-                <div id="verifySignatureResult" class="result" style="display: none;"></div>
-            </div>
-
-            <!-- Public Key Tab Content -->
-            <div id="PublicKey" class="tabcontent" style="display: none;">
-                <button id="getPublicKeyBtn" class="submit-btn">Get Public Key</button>
-                <div id="publicKeyResult" class="result" style="display: none; margin-top: 20px;">
-                    <!-- Copy Feedback -->
-                    <div class="copy-feedback" id="copyFeedbackPublicKey">Copied!</div>
-                    
-                    <!-- Error Message -->
-                    <div id="publicKeyErrorMessage" class="error" style="display: none;"></div>
-                    
-                    <!-- Public Key Display -->
-                    <p>
-                        <strong>Public Key:</strong>
-                    </p>
-                    <textarea id="publicKeyOutput" readonly rows="8"></textarea>
-                    <button type="button" class="copy-btn" onclick="copyToClipboard('publicKeyOutput')">Copy</button>
-                </div>
-            </div>
+            <!-- Removed the global h1 here -->
 
             <!-- Block Explorer Tab Content -->
-            <div id="BlockExplorer" class="tabcontent" style="display: none;">
+            <div id="BlockExplorer" class="tabcontent" style="display: block;">
+                <h1>Block Explorer</h1>
                 <form id="blockExplorerForm" class="block-explorer-form">
                     <label for="network">Select Network:</label>
                     <select id="network" name="network" required>
@@ -510,17 +451,17 @@
                             </div>
                             <div class="block-info-item">
                                 <strong>Hash:</strong>
-                                <span id="blockHash" class="clickable" onclick="copyToClipboard('blockHash')">abc123</span>
+                                <span id="blockHash" class="clickable" onclick="copyToClipboard('blockHash')" title="Click to copy">abc123</span>
                                 <div class="copy-feedback" id="copyFeedbackHash">Copied!</div>
                             </div>
                             <div class="block-info-item">
                                 <strong>Previous Hash:</strong>
-                                <span id="blockPreviousHash" class="clickable" onclick="copyToClipboard('blockPreviousHash')">prev123</span>
+                                <span id="blockPreviousHash" class="clickable" onclick="copyToClipboard('blockPreviousHash')" title="Click to copy">prev123</span>
                                 <div class="copy-feedback" id="copyFeedbackPreviousHash">Copied!</div>
                             </div>
                             <div class="block-info-item">
                                 <strong>Consensus Root:</strong>
-                                <span id="blockConsensusRoot" class="clickable" onclick="copyToClipboard('blockConsensusRoot')">consensus123</span>
+                                <span id="blockConsensusRoot" class="clickable" onclick="copyToClipboard('blockConsensusRoot')" title="Click to copy">consensus123</span>
                                 <div class="copy-feedback" id="copyFeedbackConsensusRoot">Copied!</div>
                             </div>
                             <div class="block-info-item">
@@ -529,7 +470,7 @@
                             </div>
                             <div class="block-info-item">
                                 <strong>Validator:</strong>
-                                <span id="blockValidator" class="clickable" onclick="copyToClipboard('blockValidator')">validator123</span>
+                                <span id="blockValidator" class="clickable" onclick="copyToClipboard('blockValidator')" title="Click to copy">validator123</span>
                                 <div class="copy-feedback" id="copyFeedbackValidator">Copied!</div>
                             </div>
                         </div>
@@ -551,6 +492,78 @@
                             </table>
                         </div>
                     </div>
+                </div>
+            </div>
+
+            <!-- Vectorize & Sign Tab Content -->
+            <div id="VectorizeSign" class="tabcontent" style="display: none;">
+                <h1>Vectorize & Sign</h1>
+                <form id="vectorizeSignForm">
+                    <label for="sentence">Enter your sentence:</label>
+                    <input type="text" id="sentence" name="sentence" placeholder="e.g., I like to eat apple" required>
+                    <button type="submit" class="submit-btn">Submit</button>
+                </form>
+                <div id="vectorizeSignResult" class="result" style="display: none;">
+                    <!-- Copy Feedback for Vector -->
+                    <div class="copy-feedback" id="copyFeedbackVector">Copied!</div>
+                    
+                    <!-- Copy Feedback for Signature -->
+                    <div class="copy-feedback" id="copyFeedbackSignature">Copied!</div>
+                    
+                    <!-- Processing Message -->
+                    <div id="processingMessage">Processing...</div>
+                    
+                    <!-- Error Message -->
+                    <div id="errorMessage" class="error" style="display: none;"></div>
+                    
+                    <!-- Vector Output -->
+                    <div id="vectorResults" style="display: none;">
+                        <h2>Vector:</h2>
+                        <div class="copyable-output" id="vectorOutput" onclick="copyToClipboard('vectorOutput')" title="Click to copy">[0, 1, 2]</div>
+                        <!-- Removed the copy button -->
+                    </div>
+
+                    <!-- Signature Output -->
+                    <div id="signatureResults" style="display: none; margin-top: 20px;">
+                        <h2>Signature:</h2>
+                        <div class="signature-output" id="signatureOutput" onclick="copyToClipboard('signatureOutput')" title="Click to copy">abcdef123456</div>
+                        <!-- Removed the copy button -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Verify Signature Tab Content -->
+            <div id="VerifySignature" class="tabcontent" style="display: none;">
+                <h1>Verify Signature</h1>
+                <form id="verifySignatureForm">
+                    <label for="vector">Enter your vector (e.g., [0.0, 1.0, 2.0]):</label>
+                    <input type="text" id="vector" name="vector" placeholder='e.g., [0.0, 1.0, 2.0]' required>
+                    
+                    <label for="signature">Enter your signature:</label>
+                    <input type="text" id="signature" name="signature" placeholder="e.g., abcdef123456" required>
+                    
+                    <button type="submit" class="submit-btn">Verify</button>
+                </form>
+                <div id="verifySignatureResult" class="result" style="display: none;"></div>
+            </div>
+
+            <!-- Public Key Tab Content -->
+            <div id="PublicKey" class="tabcontent" style="display: none;">
+                <h1>Public Key</h1>
+                <button id="getPublicKeyBtn" class="submit-btn">Get Public Key</button>
+                <div id="publicKeyResult" class="result" style="display: none; margin-top: 20px;">
+                    <!-- Copy Feedback -->
+                    <div class="copy-feedback" id="copyFeedbackPublicKey">Copied!</div>
+                    
+                    <!-- Error Message -->
+                    <div id="publicKeyErrorMessage" class="error" style="display: none;"></div>
+                    
+                    <!-- Public Key Display -->
+                    <p>
+                        <strong>Public Key:</strong>
+                    </p>
+                    <textarea id="publicKeyOutput" readonly rows="8" onclick="copyToClipboard('publicKeyOutput')" title="Click to copy"></textarea>
+                    <!-- Removed the copy button -->
                 </div>
             </div>
 
@@ -597,6 +610,21 @@
                     // Remove 'block' prefix and capitalize the first letter
                     const suffix = elementId.replace('block', '');
                     feedbackId = 'copyFeedback' + suffix.charAt(0).toUpperCase() + suffix.slice(1);
+                } else if (elementId.startsWith('transactionVector')) {
+                    const suffix = elementId.replace('transactionVector_', '');
+                    feedbackId = 'copyFeedbackVector_' + suffix;
+                } else if (elementId.startsWith('transactionSignature')) {
+                    const suffix = elementId.replace('transactionSignature_', '');
+                    feedbackId = 'copyFeedbackSignature_' + suffix;
+                } else if (elementId.startsWith('transactionPostContent')) {
+                    const suffix = elementId.replace('transactionPostContent_', '');
+                    feedbackId = 'copyFeedbackPostContent_' + suffix;
+                } else if (elementId.startsWith('transactionPublicKey')) {
+                    const suffix = elementId.replace('transactionPublicKey_', '');
+                    feedbackId = 'copyFeedbackPublicKey_' + suffix;
+                } else if (elementId.startsWith('transactionVectorSignature')) {
+                    const suffix = elementId.replace('transactionVectorSignature_', '');
+                    feedbackId = 'copyFeedbackVectorSignature_' + suffix;
                 } else {
                     feedbackId = 'copyFeedback' + capitalizeFirstLetter(elementId.replace('Output', ''));
                 }
@@ -608,8 +636,19 @@
                         feedback.classList.remove('show');
                     }, 2000);
                 }
+
+                // Optional: Visual feedback by changing background color
+                const element = document.getElementById(elementId);
+                if (element) {
+                    const originalColor = element.style.backgroundColor;
+                    element.style.backgroundColor = '#00FFC8';
+                    setTimeout(() => {
+                        element.style.backgroundColor = originalColor;
+                    }, 500);
+                }
             }).catch(err => {
                 console.error('Failed to copy: ', err);
+                alert('Failed to copy the content. Please try manually.');
             });
         }
 
@@ -884,6 +923,9 @@
 
                 // Display the public key as a single-line string with \n
                 publicKeyOutput.value = publicKeyFormatted;
+
+                // Make the public key output clickable to copy
+                publicKeyOutput.onclick = () => copyToClipboard('publicKeyOutput');
             })
             .catch(error => {
                 console.error('Get Public Key Error:', error); // Debugging line
@@ -995,7 +1037,10 @@
                 // Format timestamp
                 blockTimestampSpan.innerText = formatTimestamp(block.timestamp);
 
-                // Display transactions in a table
+                // Show the validator
+                blockValidatorSpan.innerText = block.validator;
+
+                // Populate Transactions
                 const transactions = block.transactions; // Assuming this is an object with tx_hash as keys
 
                 for (let txHash in transactions) {
@@ -1026,6 +1071,22 @@
                         const detailsCell = document.createElement('td');
                         detailsCell.colSpan = 3; // Span across all table columns
 
+                        // Serialize the vector to preserve -0.0
+                        const serializedVector = serializeVector(tx.vector);
+
+                        // Generate unique IDs for various copyable elements based on txHash
+                        const sanitizedTxHash = txHash.replace(/[^a-zA-Z0-9]/g, '_'); // Replace non-alphanumeric chars
+                        const vectorId = `transactionVector_${sanitizedTxHash}`;
+                        const signatureId = `transactionSignature_${sanitizedTxHash}`;
+                        const postContentId = `transactionPostContent_${sanitizedTxHash}`;
+                        const publicKeyId = `transactionPublicKey_${sanitizedTxHash}`;
+                        const vectorSignatureId = `transactionVectorSignature_${sanitizedTxHash}`;
+                        const copyFeedbackVectorId = `copyFeedbackVector_${sanitizedTxHash}`;
+                        const copyFeedbackSignatureId = `copyFeedbackSignature_${sanitizedTxHash}`;
+                        const copyFeedbackPostContentId = `copyFeedbackPostContent_${sanitizedTxHash}`;
+                        const copyFeedbackPublicKeyId = `copyFeedbackPublicKey_${sanitizedTxHash}`;
+                        const copyFeedbackVectorSignatureId = `copyFeedbackVectorSignature_${sanitizedTxHash}`;
+
                         // Create a vertically arranged details table
                         detailsCell.innerHTML = `
                             <table class="details-table">
@@ -1033,27 +1094,33 @@
                                     <td><strong>Nonce:</strong> ${tx.nonce}</td>
                                 </tr>
                                 <tr>
-                                    <td><strong>Post Content:</strong> ${tx.post_content}</td>
+                                    <td><strong>Post Content:</strong> <div class="copyable-output" id="${postContentId}" onclick="copyToClipboard('${postContentId}')" title="Click to copy">${tx.post_content}</div></td>
                                 </tr>
                                 <tr>
-                                    <td><strong>Post Link:</strong> <a href="${tx.post_link}" target="_blank">View Post</a></td>
+                                    <td><strong>Post Link:</strong> <a href="https://x.com/${tx.post_link}" target="_blank">View Post</a></td>
                                 </tr>
                                 <tr>
                                     <td><strong>Sender:</strong> ${tx.sender}</td>
                                 </tr>
                                 <tr>
-                                    <td><strong>Signature:</strong> ${tx.signature}</td>
+                                    <td><strong>Signature:</strong> <div class="signature-output" id="${signatureId}" onclick="copyToClipboard('${signatureId}')" title="Click to copy">${tx.signature}</div></td>
                                 </tr>
                                 <tr>
-                                    <td><strong>Vector:</strong> ${JSON.stringify(tx.vector)}</td>
+                                    <td><strong>Vector:</strong> <div class="copyable-output" id="${vectorId}" onclick="copyToClipboard('${vectorId}')" title="Click to copy">${serializedVector}</div></td>
                                 </tr>
                                 <tr>
-                                    <td><strong>Public Key:</strong> ${tx.public_key}</td>
+                                    <td><strong>Public Key:</strong> <div class="copyable-output" id="${publicKeyId}" onclick="copyToClipboard('${publicKeyId}')" title="Click to copy">${tx.public_key}</div></td>
                                 </tr>
                                 <tr>
-                                    <td><strong>Vector Signature:</strong> ${tx.vector_signature}</td>
+                                    <td><strong>Vector Signature:</strong> <div class="copyable-output" id="${vectorSignatureId}" onclick="copyToClipboard('${vectorSignatureId}')" title="Click to copy">${tx.vector_signature}</div></td>
                                 </tr>
                             </table>
+                            <!-- Copy Feedbacks for Vector, Signature, Post Content, Public Key, and Vector Signature -->
+                            <div class="copy-feedback" id="${copyFeedbackVectorId}">Copied!</div>
+                            <div class="copy-feedback" id="${copyFeedbackSignatureId}">Copied!</div>
+                            <div class="copy-feedback" id="${copyFeedbackPostContentId}">Copied!</div>
+                            <div class="copy-feedback" id="${copyFeedbackPublicKeyId}">Copied!</div>
+                            <div class="copy-feedback" id="${copyFeedbackVectorSignatureId}">Copied!</div>
                         `;
 
                         detailsRow.appendChild(detailsCell);
@@ -1083,8 +1150,6 @@
                 } else {
                     blockTransactionsDiv.style.display = 'none';
                 }
-
-                blockValidatorSpan.innerText = block.validator;
 
                 // Show the block information
                 processingMessage.style.display = 'none';
