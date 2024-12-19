@@ -229,7 +229,7 @@
             margin-top: 20px;
         }
 
-        /* Block Information Layout */
+        /* Block Header Layout */
         .block-info-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -254,6 +254,8 @@
             cursor: pointer;
             padding: 5px;
             border-radius: 4px;
+            word-break: break-all; /* Ensures breaking of long words */
+            overflow-wrap: break-word; /* Ensures breaking at appropriate points */
         }
 
         .block-info-item span.clickable:hover {
@@ -265,17 +267,24 @@
             width: 100%;
             border-collapse: collapse;
             margin-top: 20px;
+            table-layout: fixed; /* Ensures table respects container width */
+            word-wrap: break-word; /* Ensures text wraps within cells */
         }
 
         #transactionsTable th, #transactionsTable td {
             border: 1px solid #333;
             padding: 10px;
             text-align: left;
+            vertical-align: top;
+            overflow-wrap: break-word; /* Ensures text wraps */
+            word-break: break-word; /* Additional wrapping */
         }
 
         #transactionsTable th {
             background-color: #00FFC8;
             color: #121212;
+            font-weight: 700;
+            font-size: 16px;
         }
 
         #transactionsTable tr:nth-child(even) {
@@ -289,6 +298,7 @@
         #transactionsTable a {
             color: #00FFC8;
             text-decoration: none;
+            word-break: break-word; /* Ensures links wrap if too long */
         }
 
         #transactionsTable a:hover {
@@ -299,6 +309,12 @@
         #transactionsTable tr.details-row td {
             background-color: #1E1E1E;
             padding: 15px;
+        }
+
+        /* Transactions Header Font Matching */
+        #transactionsTable thead th {
+            font-weight: 700;
+            font-size: 16px;
         }
 
         /* Responsive Design */
@@ -339,6 +355,26 @@
                 display: block;
                 width: 100%;
             }
+        }
+
+        /* Additional Styles for Details Table */
+        .details-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        .details-table td {
+            padding: 8px;
+            border-bottom: 1px solid #444;
+            overflow-wrap: break-word; /* Ensures text wraps */
+            word-break: break-word; /* Additional wrapping */
+        }
+
+        .details-table td strong {
+            display: block;
+            margin-bottom: 5px;
+            color: #00FFC8;
         }
     </style>
 </head>
@@ -464,9 +500,9 @@
                     <!-- Error Message -->
                     <div id="blockErrorMessage" class="error" style="display: none;"></div>
                     
-                    <!-- Block Information -->
+                    <!-- Block Header Information -->
                     <div id="blockInfo" style="display: none;">
-                        <h2>Block Information:</h2>
+                        <h2>Block Header</h2>
                         <div class="block-info-grid">
                             <div class="block-info-item">
                                 <strong>Block Number:</strong>
@@ -505,11 +541,7 @@
                                 <thead>
                                     <tr>
                                         <th>Transaction Hash</th>
-                                        <th>Nonce</th>
-                                        <th>Post Content</th>
-                                        <th>Post Link</th>
                                         <th>Timestamp</th>
-                                        <th>Sender</th>
                                         <th>Actions</th>
                                     </tr>
                                 </thead>
@@ -976,34 +1008,10 @@
                         txHashCell.innerText = txHash;
                         row.appendChild(txHashCell);
 
-                        // Nonce
-                        const nonceCell = document.createElement('td');
-                        nonceCell.innerText = tx.nonce;
-                        row.appendChild(nonceCell);
-
-                        // Post Content
-                        const postContentCell = document.createElement('td');
-                        postContentCell.innerText = tx.post_content;
-                        row.appendChild(postContentCell);
-
-                        // Post Link
-                        const postLinkCell = document.createElement('td');
-                        const link = document.createElement('a');
-                        link.href = tx.post_link;
-                        link.target = '_blank';
-                        link.innerText = 'View Post';
-                        postLinkCell.appendChild(link);
-                        row.appendChild(postLinkCell);
-
                         // Timestamp
                         const timestampCell = document.createElement('td');
                         timestampCell.innerText = formatTimestamp(tx.post_timestamp);
                         row.appendChild(timestampCell);
-
-                        // Sender
-                        const senderCell = document.createElement('td');
-                        senderCell.innerText = tx.sender;
-                        row.appendChild(senderCell);
 
                         // Actions (e.g., View Details)
                         const actionsCell = document.createElement('td');
@@ -1016,14 +1024,36 @@
                         detailsRow.style.display = 'none';
                         detailsRow.classList.add('details-row'); // For CSS styling
                         const detailsCell = document.createElement('td');
-                        detailsCell.colSpan = 7; // Span across all table columns
+                        detailsCell.colSpan = 3; // Span across all table columns
 
-                        // Populate the details cell with transaction information
+                        // Create a vertically arranged details table
                         detailsCell.innerHTML = `
-                            <strong>Signature:</strong> ${tx.signature}<br>
-                            <strong>Vector:</strong> ${JSON.stringify(tx.vector, null, 2)}<br>
-                            <strong>Public Key:</strong> ${tx.public_key}<br>
-                            <strong>Vector Signature:</strong> ${tx.vector_signature}
+                            <table class="details-table">
+                                <tr>
+                                    <td><strong>Nonce:</strong> ${tx.nonce}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Post Content:</strong> ${tx.post_content}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Post Link:</strong> <a href="${tx.post_link}" target="_blank">View Post</a></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Sender:</strong> ${tx.sender}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Signature:</strong> ${tx.signature}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Vector:</strong> ${JSON.stringify(tx.vector)}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Public Key:</strong> ${tx.public_key}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Vector Signature:</strong> ${tx.vector_signature}</td>
+                                </tr>
+                            </table>
                         `;
 
                         detailsRow.appendChild(detailsCell);
