@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sentence Vectorizer and Signature Verifier</title>
+    <title>SentiChain</title>
     <style>
         /* Import Google Font */
         @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
@@ -20,18 +20,22 @@
             font-family: 'Roboto', sans-serif;
             background-color: #121212;
             color: #E0E0E0;
-            display: flex;
-            min-height: 100vh;
+            margin: 0; /* Remove default margin */
+            /* Removed display: flex; */
         }
 
         /* Sidebar Navigation */
         .sidebar {
+            position: fixed; /* Fix the sidebar position */
+            top: 0;
+            left: 0;
             width: 250px;
+            height: 100vh;
             background-color: #1E1E1E;
             padding-top: 30px;
-            position: fixed;
-            height: 100%;
             transition: width 0.3s;
+            overflow: auto; /* Allow scrolling if content overflows */
+            /* z-index: 1000; Optional: Ensure sidebar is above other content */
         }
 
         .sidebar.collapsed {
@@ -69,12 +73,12 @@
 
         /* Main Content */
         .main-content {
-            margin-left: 250px;
+            margin-left: 250px; /* Offset for the fixed sidebar */
             padding: 40px 30px;
-            width: 100%;
             transition: margin-left 0.3s;
         }
 
+        /* Adjust main-content margin when sidebar is collapsed */
         .sidebar.collapsed + .main-content {
             margin-left: 60px;
         }
@@ -87,13 +91,6 @@
             transition: background-color 0.3s;
         }
 
-        h1 {
-            text-align: center;
-            color: #00FFC8;
-            margin-bottom: 30px;
-            font-weight: 700;
-        }
-
         /* Forms */
         label {
             display: block;
@@ -101,7 +98,7 @@
             font-weight: 500;
         }
 
-        input[type="text"], textarea {
+        input[type="text"], textarea, select {
             width: 100%;
             padding: 12px 15px;
             margin-bottom: 20px;
@@ -114,7 +111,7 @@
             transition: box-shadow 0.3s;
         }
 
-        input[type="text"]:focus, textarea:focus {
+        input[type="text"]:focus, textarea:focus, select:focus {
             box-shadow: 0 0 10px #00FFC8;
         }
 
@@ -128,6 +125,7 @@
             cursor: pointer;
             font-size: 16px;
             transition: background 0.3s, transform 0.2s;
+            width: 100%; /* Ensures all buttons have the same width */
         }
 
         .submit-btn:hover, .copy-btn:hover {
@@ -139,6 +137,7 @@
             padding: 8px 16px;
             margin-left: 10px;
             font-size: 14px;
+            width: 100%; /* Ensure copy buttons also have 100% width */
         }
 
         /* Result Boxes */
@@ -188,9 +187,143 @@
             cursor: default;
         }
 
+        /* Scrollable Vector Output and Other Copyable Outputs */
+        .copyable-output {
+            max-height: 200px;
+            overflow-x: auto;
+            overflow-y: auto; /* Enable vertical scrollbar */
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            background-color: #2C2C2C;
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            cursor: pointer; /* Indicate clickability */
+        }
+
+        /* Scrollable Signature Output */
+        .signature-output {
+            max-height: 100px;
+            overflow-x: auto;
+            overflow-y: auto; /* Enable vertical scrollbar */
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            background-color: #2C2C2C;
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            cursor: pointer; /* Indicate clickability */
+        }
+
+        /* Block Explorer Specific Styles */
+        .block-explorer-form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .block-explorer-form label {
+            margin-top: 10px;
+        }
+
+        .block-explorer-result {
+            margin-top: 20px;
+        }
+
+        /* Block Header Layout */
+        .block-info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .block-info-item {
+            background-color: #2C2C2C;
+            padding: 15px;
+            border-radius: 8px;
+            position: relative;
+        }
+
+        .block-info-item strong {
+            display: block;
+            margin-bottom: 8px;
+            color: #00FFC8;
+        }
+
+        .block-info-item span.clickable {
+            cursor: pointer;
+            padding: 5px;
+            border-radius: 4px;
+            word-break: break-all; /* Ensures breaking of long words */
+            overflow-wrap: break-word; /* Ensures breaking at appropriate points */
+        }
+
+        .block-info-item span.clickable:hover {
+            background-color: #3C3C3C;
+        }
+
+        /* Transactions Table Styles */
+        #transactionsTable {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            table-layout: fixed; /* Ensures table respects container width */
+            word-wrap: break-word; /* Ensures text wraps within cells */
+        }
+
+        #transactionsTable th, #transactionsTable td {
+            border: 1px solid #333;
+            padding: 10px;
+            text-align: left;
+            vertical-align: top;
+            overflow-wrap: break-word; /* Ensures text wraps */
+            word-break: break-word; /* Additional wrapping */
+        }
+
+        #transactionsTable th {
+            background-color: #00FFC8;
+            color: #121212;
+            font-weight: 700;
+            font-size: 16px;
+        }
+
+        #transactionsTable tr:nth-child(even) {
+            background-color: #2C2C2C;
+        }
+
+        #transactionsTable tr:hover {
+            background-color: #3C3C3C;
+        }
+
+        #transactionsTable a {
+            color: #00FFC8;
+            text-decoration: none;
+            word-break: break-word; /* Ensures links wrap if too long */
+        }
+
+        #transactionsTable a:hover {
+            text-decoration: underline;
+        }
+
+        /* Details Row Styles */
+        #transactionsTable tr.details-row td {
+            background-color: #1E1E1E;
+            padding: 15px;
+        }
+
+        /* Transactions Header Font Matching */
+        #transactionsTable thead th {
+            font-weight: 700;
+            font-size: 16px;
+        }
+
         /* Responsive Design */
         @media (max-width: 768px) {
             .sidebar {
+                width: 60px;
+            }
+
+            .sidebar.collapsed {
                 width: 60px;
             }
 
@@ -203,8 +336,54 @@
             }
 
             .main-content {
-                margin-left: 60px;
+                margin-left: 60px; /* Adjust for collapsed sidebar */
             }
+
+            /* Adjust table for smaller screens */
+            #transactionsTable th, #transactionsTable td {
+                padding: 8px;
+                font-size: 14px;
+            }
+
+            .submit-btn, .copy-btn {
+                padding: 10px 16px;
+                font-size: 14px;
+                width: 100%; /* Ensure buttons remain full width */
+            }
+
+            .block-info-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .block-info-item span.clickable {
+                display: block;
+                width: 100%;
+            }
+        }
+
+        /* Additional Styles for Details Table */
+        .details-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        .details-table td {
+            padding: 8px;
+            border-bottom: 1px solid #444;
+            overflow-wrap: break-word; /* Ensures text wraps */
+            word-break: break-word; /* Additional wrapping */
+        }
+
+        .details-table td strong {
+            display: block;
+            margin-bottom: 5px;
+            color: #00FFC8;
+        }
+
+        /* Spacing between h1 and first content in each tab */
+        .tabcontent h1 {
+            margin-bottom: 20px;
         }
     </style>
 </head>
@@ -212,8 +391,11 @@
 
     <!-- Sidebar Navigation -->
     <div class="sidebar">
-        <h2>Vectorizer</h2>
-        <a href="#" class="tablinks active" onclick="openTab(event, 'VectorizeSign')">
+        <h2>SentiChain</h2>
+        <a href="#" class="tablinks active" onclick="openTab(event, 'BlockExplorer')">
+            <i>🔎</i><span>Block Explorer</span>
+        </a>
+        <a href="#" class="tablinks" onclick="openTab(event, 'VectorizeSign')">
             <i>🔬</i><span>Vectorize & Sign</span>
         </a>
         <a href="#" class="tablinks" onclick="openTab(event, 'VerifySignature')">
@@ -227,18 +409,105 @@
     <!-- Main Content -->
     <div class="main-content">
         <div class="container">
-            <h1>Sentence Vectorizer & Signature Verifier</h1>
+            <!-- Removed the global h1 here -->
+
+            <!-- Block Explorer Tab Content -->
+            <div id="BlockExplorer" class="tabcontent" style="display: block;">
+                <h1>Block Explorer</h1>
+                <form id="blockExplorerForm" class="block-explorer-form">
+                    <label for="network">Select Network:</label>
+                    <select id="network" name="network" required>
+                        <option value="" disabled selected>Select a network</option>
+                        <option value="mainnet">Mainnet</option>
+                        <option value="testnet">Testnet</option>
+                    </select>
+
+                    <label for="blockNumber">Enter Block Number:</label>
+                    <input type="text" id="blockNumber" name="blockNumber" placeholder="e.g., 100" required>
+
+                    <button type="submit" class="submit-btn">Get Block</button>
+                </form>
+
+                <div id="blockExplorerResult" class="result block-explorer-result" style="display: none;">
+                    <!-- Copy Feedbacks -->
+                    <div class="copy-feedback" id="copyFeedbackHash">Copied!</div>
+                    <div class="copy-feedback" id="copyFeedbackPreviousHash">Copied!</div>
+                    <div class="copy-feedback" id="copyFeedbackConsensusRoot">Copied!</div>
+                    <div class="copy-feedback" id="copyFeedbackValidator">Copied!</div>
+
+                    <!-- Processing Message -->
+                    <div id="blockProcessingMessage">Fetching block data...</div>
+                    
+                    <!-- Error Message -->
+                    <div id="blockErrorMessage" class="error" style="display: none;"></div>
+                    
+                    <!-- Block Header Information -->
+                    <div id="blockInfo" style="display: none;">
+                        <h2>Block Header</h2>
+                        <div class="block-info-grid">
+                            <div class="block-info-item">
+                                <strong>Block Number:</strong>
+                                <span id="blockNumberInfo">100</span>
+                            </div>
+                            <div class="block-info-item">
+                                <strong>Hash:</strong>
+                                <span id="blockHash" class="clickable" onclick="copyToClipboard('blockHash')" title="Click to copy">abc123</span>
+                                <div class="copy-feedback" id="copyFeedbackHash">Copied!</div>
+                            </div>
+                            <div class="block-info-item">
+                                <strong>Previous Hash:</strong>
+                                <span id="blockPreviousHash" class="clickable" onclick="copyToClipboard('blockPreviousHash')" title="Click to copy">prev123</span>
+                                <div class="copy-feedback" id="copyFeedbackPreviousHash">Copied!</div>
+                            </div>
+                            <div class="block-info-item">
+                                <strong>Consensus Root:</strong>
+                                <span id="blockConsensusRoot" class="clickable" onclick="copyToClipboard('blockConsensusRoot')" title="Click to copy">consensus123</span>
+                                <div class="copy-feedback" id="copyFeedbackConsensusRoot">Copied!</div>
+                            </div>
+                            <div class="block-info-item">
+                                <strong>Timestamp:</strong>
+                                <span id="blockTimestamp">2024-04-27 12:00:00</span>
+                            </div>
+                            <div class="block-info-item">
+                                <strong>Validator:</strong>
+                                <span id="blockValidator" class="clickable" onclick="copyToClipboard('blockValidator')" title="Click to copy">validator123</span>
+                                <div class="copy-feedback" id="copyFeedbackValidator">Copied!</div>
+                            </div>
+                        </div>
+
+                        <!-- Transactions Section -->
+                        <div id="blockTransactions" style="display: none;">
+                            <h3>Transactions:</h3>
+                            <table id="transactionsTable">
+                                <thead>
+                                    <tr>
+                                        <th>Transaction Hash</th>
+                                        <th>Timestamp</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Transaction rows will be inserted here dynamically -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
             <!-- Vectorize & Sign Tab Content -->
-            <div id="VectorizeSign" class="tabcontent" style="display: block;">
+            <div id="VectorizeSign" class="tabcontent" style="display: none;">
+                <h1>Vectorize & Sign</h1>
                 <form id="vectorizeSignForm">
                     <label for="sentence">Enter your sentence:</label>
                     <input type="text" id="sentence" name="sentence" placeholder="e.g., I like to eat apple" required>
                     <button type="submit" class="submit-btn">Submit</button>
                 </form>
                 <div id="vectorizeSignResult" class="result" style="display: none;">
-                    <!-- Copy Feedback -->
+                    <!-- Copy Feedback for Vector -->
                     <div class="copy-feedback" id="copyFeedbackVector">Copied!</div>
+                    
+                    <!-- Copy Feedback for Signature -->
                     <div class="copy-feedback" id="copyFeedbackSignature">Copied!</div>
                     
                     <!-- Processing Message -->
@@ -247,23 +516,25 @@
                     <!-- Error Message -->
                     <div id="errorMessage" class="error" style="display: none;"></div>
                     
-                    <!-- Results -->
-                    <div id="results">
-                        <h2>Results:</h2>
-                        <p>
-                            <strong>Vector:</strong> <span id="vectorOutput">[0, 1, 2]</span>
-                            <button type="button" class="copy-btn" onclick="copyToClipboard('vectorOutput')">Copy</button>
-                        </p>
-                        <p>
-                            <strong>Signature:</strong> <span id="signatureOutput">abcdef123456</span>
-                            <button type="button" class="copy-btn" onclick="copyToClipboard('signatureOutput')">Copy</button>
-                        </p>
+                    <!-- Vector Output -->
+                    <div id="vectorResults" style="display: none;">
+                        <h2>Vector:</h2>
+                        <div class="copyable-output" id="vectorOutput" onclick="copyToClipboard('vectorOutput')" title="Click to copy">[0, 1, 2]</div>
+                        <!-- Removed the copy button -->
+                    </div>
+
+                    <!-- Signature Output -->
+                    <div id="signatureResults" style="display: none; margin-top: 20px;">
+                        <h2>Signature:</h2>
+                        <div class="signature-output" id="signatureOutput" onclick="copyToClipboard('signatureOutput')" title="Click to copy">abcdef123456</div>
+                        <!-- Removed the copy button -->
                     </div>
                 </div>
             </div>
 
             <!-- Verify Signature Tab Content -->
             <div id="VerifySignature" class="tabcontent" style="display: none;">
+                <h1>Verify Signature</h1>
                 <form id="verifySignatureForm">
                     <label for="vector">Enter your vector (e.g., [0.0, 1.0, 2.0]):</label>
                     <input type="text" id="vector" name="vector" placeholder='e.g., [0.0, 1.0, 2.0]' required>
@@ -278,6 +549,7 @@
 
             <!-- Public Key Tab Content -->
             <div id="PublicKey" class="tabcontent" style="display: none;">
+                <h1>Public Key</h1>
                 <button id="getPublicKeyBtn" class="submit-btn">Get Public Key</button>
                 <div id="publicKeyResult" class="result" style="display: none; margin-top: 20px;">
                     <!-- Copy Feedback -->
@@ -290,10 +562,11 @@
                     <p>
                         <strong>Public Key:</strong>
                     </p>
-                    <textarea id="publicKeyOutput" readonly rows="8"></textarea>
-                    <button type="button" class="copy-btn" onclick="copyToClipboard('publicKeyOutput')">Copy</button>
+                    <textarea id="publicKeyOutput" readonly rows="8" onclick="copyToClipboard('publicKeyOutput')" title="Click to copy"></textarea>
+                    <!-- Removed the copy button -->
                 </div>
             </div>
+
         </div>
     </div>
 
@@ -321,19 +594,61 @@
                 // For textarea, use value
                 text = document.getElementById(elementId).value;
             } else {
-                // For span elements, use innerText
-                text = document.getElementById(elementId).innerText;
+                // For div or span elements, use innerText or innerHTML
+                const element = document.getElementById(elementId);
+                if (element.tagName.toLowerCase() === 'pre') {
+                    text = element.innerText;
+                } else {
+                    text = element.innerText;
+                }
             }
 
             navigator.clipboard.writeText(text).then(() => {
-                // Show feedback
-                const feedback = document.getElementById('copyFeedback' + capitalizeFirstLetter(elementId.replace('Output', '')));
-                feedback.classList.add('show');
-                setTimeout(() => {
-                    feedback.classList.remove('show');
-                }, 2000);
+                // Determine the feedback ID based on the element being copied
+                let feedbackId;
+                if (elementId.startsWith('block')) {
+                    // Remove 'block' prefix and capitalize the first letter
+                    const suffix = elementId.replace('block', '');
+                    feedbackId = 'copyFeedback' + suffix.charAt(0).toUpperCase() + suffix.slice(1);
+                } else if (elementId.startsWith('transactionVector')) {
+                    const suffix = elementId.replace('transactionVector_', '');
+                    feedbackId = 'copyFeedbackVector_' + suffix;
+                } else if (elementId.startsWith('transactionSignature')) {
+                    const suffix = elementId.replace('transactionSignature_', '');
+                    feedbackId = 'copyFeedbackSignature_' + suffix;
+                } else if (elementId.startsWith('transactionPostContent')) {
+                    const suffix = elementId.replace('transactionPostContent_', '');
+                    feedbackId = 'copyFeedbackPostContent_' + suffix;
+                } else if (elementId.startsWith('transactionPublicKey')) {
+                    const suffix = elementId.replace('transactionPublicKey_', '');
+                    feedbackId = 'copyFeedbackPublicKey_' + suffix;
+                } else if (elementId.startsWith('transactionVectorSignature')) {
+                    const suffix = elementId.replace('transactionVectorSignature_', '');
+                    feedbackId = 'copyFeedbackVectorSignature_' + suffix;
+                } else {
+                    feedbackId = 'copyFeedback' + capitalizeFirstLetter(elementId.replace('Output', ''));
+                }
+
+                const feedback = document.getElementById(feedbackId);
+                if (feedback) {
+                    feedback.classList.add('show');
+                    setTimeout(() => {
+                        feedback.classList.remove('show');
+                    }, 2000);
+                }
+
+                // Optional: Visual feedback by changing background color
+                const element = document.getElementById(elementId);
+                if (element) {
+                    const originalColor = element.style.backgroundColor;
+                    element.style.backgroundColor = '#00FFC8';
+                    setTimeout(() => {
+                        element.style.backgroundColor = originalColor;
+                    }, 500);
+                }
             }).catch(err => {
                 console.error('Failed to copy: ', err);
+                alert('Failed to copy the content. Please try manually.');
             });
         }
 
@@ -356,6 +671,12 @@
             }).join(", ") + "]";
         }
 
+        // Function to format UNIX timestamp to human-readable date
+        function formatTimestamp(timestamp) {
+            const date = new Date(timestamp * 1000); // Convert to milliseconds
+            return date.toLocaleString();
+        }
+
         // Vectorize & Sign Form Handling
         document.getElementById('vectorizeSignForm').addEventListener('submit', function(event) {
             event.preventDefault(); // Prevent the form from submitting the traditional way
@@ -364,13 +685,15 @@
             const sentence = sentenceInput.value.trim();
             const resultDiv = document.getElementById('vectorizeSignResult');
             const processingMessage = document.getElementById('processingMessage');
-            const resultsDiv = document.getElementById('results');
+            const vectorResultsDiv = document.getElementById('vectorResults');
+            const signatureResultsDiv = document.getElementById('signatureResults');
             const errorMessageDiv = document.getElementById('errorMessage');
 
             // Clear previous results and errors
             resultDiv.classList.remove('error');
             processingMessage.style.display = 'none';
-            resultsDiv.style.display = 'none';
+            vectorResultsDiv.style.display = 'none';
+            signatureResultsDiv.style.display = 'none';
             errorMessageDiv.style.display = 'none';
             document.getElementById('vectorOutput').innerText = '';
             document.getElementById('signatureOutput').innerText = '';
@@ -387,7 +710,7 @@
             resultDiv.style.display = 'block';
 
             // Define the API endpoint
-            const BASE_URL = "http://18.169.100.1:80/vectorize_and_sign";
+            const BASE_URL = "http://18.169.100.1:5001/vectorize_and_sign";
 
             // Send the POST request to the server
             fetch(BASE_URL, {
@@ -424,7 +747,8 @@
 
                 // Hide processing message and show results
                 processingMessage.style.display = 'none';
-                resultsDiv.style.display = 'block';
+                vectorResultsDiv.style.display = 'block';
+                signatureResultsDiv.style.display = 'block';
             })
             .catch(error => {
                 console.error('Vectorize & Sign Error:', error); // Debugging line
@@ -432,7 +756,8 @@
                 errorMessageDiv.innerText = `Error: ${error.message}`;
                 errorMessageDiv.style.display = 'block';
                 processingMessage.style.display = 'none';
-                resultsDiv.style.display = 'none';
+                vectorResultsDiv.style.display = 'none';
+                signatureResultsDiv.style.display = 'none';
             });
         });
 
@@ -494,8 +819,8 @@
             resultDiv.style.display = 'block';
 
             // Define the API endpoints
-            const PUBLIC_KEY_URL = "http://18.169.100.1:80/get_vectorizer_public_key";
-            const VERIFY_URL = "http://18.169.100.1:80/verify_vector_signature";
+            const PUBLIC_KEY_URL = "http://18.169.100.1:5001/get_vectorizer_public_key";
+            const VERIFY_URL = "http://18.169.100.1:5001/verify_vector_signature";
 
             // Fetch the public key first
             fetch(PUBLIC_KEY_URL, {
@@ -571,7 +896,7 @@
             publicKeyOutput.value = 'Fetching public key...';
 
             // Define the API endpoint
-            const PUBLIC_KEY_URL = "http://18.169.100.1:80/get_vectorizer_public_key";
+            const PUBLIC_KEY_URL = "http://18.169.100.1:5001/get_vectorizer_public_key";
 
             // Fetch the public key
             fetch(PUBLIC_KEY_URL, {
@@ -593,11 +918,14 @@
                     throw new Error('Public key not found in the response.');
                 }
 
-                // Replace actual newline characters with \n
+                // Replace actual newline characters with \n for display
                 let publicKeyFormatted = data.public_key.replace(/\n/g, '\\n');
 
                 // Display the public key as a single-line string with \n
                 publicKeyOutput.value = publicKeyFormatted;
+
+                // Make the public key output clickable to copy
+                publicKeyOutput.onclick = () => copyToClipboard('publicKeyOutput');
             })
             .catch(error => {
                 console.error('Get Public Key Error:', error); // Debugging line
@@ -606,6 +934,235 @@
                 publicKeyErrorMessage.innerText = `Error: ${error.message}`;
                 publicKeyErrorMessage.style.display = 'block';
                 publicKeyOutput.value = '';
+            });
+        });
+
+        // Block Explorer Form Handling
+        document.getElementById('blockExplorerForm').addEventListener('submit', function(event) {
+            event.preventDefault(); // Prevent the form from submitting the traditional way
+
+            const networkSelect = document.getElementById('network');
+            const blockNumberInput = document.getElementById('blockNumber');
+            const network = networkSelect.value;
+            const blockNumber = blockNumberInput.value.trim();
+            const resultDiv = document.getElementById('blockExplorerResult');
+            const processingMessage = document.getElementById('blockProcessingMessage');
+            const blockInfoDiv = document.getElementById('blockInfo');
+            const blockHashSpan = document.getElementById('blockHash');
+            const blockNumberInfoSpan = document.getElementById('blockNumberInfo');
+            const blockTimestampSpan = document.getElementById('blockTimestamp');
+            const blockTransactionsDiv = document.getElementById('blockTransactions');
+            const blockConsensusRootSpan = document.getElementById('blockConsensusRoot');
+            const blockPreviousHashSpan = document.getElementById('blockPreviousHash');
+            const blockValidatorSpan = document.getElementById('blockValidator');
+            const blockErrorMessageDiv = document.getElementById('blockErrorMessage');
+            const transactionsTableBody = document.querySelector('#transactionsTable tbody');
+
+            // Clear previous results and errors
+            resultDiv.classList.remove('error');
+            processingMessage.style.display = 'none';
+            blockInfoDiv.style.display = 'none';
+            blockErrorMessageDiv.style.display = 'none';
+            blockHashSpan.innerText = '';
+            blockNumberInfoSpan.innerText = '';
+            blockTimestampSpan.innerText = '';
+            blockConsensusRootSpan.innerText = '';
+            blockPreviousHashSpan.innerText = '';
+            blockValidatorSpan.innerText = '';
+            transactionsTableBody.innerHTML = '';
+            blockTransactionsDiv.style.display = 'none';
+
+            // Input validation
+            if (!network) {
+                blockErrorMessageDiv.innerText = 'Please select a network.';
+                blockErrorMessageDiv.style.display = 'block';
+                resultDiv.style.display = 'block';
+                return;
+            }
+
+            if (blockNumber === "" || isNaN(blockNumber) || parseInt(blockNumber) < 0) {
+                blockErrorMessageDiv.innerText = 'Please enter a valid block number.';
+                blockErrorMessageDiv.style.display = 'block';
+                resultDiv.style.display = 'block';
+                return;
+            }
+
+            // Display loading message
+            processingMessage.style.display = 'block';
+            resultDiv.style.display = 'block';
+
+            // Define the API endpoint with query parameters
+            const GET_BLOCK_BY_NUMBER_URL = `http://18.169.100.1:5000/get_block_by_number?network=${encodeURIComponent(network)}&block_number=${encodeURIComponent(parseInt(blockNumber))}`;
+
+            // Send the GET request to fetch the block by number
+            fetch(GET_BLOCK_BY_NUMBER_URL, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => {
+                if (response.status === 404) {
+                    throw new Error('Block not found.');
+                }
+                if (!response.ok) {
+                    throw new Error(`Server error: ${response.status} ${response.statusText}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('Get Block By Number Response:', data); // Debugging line
+
+                // Ensure the response has the 'block' object
+                if (!('block' in data)) {
+                    throw new Error('Missing "block" data in response.');
+                }
+
+                const block = data.block;
+
+                // Validate the required fields within the 'block' object
+                const requiredFields = ['block_number', 'consensus_root', 'hash', 'previous_hash', 'timestamp', 'transactions', 'validator'];
+                for (let field of requiredFields) {
+                    if (!(field in block)) {
+                        throw new Error(`Missing field in response: ${field}`);
+                    }
+                }
+
+                // Populate the block information in the DOM
+                blockNumberInfoSpan.innerText = block.block_number;
+                blockHashSpan.innerText = block.hash;
+                blockPreviousHashSpan.innerText = block.previous_hash;
+                blockConsensusRootSpan.innerText = block.consensus_root;
+
+                // Format timestamp
+                blockTimestampSpan.innerText = formatTimestamp(block.timestamp);
+
+                // Show the validator
+                blockValidatorSpan.innerText = block.validator;
+
+                // Populate Transactions
+                const transactions = block.transactions; // Assuming this is an object with tx_hash as keys
+
+                for (let txHash in transactions) {
+                    if (transactions.hasOwnProperty(txHash)) {
+                        const tx = transactions[txHash];
+                        const row = document.createElement('tr');
+
+                        // Transaction Hash
+                        const txHashCell = document.createElement('td');
+                        txHashCell.innerText = txHash;
+                        row.appendChild(txHashCell);
+
+                        // Timestamp
+                        const timestampCell = document.createElement('td');
+                        timestampCell.innerText = formatTimestamp(tx.post_timestamp);
+                        row.appendChild(timestampCell);
+
+                        // Actions (e.g., View Details)
+                        const actionsCell = document.createElement('td');
+                        const toggleDetailsBtn = document.createElement('button');
+                        toggleDetailsBtn.innerText = 'View Details';
+                        toggleDetailsBtn.classList.add('submit-btn'); // Reuse existing button styles
+
+                        // Create a hidden row for transaction details
+                        const detailsRow = document.createElement('tr');
+                        detailsRow.style.display = 'none';
+                        detailsRow.classList.add('details-row'); // For CSS styling
+                        const detailsCell = document.createElement('td');
+                        detailsCell.colSpan = 3; // Span across all table columns
+
+                        // Serialize the vector to preserve -0.0
+                        const serializedVector = serializeVector(tx.vector);
+
+                        // Generate unique IDs for various copyable elements based on txHash
+                        const sanitizedTxHash = txHash.replace(/[^a-zA-Z0-9]/g, '_'); // Replace non-alphanumeric chars
+                        const vectorId = `transactionVector_${sanitizedTxHash}`;
+                        const signatureId = `transactionSignature_${sanitizedTxHash}`;
+                        const postContentId = `transactionPostContent_${sanitizedTxHash}`;
+                        const publicKeyId = `transactionPublicKey_${sanitizedTxHash}`;
+                        const vectorSignatureId = `transactionVectorSignature_${sanitizedTxHash}`;
+                        const copyFeedbackVectorId = `copyFeedbackVector_${sanitizedTxHash}`;
+                        const copyFeedbackSignatureId = `copyFeedbackSignature_${sanitizedTxHash}`;
+                        const copyFeedbackPostContentId = `copyFeedbackPostContent_${sanitizedTxHash}`;
+                        const copyFeedbackPublicKeyId = `copyFeedbackPublicKey_${sanitizedTxHash}`;
+                        const copyFeedbackVectorSignatureId = `copyFeedbackVectorSignature_${sanitizedTxHash}`;
+
+                        // Create a vertically arranged details table
+                        detailsCell.innerHTML = `
+                            <table class="details-table">
+                                <tr>
+                                    <td><strong>Nonce:</strong> ${tx.nonce}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Post Content:</strong> <div class="copyable-output" id="${postContentId}" onclick="copyToClipboard('${postContentId}')" title="Click to copy">${tx.post_content}</div></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Post Link:</strong> <a href="https://x.com/${tx.post_link}" target="_blank">View Post</a></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Sender:</strong> ${tx.sender}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Signature:</strong> <div class="signature-output" id="${signatureId}" onclick="copyToClipboard('${signatureId}')" title="Click to copy">${tx.signature}</div></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Vector:</strong> <div class="copyable-output" id="${vectorId}" onclick="copyToClipboard('${vectorId}')" title="Click to copy">${serializedVector}</div></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Public Key:</strong> <div class="copyable-output" id="${publicKeyId}" onclick="copyToClipboard('${publicKeyId}')" title="Click to copy">${tx.public_key}</div></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Vector Signature:</strong> <div class="copyable-output" id="${vectorSignatureId}" onclick="copyToClipboard('${vectorSignatureId}')" title="Click to copy">${tx.vector_signature}</div></td>
+                                </tr>
+                            </table>
+                            <!-- Copy Feedbacks for Vector, Signature, Post Content, Public Key, and Vector Signature -->
+                            <div class="copy-feedback" id="${copyFeedbackVectorId}">Copied!</div>
+                            <div class="copy-feedback" id="${copyFeedbackSignatureId}">Copied!</div>
+                            <div class="copy-feedback" id="${copyFeedbackPostContentId}">Copied!</div>
+                            <div class="copy-feedback" id="${copyFeedbackPublicKeyId}">Copied!</div>
+                            <div class="copy-feedback" id="${copyFeedbackVectorSignatureId}">Copied!</div>
+                        `;
+
+                        detailsRow.appendChild(detailsCell);
+
+                        // Toggle function to show/hide details
+                        toggleDetailsBtn.onclick = () => {
+                            if (detailsRow.style.display === 'none') {
+                                detailsRow.style.display = 'table-row';
+                                toggleDetailsBtn.innerText = 'Hide Details';
+                            } else {
+                                detailsRow.style.display = 'none';
+                                toggleDetailsBtn.innerText = 'View Details';
+                            }
+                        };
+
+                        actionsCell.appendChild(toggleDetailsBtn);
+                        row.appendChild(actionsCell);
+
+                        transactionsTableBody.appendChild(row);
+                        transactionsTableBody.appendChild(detailsRow);
+                    }
+                }
+
+                // Show the transactions table if there are transactions
+                if (Object.keys(transactions).length > 0) {
+                    blockTransactionsDiv.style.display = 'block';
+                } else {
+                    blockTransactionsDiv.style.display = 'none';
+                }
+
+                // Show the block information
+                processingMessage.style.display = 'none';
+                blockInfoDiv.style.display = 'block';
+            })
+            .catch(error => {
+                console.error('Block Explorer Error:', error); // Debugging line
+                // Display error message
+                resultDiv.classList.add('error');
+                blockErrorMessageDiv.innerText = `Error: ${error.message}`;
+                blockErrorMessageDiv.style.display = 'block';
+                processingMessage.style.display = 'none';
+                blockInfoDiv.style.display = 'none';
             });
         });
     </script>
