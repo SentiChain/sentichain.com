@@ -229,6 +229,37 @@
             margin-top: 20px;
         }
 
+        /* Block Information Layout */
+        .block-info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .block-info-item {
+            background-color: #2C2C2C;
+            padding: 15px;
+            border-radius: 8px;
+            position: relative;
+        }
+
+        .block-info-item strong {
+            display: block;
+            margin-bottom: 8px;
+            color: #00FFC8;
+        }
+
+        .block-info-item span.clickable {
+            cursor: pointer;
+            padding: 5px;
+            border-radius: 4px;
+        }
+
+        .block-info-item span.clickable:hover {
+            background-color: #3C3C3C;
+        }
+
         /* Transactions Table Styles */
         #transactionsTable {
             width: 100%;
@@ -298,6 +329,15 @@
             .submit-btn, .copy-btn {
                 padding: 10px 16px;
                 font-size: 14px;
+            }
+
+            .block-info-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .block-info-item span.clickable {
+                display: block;
+                width: 100%;
             }
         }
     </style>
@@ -427,20 +467,38 @@
                     <!-- Block Information -->
                     <div id="blockInfo" style="display: none;">
                         <h2>Block Information:</h2>
-                        <p><strong>Block Number:</strong> <span id="blockNumberInfo">100</span></p>
-                        <p>
-                            <strong>Hash:</strong> <span id="blockHash">abc123</span> 
-                            <button type="button" class="copy-btn" onclick="copyToClipboard('blockHash')">Copy Hash</button>
-                        </p>
-                        <p>
-                            <strong>Previous Hash:</strong> <span id="blockPreviousHash">prev123</span> 
-                            <button type="button" class="copy-btn" onclick="copyToClipboard('blockPreviousHash')">Copy Previous Hash</button>
-                        </p>
-                        <p>
-                            <strong>Consensus Root:</strong> <span id="blockConsensusRoot">consensus123</span> 
-                            <button type="button" class="copy-btn" onclick="copyToClipboard('blockConsensusRoot')">Copy Consensus Root</button>
-                        </p>
-                        <p><strong>Timestamp:</strong> <span id="blockTimestamp">2024-04-27 12:00:00</span></p>
+                        <div class="block-info-grid">
+                            <div class="block-info-item">
+                                <strong>Block Number:</strong>
+                                <span id="blockNumberInfo">100</span>
+                            </div>
+                            <div class="block-info-item">
+                                <strong>Hash:</strong>
+                                <span id="blockHash" class="clickable" onclick="copyToClipboard('blockHash')">abc123</span>
+                                <div class="copy-feedback" id="copyFeedbackHash">Copied!</div>
+                            </div>
+                            <div class="block-info-item">
+                                <strong>Previous Hash:</strong>
+                                <span id="blockPreviousHash" class="clickable" onclick="copyToClipboard('blockPreviousHash')">prev123</span>
+                                <div class="copy-feedback" id="copyFeedbackPreviousHash">Copied!</div>
+                            </div>
+                            <div class="block-info-item">
+                                <strong>Consensus Root:</strong>
+                                <span id="blockConsensusRoot" class="clickable" onclick="copyToClipboard('blockConsensusRoot')">consensus123</span>
+                                <div class="copy-feedback" id="copyFeedbackConsensusRoot">Copied!</div>
+                            </div>
+                            <div class="block-info-item">
+                                <strong>Timestamp:</strong>
+                                <span id="blockTimestamp">2024-04-27 12:00:00</span>
+                            </div>
+                            <div class="block-info-item">
+                                <strong>Validator:</strong>
+                                <span id="blockValidator" class="clickable" onclick="copyToClipboard('blockValidator')">validator123</span>
+                                <div class="copy-feedback" id="copyFeedbackValidator">Copied!</div>
+                            </div>
+                        </div>
+
+                        <!-- Transactions Section -->
                         <div id="blockTransactions" style="display: none;">
                             <h3>Transactions:</h3>
                             <table id="transactionsTable">
@@ -460,11 +518,6 @@
                                 </tbody>
                             </table>
                         </div>
-                        <p>
-                            <strong>Validator:</strong> <span id="blockValidator">validator123</span> 
-                            <button type="button" class="copy-btn" onclick="copyToClipboard('blockValidator')">Copy Validator</button>
-                        </p>
-                        <!-- Add more fields as needed -->
                     </div>
                 </div>
             </div>
