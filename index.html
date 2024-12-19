@@ -22,6 +22,7 @@
             color: #E0E0E0;
             display: flex;
             min-height: 100vh;
+            margin: 0; /* Ensure no default margin */
         }
 
         /* Sidebar Navigation */
@@ -29,9 +30,11 @@
             width: 250px;
             background-color: #1E1E1E;
             padding-top: 30px;
-            position: fixed;
-            height: 100%;
+            /* Removed fixed positioning */
             transition: width 0.3s;
+            flex-shrink: 0; /* Prevent sidebar from shrinking */
+            height: 100vh;
+            overflow: auto; /* Allow scrolling if content overflows */
         }
 
         .sidebar.collapsed {
@@ -69,14 +72,15 @@
 
         /* Main Content */
         .main-content {
-            margin-left: 250px;
+            flex: 1; /* Occupy remaining space */
             padding: 40px 30px;
-            width: 100%;
-            transition: margin-left 0.3s;
+            transition: margin-left 0.3s, width 0.3s;
+            width: calc(100% - 250px); /* Adjusted width */
         }
 
         .sidebar.collapsed + .main-content {
             margin-left: 60px;
+            width: calc(100% - 60px); /* Adjusted width when sidebar is collapsed */
         }
 
         .container {
@@ -204,6 +208,7 @@
 
             .main-content {
                 margin-left: 60px;
+                width: calc(100% - 60px);
             }
         }
     </style>
