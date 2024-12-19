@@ -49,6 +49,39 @@
             color: #00FFC8;
         }
 
+        /* Base styling for .senti-link to match h2 appearance */
+        h2 .senti-link {
+            color: inherit; /* Inherit the color from h2 */
+            text-decoration: none; /* No underline */
+            font-size: 2em; /* Standard size for h2, adjust as needed */
+            font-weight: bold; /* Bold like typical h2 */
+            display: inline; /* Inline display to flow with text */
+            cursor: pointer; /* Pointer to indicate clickability */
+        }
+
+        /* Interaction states */
+        h2 .senti-link:hover,
+        h2 .senti-link:focus,
+        h2 .senti-link:active {
+            text-decoration: none; /* No underline on interaction */
+            color: inherit; /* Maintain the color from h2 */
+            background: none; /* No background change */
+        }
+
+        /* Ensuring no conflict or unintended inheritance from other a styles */
+        .sidebar h2 .senti-link,
+        .sidebar h2 .senti-link:hover,
+        .sidebar h2 .senti-link:focus,
+        .sidebar h2 .senti-link:active {
+            all: unset; /* Unset all inherited styles */
+            color: inherit; /* Explicitly inherit the color from h2 again */
+            text-decoration: none; /* Ensure no text-decoration */
+            font-size: inherit; /* Reinforce the font size */
+            font-weight: bold; /* Reinforce the font weight */
+            display: inline; /* Maintain inline display */
+            cursor: pointer; /* Ensure cursor pointer */
+        }
+
         .sidebar a {
             display: flex;
             align-items: center;
@@ -391,7 +424,7 @@
 
     <!-- Sidebar Navigation -->
     <div class="sidebar">
-        <h2>SentiChain</h2>
+        <h2><a href="home.html" class="senti-link">SentiChain</a></h2>
         <a href="#" class="tablinks active" onclick="openTab(event, 'BlockExplorer')">
             <i>🔎</i><span>Block Explorer</span>
         </a>
