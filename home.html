@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SentiChain - Home</title>
     <style>
-        /* Import Google Font */
         @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
 
         * {
@@ -17,10 +16,19 @@
         body, html {
             width: 100%;
             height: 100%;
-            overflow: hidden; 
             font-family: 'Roboto', sans-serif;
             background-color: #000;
             color: #fff;
+            overflow-x: hidden;
+            overflow-y: auto;
+        }
+
+        /* HERO SECTION (BLACK HOLE) */
+        .hero-section {
+            position: relative;
+            width: 100%;
+            height: 100vh;
+            overflow: hidden;
         }
 
         #animationCanvas {
@@ -49,6 +57,7 @@
             color: #00FFC8;
             text-shadow: 0 0 10px #00FFC8, 0 0 20px #00FFC8;
             cursor: pointer;
+            font-weight: 700;
         }
 
         @media (max-width: 768px) {
@@ -56,15 +65,310 @@
                 font-size: 2.5rem;
             }
         }
+
+        /* INTRO SECTION WITH ROCKET */
+        .intro-section {
+            position: relative;
+            min-height: 100vh;
+            background: #000;
+            color: #fff;
+            text-align: center;
+            padding: 100px 20px;
+        }
+
+        .intro-section h2 {
+            font-size: 3rem;
+            color: #00FFC8;
+            margin-bottom: 40px;
+            text-transform: uppercase;
+            text-shadow: 0 0 10px #00FFC8;
+            animation: blink 2s infinite;
+        }
+
+        @keyframes blink {
+            0%, 50%, 100% {opacity: 1;}
+            25%, 75% {opacity: 0.6;}
+        }
+
+        .intro-section p {
+            font-size: 1.2rem;
+            line-height: 1.6;
+            color: #ccc;
+            max-width: 800px;
+            margin: 0 auto 60px auto;
+        }
+
+        .rocket-wrapper {
+            position: relative;
+            display: inline-block;
+        }
+
+        .rocket {
+            width: 150px;
+            cursor: default;
+            transition: all 0.3s ease;
+        }
+
+        /* LAYER LABEL BOXES */
+        .layer-box {
+            position: absolute;
+            background: rgba(0,255,200,0.1);
+            border: 1px solid #00FFC8;
+            padding: 20px;
+            width: 350px;
+            box-shadow: 0 0 10px #00FFC8;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            line-height: 1.8;
+            text-align: left;
+        }
+
+        .layer-box h3 {
+            color: #00FFC8;
+            margin-bottom: 10px;
+            font-size: 1.3rem;
+        }
+
+        .layer-line {
+            position: absolute;
+            background: #00FFC8;
+        }
+
+        .layer-point {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: #00FFC8;
+            border-radius: 50%;
+        }
+
+        /* Layer 3 (Top, Left) */
+        /* Rocket approx top edge at y=20%, left edge around x=35px */
+        .layer3-box {
+            top: 10%;
+            left: -420px; /* box to the left */
+        }
+        .layer3-line {
+            top: 20.5%;
+            left: -70px;
+            width: 148px;
+            height: 2px;
+        }
+        .layer3-point {
+            top: 19.5%;
+            left: 70px; /* pointer at rocket edge */
+        }
+
+        /* Layer 2 (Middle, Right) */
+        /* Right edge around x=70px */
+        .layer2-box {
+            top: 45%;
+            left: 220px; /* box on the right */
+        }
+        .layer2-line {
+            top: 54.5%;
+            left: 70px; 
+            width: 148px;
+            height: 2px;
+        }
+        .layer2-point {
+            top: 53.5%;
+            left: 70px; 
+        }
+
+        /* Layer 1 (Bottom, Left) */
+        /* Similar to layer3 */
+        .layer1-box {
+            top: 75%;
+            left: -420px;
+        }
+        .layer1-line {
+            top: 82.5%;
+            left: -70px;
+            width: 148px;
+            height: 2px;
+        }
+        .layer1-point {
+            top: 81.5%;
+            left: 70px;
+        }
+
+        /* NETWORK METRICS SECTION */
+        .metrics-section {
+            background: #000;
+            padding: 100px 20px;
+            min-height: 60vh;
+            text-align: center;
+            position: relative;
+        }
+
+        .metrics-section h2 {
+            font-size: 2.5rem;
+            color: #00FFC8;
+            margin-bottom: 40px;
+            text-transform: uppercase;
+            text-shadow: 0 0 10px #00FFC8;
+        }
+
+        .metrics-container {
+            display: flex;
+            justify-content: center;
+            gap: 100px;
+            flex-wrap: wrap;
+        }
+
+        .metric-box {
+            width: 200px;
+            height: 200px;
+            background: rgba(0,255,200,0.08);
+            border: 1px solid #00FFC8;
+            border-radius: 10px;
+            position: relative;
+            box-shadow: 0 0 15px #00FFC8;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: transform 0.3s ease;
+        }
+
+        .metric-box:hover {
+            transform: scale(1.05);
+        }
+
+        .metric-box h3 {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+            color: #00FFC8;
+            text-shadow: 0 0 5px #00FFC8;
+        }
+
+        .metric-box p {
+            font-size: 1.2rem;
+            color: #ccc;
+        }
+
+        .metric-box::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(to right, transparent, #00ffc8, transparent);
+            animation: scan 2s linear infinite;
+            opacity: 0.1;
+        }
+
+        footer {
+            background: #000;
+            color: #ccc;
+            text-align: center;
+            padding: 40px 0;
+            font-size: 0.9rem;
+        }
+
+        footer a {
+            color: #00FFC8;
+            text-decoration: none;
+            margin: 0 10px;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
+        }
+
     </style>
 </head>
 <body>
 
-    <canvas id="animationCanvas"></canvas>
+    <section class="hero-section">
+        <canvas id="animationCanvas"></canvas>
+        <div class="overlay">
+            <h1 onclick="window.location.href='app.html'">SentiChain</h1>
+        </div>
+    </section>
 
-    <div class="overlay">
-        <h1 onclick="window.location.href='app.html'">SentiChain</h1>
-    </div>
+    <section class="intro-section">
+        <h2>Mission Briefing</h2>
+        <p>
+            The SentiChain ecosystem is built in layers, like a rocket. Each layer strengthens the foundation of sentiment data, 
+            refines it into insights, and culminates in strategic foresight.
+        </p>
+
+        <div class="rocket-wrapper">
+            <!-- SVG Rocket -->
+            <svg class="rocket" viewBox="0 0 100 300" xmlns="http://www.w3.org/2000/svg">
+                <!-- Layer 3 (Top) - Command Module -->
+                <path class="layer3" d="M50 10 
+                                         C45 10 35 30 35 50 
+                                         L35 90 
+                                         L65 90 
+                                         L65 50 
+                                         C65 30 55 10 50 10 Z"
+                      fill="#111" stroke="#00FFC8" stroke-width="2"/>
+
+                <!-- Layer 2 (Middle) - Body -->
+                <rect class="layer2" x="30" y="90" width="40" height="120" fill="#111" stroke="#00FFC8" stroke-width="2" rx="8"/>
+
+                <!-- Layer 1 (Bottom) - Thruster/Engine -->
+                <path class="layer1" d="M30 210 
+                                         L70 210 
+                                         L70 230 
+                                         C70 250 60 270 50 270 
+                                         C40 270 30 250 30 230 
+                                         Z"
+                      fill="#111" stroke="#00FFC8" stroke-width="2"/>
+            </svg>
+
+            <!-- Layer 3 Content (Top, Left) -->
+            <div class="layer-box layer3-box">
+                <h3>Layer 3</h3>
+                Prediction markets leverage upcoming emotional surges.<br>
+                Invest based on sentiment forecasts shaping tomorrow's economy.
+            </div>
+            <div class="layer-line layer3-line"></div>
+            <div class="layer-point layer3-point"></div>
+
+            <!-- Layer 2 Content (Middle, Right) -->
+            <div class="layer-box layer2-box">
+                <h3>Layer 2</h3>
+                Intelligence dashboards refine raw sentiment into actionable insights,<br>
+                illuminating how collective emotions drive market movements.
+            </div>
+            <div class="layer-line layer2-line"></div>
+            <div class="layer-point layer2-point"></div>
+
+            <!-- Layer 1 Content (Bottom, Left) -->
+            <div class="layer-box layer1-box">
+                <h3>Layer 1</h3>
+                The core foundation anchors sentiment data with one-minute block forging,<br>
+                ensuring integrity and trust at the network’s core.
+            </div>
+            <div class="layer-line layer1-line"></div>
+            <div class="layer-point layer1-point"></div>
+        </div>
+    </section>
+
+    <!-- NETWORK METRICS SECTION -->
+    <section class="metrics-section">
+        <h2>Network Status</h2>
+        <div class="metrics-container">
+            <div class="metric-box">
+                <h3>Blocks</h3>
+                <p id="blockCount">0</p>
+            </div>
+            <div class="metric-box">
+                <h3>Block Time</h3>
+                <p>~1 minute</p>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <p>&copy; 2024 SentiChain</p>
+        <p>
+            <a href="terms.html">Terms</a> | 
+            <a href="conditions.html">Conditions</a>
+        </p>
+    </footer>
 
     <script>
         const canvas = document.getElementById('animationCanvas');
@@ -100,32 +404,18 @@
             }
 
             reset() {
-                const edge = Math.floor(random(0, 4));
-                switch(edge) {
-                    case 0:
-                        this.x = random(0, canvas.width);
-                        this.y = -10;
-                        break;
-                    case 1:
-                        this.x = canvas.width + 10;
-                        this.y = random(0, canvas.height);
-                        break;
-                    case 2:
-                        this.x = random(0, canvas.width);
-                        this.y = canvas.height + 10;
-                        break;
-                    case 3:
-                        this.x = -10;
-                        this.y = random(0, canvas.height);
-                        break;
-                }
+                const angle = random(0, Math.PI * 2);
+                const distance = random(canvas.width * 0.3, canvas.width * 0.5);
+                this.x = blackHole.x + Math.cos(angle) * distance;
+                this.y = blackHole.y + Math.sin(angle) * distance;
 
-                this.vx = (blackHole.x - this.x) * 0.001;
-                this.vy = (blackHole.y - this.y) * 0.001;
+                const dx = blackHole.x - this.x;
+                const dy = blackHole.y - this.y;
 
+                this.vx = dx * 0.001;
+                this.vy = dy * 0.001;
                 this.size = random(1, 3);
-                this.brightness = random(0.5, 1);
-
+                this.brightness = random(0.7, 1);
                 this.exploding = false;
                 this.explodeTimer = 0;
             }
@@ -142,7 +432,6 @@
                 this.x += this.vx;
                 this.y += this.vy;
 
-                // Eat the star if close enough
                 if (distance < blackHole.currentRadius) {
                     blackHole.growth += 0.5; 
                     this.reset();
@@ -191,11 +480,7 @@
                 this.shrinking = false;
                 this.hasShrunk = false;
                 this.targetRadius = this.baseRadius;
-
-                // Hue for the ring color
                 this.ringHue = 180; 
-
-                // Rotation angle for the ring
                 this.ringRotation = 0; 
             }
 
@@ -231,61 +516,40 @@
                 const maxAdditionalShrink = 0.4; 
                 const shrinkReduction = Math.min(this.growth / 200, maxAdditionalShrink);
                 const shrinkRatio = 0.5 + shrinkReduction;
-
                 this.targetRadius = (this.baseRadius + this.growth) * shrinkRatio;
                 this.shrinking = true;
-
-                // Change hue on explosion
-                this.ringHue = (this.ringHue + 10) % 360;
-
-                // Optionally, we can also change rotation speed or angle on each explosion
-                // For a subtle effect, increment the rotation angle slightly
-                this.ringRotation += Math.PI / 20; 
             }
 
             draw() {
                 this.updateRadius();
                 const r = this._currentRadius;
-
-                // Increase brightness factor with size
                 const brightnessFactor = Math.min(0.2 + (r / 1000), 0.8);
-
-                // Scale the ring's thickness proportionally
                 const outerRingRadius = r * 1.3; 
 
-                // Save context state before transformations
                 ctx.save();
                 ctx.translate(this.x, this.y);
 
-                // Rotate the ring
-                this.ringRotation += 0.002; // Continuously rotate slightly each frame
+                this.ringRotation += 0.002; 
                 ctx.rotate(this.ringRotation);
 
-                // Scale to create an elliptical shape
                 ctx.scale(1.1, 1);
 
-                // Create a radial gradient relative to transformed coordinates
                 const diskGradient = ctx.createRadialGradient(0, 0, r, 0, 0, outerRingRadius);
                 diskGradient.addColorStop(0, `hsla(${this.ringHue}, 100%, 50%, ${brightnessFactor})`);
                 diskGradient.addColorStop(1, 'rgba(0, 0, 0, 0)');
 
-                // Draw the gradient ring
                 ctx.beginPath();
                 ctx.arc(0, 0, outerRingRadius, 0, Math.PI * 2);
                 ctx.fillStyle = diskGradient;
                 ctx.fill();
 
-                // Reset scale and rotation to draw the black hole disk in a non-transformed way
                 ctx.restore();
 
-                // Draw the black hole disk (no transform)
                 ctx.beginPath();
                 ctx.arc(this.x, this.y, r, 0, Math.PI * 2);
                 ctx.fillStyle = this.color;
                 ctx.fill();
 
-                // Draw a subtle stroke ring around the black hole
-                // We can also rotate/scale this if desired, but let's keep it stable for contrast
                 ctx.beginPath();
                 ctx.arc(this.x, this.y, r * 1.1, 0, Math.PI * 2);
                 ctx.strokeStyle = `hsla(${this.ringHue}, 100%, 50%, 0.01)`;
@@ -295,7 +559,6 @@
         }
 
         const blackHole = new BlackHole();
-
         const stars = [];
         const numStars = 200;
         for (let i = 0; i < numStars; i++) {
@@ -324,7 +587,6 @@
                 lastExplosion = now;
             }
 
-            // Stop the animation if the black hole grows too large
             if (blackHole.currentRadius > 500) {
                 animationRunning = false;
                 return;
@@ -334,7 +596,32 @@
         }
 
         animate();
-    </script>
 
+        // Replace this URL with your actual API endpoint if needed
+        const blockCountElement = document.getElementById('blockCount');
+        let currentCount = 0;
+
+        fetch("http://18.169.100.1:5000/get_chain_length?network=mainnet")
+          .then(res => res.json())
+          .then(data => {
+              const targetCount = data.chain_length;
+              const increment = () => {
+                  if (currentCount < targetCount) {
+                      currentCount++;
+                      blockCountElement.textContent = currentCount;
+                      requestAnimationFrame(increment);
+                  } else {
+                      blockCountElement.textContent = targetCount;
+                  }
+              };
+              increment();
+          })
+          .catch(err => {
+              // If API fails, show a placeholder
+              blockCountElement.textContent = "N/A";
+              console.error(err);
+          });
+
+    </script>
 </body>
 </html>
