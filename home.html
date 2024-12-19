@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SentiChain - Home</title>
     <style>
-        /* Import Google Font */
         @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
 
         * {
@@ -17,10 +16,19 @@
         body, html {
             width: 100%;
             height: 100%;
-            overflow: hidden; 
             font-family: 'Roboto', sans-serif;
             background-color: #000;
             color: #fff;
+            overflow-x: hidden;
+            overflow-y: auto; /* Allow scrolling */
+        }
+
+        /* Hero Section with the Canvas Animation */
+        .hero-section {
+            position: relative;
+            width: 100%;
+            height: 100vh;
+            overflow: hidden;
         }
 
         #animationCanvas {
@@ -49,6 +57,7 @@
             color: #00FFC8;
             text-shadow: 0 0 10px #00FFC8, 0 0 20px #00FFC8;
             cursor: pointer;
+            font-weight: 700;
         }
 
         @media (max-width: 768px) {
@@ -56,15 +65,105 @@
                 font-size: 2.5rem;
             }
         }
+
+        /* Introduction Section */
+        .intro-section {
+            position: relative;
+            padding: 100px 20px;
+            background: #000;
+            color: #fff;
+            text-align: center;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .intro-section h2 {
+            font-size: 3rem;
+            color: #00FFC8;
+            text-shadow: 0 0 8px #00FFC8, 0 0 15px #00FFC8;
+            margin-bottom: 40px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            animation: flicker 3s infinite;
+        }
+
+        .intro-section p {
+            font-size: 1.3rem;
+            line-height: 1.8;
+            max-width: 800px;
+            margin: 0 auto;
+            color: #ccc;
+            font-weight: 300;
+        }
+
+        /* Add a subtle "futuristic" feel: a faint grid or glitch effect */
+        .intro-section::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: radial-gradient(circle at center, rgba(0,255,200,0.1) 0%, rgba(0,0,0,0) 80%);
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        @keyframes flicker {
+            0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% {
+                opacity: 1;
+            }
+            20%, 24%, 55% {
+                opacity: 0.4;
+            }
+        }
+
+        /* Optional: add a subtle "typing" or glitch effect to paragraph text */
+        .intro-section p span {
+            display: inline-block;
+            animation: glitch 5s infinite;
+        }
+
+        @keyframes glitch {
+            0% {
+                opacity: 1;
+            }
+            10% {
+                opacity: 0.7;
+                transform: translateX(1px) skewX(2deg);
+            }
+            20% {
+                opacity: 0.9;
+                transform: translateX(-1px) skewX(-2deg);
+            }
+            30% {
+                opacity: 1;
+                transform: translateX(0) skewX(0deg);
+            }
+        }
+
     </style>
 </head>
 <body>
 
-    <canvas id="animationCanvas"></canvas>
+    <section class="hero-section">
+        <canvas id="animationCanvas"></canvas>
+        <div class="overlay">
+            <h1 onclick="window.location.href='app.html'">SentiChain</h1>
+        </div>
+    </section>
 
-    <div class="overlay">
-        <h1 onclick="window.location.href='app.html'">SentiChain</h1>
-    </div>
+    <!-- Futuristic Introduction Section -->
+    <section class="intro-section">
+        <h2>Incoming Transmission</h2>
+        <p>
+            <span>Encrypted nodes hum in digital darkness:</span><br><br>
+            <span>Within SentiChain's lattice, raw emotion flows like code—captured from every distant social feed.</span><br><br>
+            <span>Blocks verify in a single heartbeat, forging a Consensus Root of trust that pulses through the network’s veins.</span><br><br>
+            <span>Layer 2 dashboards decode the whispers of the masses, transforming them into actionable, luminous insights.</span><br><br>
+            <span>Layer 3 prediction markets quantify the intangible spark of sentiment, letting you trade on tomorrow’s emotional surge.</span><br><br>
+            <span>Enter the hive of sentiment and shape the future of financial resonance.</span>
+        </p>
+    </section>
 
     <script>
         const canvas = document.getElementById('animationCanvas');
@@ -142,7 +241,6 @@
                 this.x += this.vx;
                 this.y += this.vy;
 
-                // Eat the star if close enough
                 if (distance < blackHole.currentRadius) {
                     blackHole.growth += 0.5; 
                     this.reset();
@@ -191,11 +289,7 @@
                 this.shrinking = false;
                 this.hasShrunk = false;
                 this.targetRadius = this.baseRadius;
-
-                // Hue for the ring color
                 this.ringHue = 180; 
-
-                // Rotation angle for the ring
                 this.ringRotation = 0; 
             }
 
@@ -235,57 +329,40 @@
                 this.targetRadius = (this.baseRadius + this.growth) * shrinkRatio;
                 this.shrinking = true;
 
-                // Change hue on explosion
                 this.ringHue = (this.ringHue + 10) % 360;
-
-                // Optionally, we can also change rotation speed or angle on each explosion
-                // For a subtle effect, increment the rotation angle slightly
                 this.ringRotation += Math.PI / 20; 
             }
 
             draw() {
                 this.updateRadius();
                 const r = this._currentRadius;
-
-                // Increase brightness factor with size
                 const brightnessFactor = Math.min(0.2 + (r / 1000), 0.8);
-
-                // Scale the ring's thickness proportionally
                 const outerRingRadius = r * 1.3; 
 
-                // Save context state before transformations
                 ctx.save();
                 ctx.translate(this.x, this.y);
 
-                // Rotate the ring
-                this.ringRotation += 0.002; // Continuously rotate slightly each frame
+                this.ringRotation += 0.002; 
                 ctx.rotate(this.ringRotation);
 
-                // Scale to create an elliptical shape
                 ctx.scale(1.1, 1);
 
-                // Create a radial gradient relative to transformed coordinates
                 const diskGradient = ctx.createRadialGradient(0, 0, r, 0, 0, outerRingRadius);
                 diskGradient.addColorStop(0, `hsla(${this.ringHue}, 100%, 50%, ${brightnessFactor})`);
                 diskGradient.addColorStop(1, 'rgba(0, 0, 0, 0)');
 
-                // Draw the gradient ring
                 ctx.beginPath();
                 ctx.arc(0, 0, outerRingRadius, 0, Math.PI * 2);
                 ctx.fillStyle = diskGradient;
                 ctx.fill();
 
-                // Reset scale and rotation to draw the black hole disk in a non-transformed way
                 ctx.restore();
 
-                // Draw the black hole disk (no transform)
                 ctx.beginPath();
                 ctx.arc(this.x, this.y, r, 0, Math.PI * 2);
                 ctx.fillStyle = this.color;
                 ctx.fill();
 
-                // Draw a subtle stroke ring around the black hole
-                // We can also rotate/scale this if desired, but let's keep it stable for contrast
                 ctx.beginPath();
                 ctx.arc(this.x, this.y, r * 1.1, 0, Math.PI * 2);
                 ctx.strokeStyle = `hsla(${this.ringHue}, 100%, 50%, 0.01)`;
@@ -324,7 +401,6 @@
                 lastExplosion = now;
             }
 
-            // Stop the animation if the black hole grows too large
             if (blackHole.currentRadius > 500) {
                 animationRunning = false;
                 return;
@@ -335,6 +411,5 @@
 
         animate();
     </script>
-
 </body>
 </html>
