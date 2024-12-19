@@ -478,7 +478,7 @@
             resultDiv.style.display = 'block';
 
             // Define the API endpoint
-            const BASE_URL = "http://18.169.100.1:80/vectorize_and_sign";
+            const BASE_URL = "http://18.169.100.1:5001/vectorize_and_sign";
 
             // Send the POST request to the server
             fetch(BASE_URL, {
@@ -587,8 +587,8 @@
             resultDiv.style.display = 'block';
 
             // Define the API endpoints
-            const PUBLIC_KEY_URL = "http://18.169.100.1:80/get_vectorizer_public_key";
-            const VERIFY_URL = "http://18.169.100.1:80/verify_vector_signature";
+            const PUBLIC_KEY_URL = "http://18.169.100.1:5001/get_vectorizer_public_key";
+            const VERIFY_URL = "http://18.169.100.1:5001/verify_vector_signature";
 
             // Fetch the public key first
             fetch(PUBLIC_KEY_URL, {
@@ -664,7 +664,7 @@
             publicKeyOutput.value = 'Fetching public key...';
 
             // Define the API endpoint
-            const PUBLIC_KEY_URL = "http://18.169.100.1:80/get_vectorizer_public_key";
+            const PUBLIC_KEY_URL = "http://18.169.100.1:5001/get_vectorizer_public_key";
 
             // Fetch the public key
             fetch(PUBLIC_KEY_URL, {
@@ -749,7 +749,7 @@
             resultDiv.style.display = 'block';
 
             // Define the API endpoint with query parameters
-            const GET_BLOCK_BY_NUMBER_URL = `http://18.169.100.1:80/get_block_by_number?network=${encodeURIComponent(network)}&block_number=${encodeURIComponent(parseInt(blockNumber))}`;
+            const GET_BLOCK_BY_NUMBER_URL = `http://18.169.100.1:5000/get_block_by_number?network=${encodeURIComponent(network)}&block_number=${encodeURIComponent(parseInt(blockNumber))}`;
 
             // Send the GET request to fetch the block by number
             fetch(GET_BLOCK_BY_NUMBER_URL, {
