@@ -229,6 +229,47 @@
             margin-top: 20px;
         }
 
+        /* Transactions Table Styles */
+        #transactionsTable {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        #transactionsTable th, #transactionsTable td {
+            border: 1px solid #333;
+            padding: 10px;
+            text-align: left;
+        }
+
+        #transactionsTable th {
+            background-color: #00FFC8;
+            color: #121212;
+        }
+
+        #transactionsTable tr:nth-child(even) {
+            background-color: #2C2C2C;
+        }
+
+        #transactionsTable tr:hover {
+            background-color: #3C3C3C;
+        }
+
+        #transactionsTable a {
+            color: #00FFC8;
+            text-decoration: none;
+        }
+
+        #transactionsTable a:hover {
+            text-decoration: underline;
+        }
+
+        /* Details Row Styles */
+        #transactionsTable tr.details-row td {
+            background-color: #1E1E1E;
+            padding: 15px;
+        }
+
         /* Responsive Design */
         @media (max-width: 768px) {
             .sidebar {
@@ -246,6 +287,17 @@
             .main-content {
                 margin-left: 60px;
                 width: calc(100% - 60px);
+            }
+
+            /* Adjust table for smaller screens */
+            #transactionsTable th, #transactionsTable td {
+                padding: 8px;
+                font-size: 14px;
+            }
+
+            .submit-btn, .copy-btn {
+                padding: 10px 16px;
+                font-size: 14px;
             }
         }
     </style>
@@ -376,12 +428,42 @@
                     <div id="blockInfo" style="display: none;">
                         <h2>Block Information:</h2>
                         <p><strong>Block Number:</strong> <span id="blockNumberInfo">100</span></p>
-                        <p><strong>Hash:</strong> <span id="blockHash">abc123</span> <button type="button" class="copy-btn" onclick="copyToClipboard('blockHash')">Copy Hash</button></p>
-                        <p><strong>Previous Hash:</strong> <span id="blockPreviousHash">prev123</span> <button type="button" class="copy-btn" onclick="copyToClipboard('blockPreviousHash')">Copy Previous Hash</button></p>
-                        <p><strong>Consensus Root:</strong> <span id="blockConsensusRoot">consensus123</span> <button type="button" class="copy-btn" onclick="copyToClipboard('blockConsensusRoot')">Copy Consensus Root</button></p>
+                        <p>
+                            <strong>Hash:</strong> <span id="blockHash">abc123</span> 
+                            <button type="button" class="copy-btn" onclick="copyToClipboard('blockHash')">Copy Hash</button>
+                        </p>
+                        <p>
+                            <strong>Previous Hash:</strong> <span id="blockPreviousHash">prev123</span> 
+                            <button type="button" class="copy-btn" onclick="copyToClipboard('blockPreviousHash')">Copy Previous Hash</button>
+                        </p>
+                        <p>
+                            <strong>Consensus Root:</strong> <span id="blockConsensusRoot">consensus123</span> 
+                            <button type="button" class="copy-btn" onclick="copyToClipboard('blockConsensusRoot')">Copy Consensus Root</button>
+                        </p>
                         <p><strong>Timestamp:</strong> <span id="blockTimestamp">2024-04-27 12:00:00</span></p>
-                        <p><strong>Transactions:</strong> <pre id="blockTransactions" style="white-space: pre-wrap;">{"tx1": {}, "tx2": {}}</pre></p>
-                        <p><strong>Validator:</strong> <span id="blockValidator">validator123</span> <button type="button" class="copy-btn" onclick="copyToClipboard('blockValidator')">Copy Validator</button></p>
+                        <div id="blockTransactions" style="display: none;">
+                            <h3>Transactions:</h3>
+                            <table id="transactionsTable">
+                                <thead>
+                                    <tr>
+                                        <th>Transaction Hash</th>
+                                        <th>Nonce</th>
+                                        <th>Post Content</th>
+                                        <th>Post Link</th>
+                                        <th>Timestamp</th>
+                                        <th>Sender</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Transaction rows will be inserted here dynamically -->
+                                </tbody>
+                            </table>
+                        </div>
+                        <p>
+                            <strong>Validator:</strong> <span id="blockValidator">validator123</span> 
+                            <button type="button" class="copy-btn" onclick="copyToClipboard('blockValidator')">Copy Validator</button>
+                        </p>
                         <!-- Add more fields as needed -->
                     </div>
                 </div>
@@ -742,11 +824,12 @@
             const blockHashSpan = document.getElementById('blockHash');
             const blockNumberInfoSpan = document.getElementById('blockNumberInfo');
             const blockTimestampSpan = document.getElementById('blockTimestamp');
-            const blockTransactionsSpan = document.getElementById('blockTransactions');
+            const blockTransactionsDiv = document.getElementById('blockTransactions');
             const blockConsensusRootSpan = document.getElementById('blockConsensusRoot');
             const blockPreviousHashSpan = document.getElementById('blockPreviousHash');
             const blockValidatorSpan = document.getElementById('blockValidator');
             const blockErrorMessageDiv = document.getElementById('blockErrorMessage');
+            const transactionsTableBody = document.querySelector('#transactionsTable tbody');
 
             // Clear previous results and errors
             resultDiv.classList.remove('error');
@@ -756,10 +839,11 @@
             blockHashSpan.innerText = '';
             blockNumberInfoSpan.innerText = '';
             blockTimestampSpan.innerText = '';
-            blockTransactionsSpan.innerText = '';
             blockConsensusRootSpan.innerText = '';
             blockPreviousHashSpan.innerText = '';
             blockValidatorSpan.innerText = '';
+            transactionsTableBody.innerHTML = '';
+            blockTransactionsDiv.style.display = 'none';
 
             // Input validation
             if (!network) {
@@ -826,11 +910,95 @@
                 // Format timestamp
                 blockTimestampSpan.innerText = formatTimestamp(block.timestamp);
 
-                // Display transactions as a formatted JSON string
-                if (typeof block.transactions === 'object') {
-                    blockTransactionsSpan.innerText = JSON.stringify(block.transactions, null, 2);
+                // Display transactions in a table
+                const transactions = block.transactions; // Assuming this is an object with tx_hash as keys
+
+                for (let txHash in transactions) {
+                    if (transactions.hasOwnProperty(txHash)) {
+                        const tx = transactions[txHash];
+                        const row = document.createElement('tr');
+
+                        // Transaction Hash
+                        const txHashCell = document.createElement('td');
+                        txHashCell.innerText = txHash;
+                        row.appendChild(txHashCell);
+
+                        // Nonce
+                        const nonceCell = document.createElement('td');
+                        nonceCell.innerText = tx.nonce;
+                        row.appendChild(nonceCell);
+
+                        // Post Content
+                        const postContentCell = document.createElement('td');
+                        postContentCell.innerText = tx.post_content;
+                        row.appendChild(postContentCell);
+
+                        // Post Link
+                        const postLinkCell = document.createElement('td');
+                        const link = document.createElement('a');
+                        link.href = tx.post_link;
+                        link.target = '_blank';
+                        link.innerText = 'View Post';
+                        postLinkCell.appendChild(link);
+                        row.appendChild(postLinkCell);
+
+                        // Timestamp
+                        const timestampCell = document.createElement('td');
+                        timestampCell.innerText = formatTimestamp(tx.post_timestamp);
+                        row.appendChild(timestampCell);
+
+                        // Sender
+                        const senderCell = document.createElement('td');
+                        senderCell.innerText = tx.sender;
+                        row.appendChild(senderCell);
+
+                        // Actions (e.g., View Details)
+                        const actionsCell = document.createElement('td');
+                        const toggleDetailsBtn = document.createElement('button');
+                        toggleDetailsBtn.innerText = 'View Details';
+                        toggleDetailsBtn.classList.add('submit-btn'); // Reuse existing button styles
+
+                        // Create a hidden row for transaction details
+                        const detailsRow = document.createElement('tr');
+                        detailsRow.style.display = 'none';
+                        detailsRow.classList.add('details-row'); // For CSS styling
+                        const detailsCell = document.createElement('td');
+                        detailsCell.colSpan = 7; // Span across all table columns
+
+                        // Populate the details cell with transaction information
+                        detailsCell.innerHTML = `
+                            <strong>Signature:</strong> ${tx.signature}<br>
+                            <strong>Vector:</strong> ${JSON.stringify(tx.vector, null, 2)}<br>
+                            <strong>Public Key:</strong> ${tx.public_key}<br>
+                            <strong>Vector Signature:</strong> ${tx.vector_signature}
+                        `;
+
+                        detailsRow.appendChild(detailsCell);
+
+                        // Toggle function to show/hide details
+                        toggleDetailsBtn.onclick = () => {
+                            if (detailsRow.style.display === 'none') {
+                                detailsRow.style.display = 'table-row';
+                                toggleDetailsBtn.innerText = 'Hide Details';
+                            } else {
+                                detailsRow.style.display = 'none';
+                                toggleDetailsBtn.innerText = 'View Details';
+                            }
+                        };
+
+                        actionsCell.appendChild(toggleDetailsBtn);
+                        row.appendChild(actionsCell);
+
+                        transactionsTableBody.appendChild(row);
+                        transactionsTableBody.appendChild(detailsRow);
+                    }
+                }
+
+                // Show the transactions table if there are transactions
+                if (Object.keys(transactions).length > 0) {
+                    blockTransactionsDiv.style.display = 'block';
                 } else {
-                    blockTransactionsSpan.innerText = block.transactions;
+                    blockTransactionsDiv.style.display = 'none';
                 }
 
                 blockValidatorSpan.innerText = block.validator;
