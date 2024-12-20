@@ -601,7 +601,7 @@
         const blockCountElement = document.getElementById('blockCount');
         let currentCount = 0;
 
-        fetch("http://18.169.100.1:5000/get_chain_length?network=mainnet")
+        fetch("https://api.sentichain.com/blockchain/get_chain_length?network=mainnet")
           .then(res => res.json())
           .then(data => {
               const targetCount = data.chain_length;
