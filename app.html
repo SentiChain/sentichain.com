@@ -20,13 +20,12 @@
             font-family: 'Roboto', sans-serif;
             background-color: #121212;
             color: #E0E0E0;
-            margin: 0; /* Remove default margin */
-            /* Removed display: flex; */
+            margin: 0;
         }
 
         /* Sidebar Navigation */
         .sidebar {
-            position: fixed; /* Fix the sidebar position */
+            position: fixed;
             top: 0;
             left: 0;
             width: 250px;
@@ -34,8 +33,7 @@
             background-color: #1E1E1E;
             padding-top: 30px;
             transition: width 0.3s;
-            overflow: auto; /* Allow scrolling if content overflows */
-            /* z-index: 1000; Optional: Ensure sidebar is above other content */
+            overflow: auto;
         }
 
         .sidebar.collapsed {
@@ -51,35 +49,70 @@
 
         /* Base styling for .senti-link to match h2 appearance */
         h2 .senti-link {
-            color: inherit; /* Inherit the color from h2 */
-            text-decoration: none; /* No underline */
-            font-size: 2em; /* Standard size for h2, adjust as needed */
-            font-weight: bold; /* Bold like typical h2 */
-            display: inline; /* Inline display to flow with text */
-            cursor: pointer; /* Pointer to indicate clickability */
+            color: inherit;
+            text-decoration: none;
+            font-size: 2em;
+            font-weight: bold;
+            display: inline;
+            cursor: pointer;
         }
 
-        /* Interaction states */
-        h2 .senti-link:hover,
-        h2 .senti-link:focus,
-        h2 .senti-link:active {
-            text-decoration: none; /* No underline on interaction */
-            color: inherit; /* Maintain the color from h2 */
-            background: none; /* No background change */
-        }
-
-        /* Ensuring no conflict or unintended inheritance from other a styles */
         .sidebar h2 .senti-link,
         .sidebar h2 .senti-link:hover,
         .sidebar h2 .senti-link:focus,
         .sidebar h2 .senti-link:active {
-            all: unset; /* Unset all inherited styles */
-            color: inherit; /* Explicitly inherit the color from h2 again */
-            text-decoration: none; /* Ensure no text-decoration */
-            font-size: inherit; /* Reinforce the font size */
-            font-weight: bold; /* Reinforce the font weight */
-            display: inline; /* Maintain inline display */
-            cursor: pointer; /* Ensure cursor pointer */
+            all: unset;
+            color: inherit;
+            text-decoration: none;
+            font-size: inherit;
+            font-weight: bold;
+            display: inline;
+            cursor: pointer;
+        }
+
+        /* API Key Section */
+        .api-key-section {
+            padding: 0 20px 20px 20px;
+            margin-bottom: 20px;
+        }
+
+        .api-key-section label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .api-key-section input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: none;
+            border-radius: 8px;
+            background-color: #2C2C2C;
+            color: #E0E0E0;
+            font-size: 16px;
+            outline: none;
+        }
+
+        .api-key-section button {
+            background: linear-gradient(45deg, #00FFC8, #007BFF);
+            border: none;
+            color: #121212;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+        }
+
+        .api-key-section button:hover {
+            background: linear-gradient(45deg, #007BFF, #00FFC8);
+        }
+
+        .api-key-error {
+            color: #FF5555;
+            font-size: 14px;
+            margin-top: 5px;
         }
 
         .sidebar a {
@@ -106,12 +139,11 @@
 
         /* Main Content */
         .main-content {
-            margin-left: 250px; /* Offset for the fixed sidebar */
+            margin-left: 250px;
             padding: 40px 30px;
             transition: margin-left 0.3s;
         }
 
-        /* Adjust main-content margin when sidebar is collapsed */
         .sidebar.collapsed + .main-content {
             margin-left: 60px;
         }
@@ -158,7 +190,7 @@
             cursor: pointer;
             font-size: 16px;
             transition: background 0.3s, transform 0.2s;
-            width: 100%; /* Ensures all buttons have the same width */
+            width: 100%;
         }
 
         .submit-btn:hover, .copy-btn:hover {
@@ -170,7 +202,7 @@
             padding: 8px 16px;
             margin-left: 10px;
             font-size: 14px;
-            width: 100%; /* Ensure copy buttons also have 100% width */
+            width: 100%;
         }
 
         /* Result Boxes */
@@ -224,28 +256,28 @@
         .copyable-output {
             max-height: 200px;
             overflow-x: auto;
-            overflow-y: auto; /* Enable vertical scrollbar */
+            overflow-y: auto;
             white-space: pre-wrap;
             word-wrap: break-word;
             background-color: #2C2C2C;
             padding: 10px;
             border-radius: 8px;
             margin-bottom: 10px;
-            cursor: pointer; /* Indicate clickability */
+            cursor: pointer;
         }
 
         /* Scrollable Signature Output */
         .signature-output {
             max-height: 100px;
             overflow-x: auto;
-            overflow-y: auto; /* Enable vertical scrollbar */
+            overflow-y: auto;
             white-space: pre-wrap;
             word-wrap: break-word;
             background-color: #2C2C2C;
             padding: 10px;
             border-radius: 8px;
             margin-bottom: 10px;
-            cursor: pointer; /* Indicate clickability */
+            cursor: pointer;
         }
 
         /* Block Explorer Specific Styles */
@@ -287,8 +319,8 @@
             cursor: pointer;
             padding: 5px;
             border-radius: 4px;
-            word-break: break-all; /* Ensures breaking of long words */
-            overflow-wrap: break-word; /* Ensures breaking at appropriate points */
+            word-break: break-all;
+            overflow-wrap: break-word;
         }
 
         .block-info-item span.clickable:hover {
@@ -300,8 +332,8 @@
             width: 100%;
             border-collapse: collapse;
             margin-top: 20px;
-            table-layout: fixed; /* Ensures table respects container width */
-            word-wrap: break-word; /* Ensures text wraps within cells */
+            table-layout: fixed;
+            word-wrap: break-word;
         }
 
         #transactionsTable th, #transactionsTable td {
@@ -309,8 +341,8 @@
             padding: 10px;
             text-align: left;
             vertical-align: top;
-            overflow-wrap: break-word; /* Ensures text wraps */
-            word-break: break-word; /* Additional wrapping */
+            overflow-wrap: break-word;
+            word-break: break-word;
         }
 
         #transactionsTable th {
@@ -331,7 +363,7 @@
         #transactionsTable a {
             color: #00FFC8;
             text-decoration: none;
-            word-break: break-word; /* Ensures links wrap if too long */
+            word-break: break-word;
         }
 
         #transactionsTable a:hover {
@@ -369,10 +401,9 @@
             }
 
             .main-content {
-                margin-left: 60px; /* Adjust for collapsed sidebar */
+                margin-left: 60px;
             }
 
-            /* Adjust table for smaller screens */
             #transactionsTable th, #transactionsTable td {
                 padding: 8px;
                 font-size: 14px;
@@ -381,7 +412,7 @@
             .submit-btn, .copy-btn {
                 padding: 10px 16px;
                 font-size: 14px;
-                width: 100%; /* Ensure buttons remain full width */
+                width: 100%;
             }
 
             .block-info-grid {
@@ -404,8 +435,8 @@
         .details-table td {
             padding: 8px;
             border-bottom: 1px solid #444;
-            overflow-wrap: break-word; /* Ensures text wraps */
-            word-break: break-word; /* Additional wrapping */
+            overflow-wrap: break-word;
+            word-break: break-word;
         }
 
         .details-table td strong {
@@ -414,7 +445,6 @@
             color: #00FFC8;
         }
 
-        /* Spacing between h1 and first content in each tab */
         .tabcontent h1 {
             margin-bottom: 20px;
         }
@@ -425,6 +455,14 @@
     <!-- Sidebar Navigation -->
     <div class="sidebar">
         <h2><a href="home.html" class="senti-link">SentiChain</a></h2>
+
+        <!-- API Key Input Section -->
+        <div class="api-key-section">
+            <input type="text" id="apiKeyInput" placeholder="Enter your API Key">
+            <button id="saveApiKeyBtn">Save API Key</button>
+            <div id="apiKeyError" class="api-key-error" style="display: none;">API Key is required for POST requests.</div>
+        </div>
+
         <a href="#" class="tablinks active" onclick="openTab(event, 'BlockExplorer')">
             <i>🔎</i><span>Block Explorer</span>
         </a>
@@ -442,8 +480,6 @@
     <!-- Main Content -->
     <div class="main-content">
         <div class="container">
-            <!-- Removed the global h1 here -->
-
             <!-- Block Explorer Tab Content -->
             <div id="BlockExplorer" class="tabcontent" style="display: block;">
                 <h1>Block Explorer</h1>
@@ -553,14 +589,12 @@
                     <div id="vectorResults" style="display: none;">
                         <h2>Vector:</h2>
                         <div class="copyable-output" id="vectorOutput" onclick="copyToClipboard('vectorOutput')" title="Click to copy">[0, 1, 2]</div>
-                        <!-- Removed the copy button -->
                     </div>
 
                     <!-- Signature Output -->
                     <div id="signatureResults" style="display: none; margin-top: 20px;">
                         <h2>Signature:</h2>
                         <div class="signature-output" id="signatureOutput" onclick="copyToClipboard('signatureOutput')" title="Click to copy">abcdef123456</div>
-                        <!-- Removed the copy button -->
                     </div>
                 </div>
             </div>
@@ -592,11 +626,8 @@
                     <div id="publicKeyErrorMessage" class="error" style="display: none;"></div>
                     
                     <!-- Public Key Display -->
-                    <p>
-                        <strong>Public Key:</strong>
-                    </p>
+                    <p><strong>Public Key:</strong></p>
                     <textarea id="publicKeyOutput" readonly rows="8" onclick="copyToClipboard('publicKeyOutput')" title="Click to copy"></textarea>
-                    <!-- Removed the copy button -->
                 </div>
             </div>
 
@@ -605,17 +636,28 @@
 
     <!-- JavaScript -->
     <script>
+        let apiKey = ""; // Global variable to store the API key
+
+        document.getElementById('saveApiKeyBtn').addEventListener('click', () => {
+            const inputKey = document.getElementById('apiKeyInput').value.trim();
+            if (!inputKey) {
+                // Show error if key is empty
+                document.getElementById('apiKeyError').style.display = 'block';
+            } else {
+                apiKey = inputKey;
+                document.getElementById('apiKeyError').style.display = 'none';
+                alert('API Key saved successfully!');
+            }
+        });
+
         // Tab functionality
         function openTab(evt, tabName) {
-            // Remove active class from all tabs
             const tablinks = document.querySelectorAll('.tablinks');
             tablinks.forEach(tab => tab.classList.remove('active'));
 
-            // Hide all tab contents
             const tabcontents = document.querySelectorAll('.tabcontent');
             tabcontents.forEach(content => content.style.display = 'none');
 
-            // Show the selected tab content and add active class to the clicked tab
             document.getElementById(tabName).style.display = 'block';
             evt.currentTarget.classList.add('active');
         }
@@ -624,23 +666,16 @@
         function copyToClipboard(elementId) {
             let text;
             if (elementId === 'publicKeyOutput') {
-                // For textarea, use value
                 text = document.getElementById(elementId).value;
             } else {
-                // For div or span elements, use innerText or innerHTML
                 const element = document.getElementById(elementId);
-                if (element.tagName.toLowerCase() === 'pre') {
-                    text = element.innerText;
-                } else {
-                    text = element.innerText;
-                }
+                text = element.innerText;
             }
 
             navigator.clipboard.writeText(text).then(() => {
-                // Determine the feedback ID based on the element being copied
                 let feedbackId;
+
                 if (elementId.startsWith('block')) {
-                    // Remove 'block' prefix and capitalize the first letter
                     const suffix = elementId.replace('block', '');
                     feedbackId = 'copyFeedback' + suffix.charAt(0).toUpperCase() + suffix.slice(1);
                 } else if (elementId.startsWith('transactionVector')) {
@@ -670,7 +705,6 @@
                     }, 2000);
                 }
 
-                // Optional: Visual feedback by changing background color
                 const element = document.getElementById(elementId);
                 if (element) {
                     const originalColor = element.style.backgroundColor;
@@ -685,16 +719,10 @@
             });
         }
 
-        // Helper function to capitalize first letter
         function capitalizeFirstLetter(string) {
             return string.charAt(0).toUpperCase() + string.slice(1);
         }
 
-        /**
-         * Serialize the vector, preserving -0.0 values
-         * @param {Array<number>} vector - The original vector
-         * @returns {string} - The serialized vector as a string
-         */
         function serializeVector(vector) {
             return "[" + vector.map(n => {
                 if (Object.is(n, -0)) {
@@ -704,16 +732,14 @@
             }).join(", ") + "]";
         }
 
-        // Function to format UNIX timestamp to human-readable date
         function formatTimestamp(timestamp) {
-            const date = new Date(timestamp * 1000); // Convert to milliseconds
+            const date = new Date(timestamp * 1000);
             return date.toLocaleString();
         }
 
-        // Vectorize & Sign Form Handling
+        // Vectorize & Sign Form Handling (POST requires API key)
         document.getElementById('vectorizeSignForm').addEventListener('submit', function(event) {
-            event.preventDefault(); // Prevent the form from submitting the traditional way
-
+            event.preventDefault();
             const sentenceInput = document.getElementById('sentence');
             const sentence = sentenceInput.value.trim();
             const resultDiv = document.getElementById('vectorizeSignResult');
@@ -722,7 +748,7 @@
             const signatureResultsDiv = document.getElementById('signatureResults');
             const errorMessageDiv = document.getElementById('errorMessage');
 
-            // Clear previous results and errors
+            // Clear previous results
             resultDiv.classList.remove('error');
             processingMessage.style.display = 'none';
             vectorResultsDiv.style.display = 'none';
@@ -731,25 +757,31 @@
             document.getElementById('vectorOutput').innerText = '';
             document.getElementById('signatureOutput').innerText = '';
 
-            if (sentence === "") {
+            if (!sentence) {
                 errorMessageDiv.innerText = 'Please enter a sentence.';
                 errorMessageDiv.style.display = 'block';
                 resultDiv.style.display = 'block';
                 return;
             }
 
-            // Display loading message
+            // Check if API key is provided
+            if (!apiKey) {
+                errorMessageDiv.innerText = 'API Key is required for this request.';
+                errorMessageDiv.style.display = 'block';
+                resultDiv.style.display = 'block';
+                return;
+            }
+
             processingMessage.style.display = 'block';
             resultDiv.style.display = 'block';
 
-            // Define the API endpoint
             const BASE_URL = "https://api.sentichain.com/vectorizer/vectorize_and_sign";
 
-            // Send the POST request to the server
             fetch(BASE_URL, {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    'X-API-KEY': apiKey
                 },
                 body: JSON.stringify({ sentence: sentence })
             })
@@ -760,32 +792,24 @@
                 return response.json();
             })
             .then(data => {
-                console.log('Vectorize & Sign Response:', data); // Debugging line
-
-                // Ensure the response has the expected fields
                 if (!data.vector || !data.signature) {
                     throw new Error('Invalid response format from server.');
                 }
 
-                // Serialize the vector without modifying -0.0
                 const serializedVector = serializeVector(data.vector);
-
-                // Populate the vector and signature in the DOM
                 document.getElementById('vectorOutput').innerText = serializedVector;
                 document.getElementById('signatureOutput').innerText = data.signature;
 
-                // Optionally, populate the Verify Signature form fields automatically
+                // Populate the Verify Signature form automatically
                 document.getElementById('vector').value = serializedVector;
                 document.getElementById('signature').value = data.signature;
 
-                // Hide processing message and show results
                 processingMessage.style.display = 'none';
                 vectorResultsDiv.style.display = 'block';
                 signatureResultsDiv.style.display = 'block';
             })
             .catch(error => {
-                console.error('Vectorize & Sign Error:', error); // Debugging line
-                // Display error message
+                console.error('Vectorize & Sign Error:', error);
                 errorMessageDiv.innerText = `Error: ${error.message}`;
                 errorMessageDiv.style.display = 'block';
                 processingMessage.style.display = 'none';
@@ -794,9 +818,9 @@
             });
         });
 
-        // Verify Signature Form Handling
+        // Verify Signature Form Handling (POST requires API key)
         document.getElementById('verifySignatureForm').addEventListener('submit', function(event) {
-            event.preventDefault(); // Prevent the form from submitting the traditional way
+            event.preventDefault();
 
             const vectorInput = document.getElementById('vector');
             const signatureInput = document.getElementById('signature');
@@ -809,8 +833,7 @@
             resultDiv.classList.remove('error');
             resultDiv.innerHTML = '';
 
-            // Input validation
-            if (vectorText === "" || signature === "") {
+            if (!vectorText || !signature) {
                 resultDiv.classList.add('error');
                 resultDiv.innerHTML = 'Please enter both vector and signature.';
                 resultDiv.style.display = 'block';
@@ -823,7 +846,6 @@
                 if (!Array.isArray(vector)) {
                     throw new Error('Vector must be a list.');
                 }
-                // Optional: Ensure all elements are numbers
                 for (let i = 0; i < vector.length; i++) {
                     if (typeof vector[i] !== 'number') {
                         throw new Error('All elements in the vector must be numbers.');
@@ -836,10 +858,14 @@
                 return;
             }
 
-            // Serialize the vector without modifying -0.0
-            const serializedVector = serializeVector(vector);
+            // Check if API key is provided
+            if (!apiKey) {
+                resultDiv.classList.add('error');
+                resultDiv.innerHTML = 'API Key is required for this request.';
+                resultDiv.style.display = 'block';
+                return;
+            }
 
-            // Parse the serialized vector back to maintain -0.0
             const parsedVector = vector.map(n => {
                 if (n === 0 && (1 / n === -Infinity)) {
                     return -0.0;
@@ -847,20 +873,16 @@
                 return n;
             });
 
-            // Display loading message
             resultDiv.innerHTML = 'Verifying...';
             resultDiv.style.display = 'block';
 
-            // Define the API endpoints
             const PUBLIC_KEY_URL = "https://api.sentichain.com/vectorizer/get_vectorizer_public_key";
             const VERIFY_URL = "https://api.sentichain.com/vectorizer/verify_vector_signature";
 
-            // Fetch the public key first
+            // Get public key (GET - no API key needed)
             fetch(PUBLIC_KEY_URL, {
                 method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json'
-                }
+                headers: { 'Content-Type': 'application/json' }
             })
             .then(response => {
                 if (!response.ok) {
@@ -869,18 +891,17 @@
                 return response.json();
             })
             .then(publicKeyData => {
-                console.log('Public Key Data:', publicKeyData); // Debugging line
                 const public_key = publicKeyData.public_key;
                 if (!public_key) {
                     throw new Error('Public key not found.');
                 }
 
-                // Now send the verification request
-                console.log('Sending verification with:', { vector: parsedVector, signature: signature, public_key: public_key }); // Debugging line
+                // Verify signature (POST requires API key)
                 return fetch(VERIFY_URL, {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/json'
+                        'Content-Type': 'application/json',
+                        'X-API-KEY': apiKey
                     },
                     body: JSON.stringify({ vector: parsedVector, signature: signature, public_key: public_key })
                 });
@@ -892,51 +913,39 @@
                 return response.json();
             })
             .then(data => {
-                console.log('Verify Signature Response:', data); // Debugging line
-
-                // Ensure the response has the expected field
                 if (typeof data.is_valid !== 'boolean') {
                     throw new Error('Invalid response format from server.');
                 }
 
-                // Display the verification result
-                resultDiv.innerHTML = `
-                    <h2>Verification Result:</h2>
-                    <p><strong>Is Valid:</strong> ${data.is_valid ? '✅ Signature is valid.' : '❌ Signature is invalid.'}</p>
-                `;
+                resultDiv.innerHTML = 
+                    `<h2>Verification Result:</h2>
+                    <p><strong>Is Valid:</strong> ${data.is_valid ? '✅ Signature is valid.' : '❌ Signature is invalid.'}</p>`;
             })
             .catch(error => {
-                console.error('Verify Signature Error:', error); // Debugging line
-                // Display error message
+                console.error('Verify Signature Error:', error);
                 resultDiv.classList.add('error');
                 resultDiv.innerHTML = `Error: ${error.message}`;
             });
         });
 
-        // Public Key Button Handling
+        // Public Key Button Handling (GET - no API key needed)
         document.getElementById('getPublicKeyBtn').addEventListener('click', function() {
             const publicKeyResultDiv = document.getElementById('publicKeyResult');
             const publicKeyOutput = document.getElementById('publicKeyOutput');
             const publicKeyErrorMessage = document.getElementById('publicKeyErrorMessage');
 
-            // Clear previous results and errors
             publicKeyResultDiv.classList.remove('error');
             publicKeyErrorMessage.style.display = 'none';
             publicKeyOutput.value = '';
 
-            // Display loading message
             publicKeyResultDiv.style.display = 'block';
             publicKeyOutput.value = 'Fetching public key...';
 
-            // Define the API endpoint
             const PUBLIC_KEY_URL = "https://api.sentichain.com/vectorizer/get_vectorizer_public_key";
 
-            // Fetch the public key
             fetch(PUBLIC_KEY_URL, {
                 method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json'
-                }
+                headers: { 'Content-Type': 'application/json' }
             })
             .then(response => {
                 if (!response.ok) {
@@ -945,24 +954,15 @@
                 return response.json();
             })
             .then(data => {
-                console.log('Public Key Response:', data); // Debugging line
-
                 if (!data.public_key) {
                     throw new Error('Public key not found in the response.');
                 }
-
-                // Replace actual newline characters with \n for display
                 let publicKeyFormatted = data.public_key.replace(/\n/g, '\\n');
-
-                // Display the public key as a single-line string with \n
                 publicKeyOutput.value = publicKeyFormatted;
-
-                // Make the public key output clickable to copy
                 publicKeyOutput.onclick = () => copyToClipboard('publicKeyOutput');
             })
             .catch(error => {
-                console.error('Get Public Key Error:', error); // Debugging line
-                // Display error message
+                console.error('Get Public Key Error:', error);
                 publicKeyResultDiv.classList.add('error');
                 publicKeyErrorMessage.innerText = `Error: ${error.message}`;
                 publicKeyErrorMessage.style.display = 'block';
@@ -970,9 +970,9 @@
             });
         });
 
-        // Block Explorer Form Handling
+        // Block Explorer Form Handling (GET - no API key needed)
         document.getElementById('blockExplorerForm').addEventListener('submit', function(event) {
-            event.preventDefault(); // Prevent the form from submitting the traditional way
+            event.preventDefault();
 
             const networkSelect = document.getElementById('network');
             const blockNumberInput = document.getElementById('blockNumber');
@@ -991,7 +991,6 @@
             const blockErrorMessageDiv = document.getElementById('blockErrorMessage');
             const transactionsTableBody = document.querySelector('#transactionsTable tbody');
 
-            // Clear previous results and errors
             resultDiv.classList.remove('error');
             processingMessage.style.display = 'none';
             blockInfoDiv.style.display = 'none';
@@ -1005,7 +1004,6 @@
             transactionsTableBody.innerHTML = '';
             blockTransactionsDiv.style.display = 'none';
 
-            // Input validation
             if (!network) {
                 blockErrorMessageDiv.innerText = 'Please select a network.';
                 blockErrorMessageDiv.style.display = 'block';
@@ -1020,19 +1018,14 @@
                 return;
             }
 
-            // Display loading message
             processingMessage.style.display = 'block';
             resultDiv.style.display = 'block';
 
-            // Define the API endpoint with query parameters
             const GET_BLOCK_BY_NUMBER_URL = `https://api.sentichain.com/blockchain/get_block_by_number?network=${encodeURIComponent(network)}&block_number=${encodeURIComponent(parseInt(blockNumber))}`;
 
-            // Send the GET request to fetch the block by number
             fetch(GET_BLOCK_BY_NUMBER_URL, {
                 method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json'
-                }
+                headers: { 'Content-Type': 'application/json' }
             })
             .then(response => {
                 if (response.status === 404) {
@@ -1044,16 +1037,11 @@
                 return response.json();
             })
             .then(data => {
-                console.log('Get Block By Number Response:', data); // Debugging line
-
-                // Ensure the response has the 'block' object
                 if (!('block' in data)) {
                     throw new Error('Missing "block" data in response.');
                 }
 
                 const block = data.block;
-
-                // Validate the required fields within the 'block' object
                 const requiredFields = ['block_number', 'consensus_root', 'hash', 'previous_hash', 'timestamp', 'transactions', 'validator'];
                 for (let field of requiredFields) {
                     if (!(field in block)) {
@@ -1061,54 +1049,40 @@
                     }
                 }
 
-                // Populate the block information in the DOM
                 blockNumberInfoSpan.innerText = block.block_number;
                 blockHashSpan.innerText = block.hash;
                 blockPreviousHashSpan.innerText = block.previous_hash;
                 blockConsensusRootSpan.innerText = block.consensus_root;
-
-                // Format timestamp
                 blockTimestampSpan.innerText = formatTimestamp(block.timestamp);
-
-                // Show the validator
                 blockValidatorSpan.innerText = block.validator;
 
-                // Populate Transactions
-                const transactions = block.transactions; // Assuming this is an object with tx_hash as keys
-
+                const transactions = block.transactions;
                 for (let txHash in transactions) {
                     if (transactions.hasOwnProperty(txHash)) {
                         const tx = transactions[txHash];
                         const row = document.createElement('tr');
 
-                        // Transaction Hash
                         const txHashCell = document.createElement('td');
                         txHashCell.innerText = txHash;
                         row.appendChild(txHashCell);
 
-                        // Timestamp
                         const timestampCell = document.createElement('td');
                         timestampCell.innerText = formatTimestamp(tx.post_timestamp);
                         row.appendChild(timestampCell);
 
-                        // Actions (e.g., View Details)
                         const actionsCell = document.createElement('td');
                         const toggleDetailsBtn = document.createElement('button');
                         toggleDetailsBtn.innerText = 'View Details';
-                        toggleDetailsBtn.classList.add('submit-btn'); // Reuse existing button styles
+                        toggleDetailsBtn.classList.add('submit-btn');
 
-                        // Create a hidden row for transaction details
                         const detailsRow = document.createElement('tr');
                         detailsRow.style.display = 'none';
-                        detailsRow.classList.add('details-row'); // For CSS styling
+                        detailsRow.classList.add('details-row');
                         const detailsCell = document.createElement('td');
-                        detailsCell.colSpan = 3; // Span across all table columns
+                        detailsCell.colSpan = 3;
 
-                        // Serialize the vector to preserve -0.0
                         const serializedVector = serializeVector(tx.vector);
-
-                        // Generate unique IDs for various copyable elements based on txHash
-                        const sanitizedTxHash = txHash.replace(/[^a-zA-Z0-9]/g, '_'); // Replace non-alphanumeric chars
+                        const sanitizedTxHash = txHash.replace(/[^a-zA-Z0-9]/g, '_');
                         const vectorId = `transactionVector_${sanitizedTxHash}`;
                         const signatureId = `transactionSignature_${sanitizedTxHash}`;
                         const postContentId = `transactionPostContent_${sanitizedTxHash}`;
@@ -1120,45 +1094,25 @@
                         const copyFeedbackPublicKeyId = `copyFeedbackPublicKey_${sanitizedTxHash}`;
                         const copyFeedbackVectorSignatureId = `copyFeedbackVectorSignature_${sanitizedTxHash}`;
 
-                        // Create a vertically arranged details table
-                        detailsCell.innerHTML = `
-                            <table class="details-table">
-                                <tr>
-                                    <td><strong>Nonce:</strong> ${tx.nonce}</td>
-                                </tr>
-                                <tr>
-                                    <td><strong>Post Content:</strong> <div class="copyable-output" id="${postContentId}" onclick="copyToClipboard('${postContentId}')" title="Click to copy">${tx.post_content}</div></td>
-                                </tr>
-                                <tr>
-                                    <td><strong>Post Link:</strong> <a href="https://x.com/${tx.post_link}" target="_blank">View Post</a></td>
-                                </tr>
-                                <tr>
-                                    <td><strong>Sender:</strong> ${tx.sender}</td>
-                                </tr>
-                                <tr>
-                                    <td><strong>Signature:</strong> <div class="signature-output" id="${signatureId}" onclick="copyToClipboard('${signatureId}')" title="Click to copy">${tx.signature}</div></td>
-                                </tr>
-                                <tr>
-                                    <td><strong>Vector:</strong> <div class="copyable-output" id="${vectorId}" onclick="copyToClipboard('${vectorId}')" title="Click to copy">${serializedVector}</div></td>
-                                </tr>
-                                <tr>
-                                    <td><strong>Public Key:</strong> <div class="copyable-output" id="${publicKeyId}" onclick="copyToClipboard('${publicKeyId}')" title="Click to copy">${tx.public_key}</div></td>
-                                </tr>
-                                <tr>
-                                    <td><strong>Vector Signature:</strong> <div class="copyable-output" id="${vectorSignatureId}" onclick="copyToClipboard('${vectorSignatureId}')" title="Click to copy">${tx.vector_signature}</div></td>
-                                </tr>
+                        detailsCell.innerHTML = 
+                            `<table class="details-table">
+                                <tr><td><strong>Nonce:</strong> ${tx.nonce}</td></tr>
+                                <tr><td><strong>Post Content:</strong> <div class="copyable-output" id="${postContentId}" onclick="copyToClipboard('${postContentId}')" title="Click to copy">${tx.post_content}</div></td></tr>
+                                <tr><td><strong>Post Link:</strong> <a href="https://x.com/${tx.post_link}" target="_blank">View Post</a></td></tr>
+                                <tr><td><strong>Sender:</strong> ${tx.sender}</td></tr>
+                                <tr><td><strong>Signature:</strong> <div class="signature-output" id="${signatureId}" onclick="copyToClipboard('${signatureId}')" title="Click to copy">${tx.signature}</div></td></tr>
+                                <tr><td><strong>Vector:</strong> <div class="copyable-output" id="${vectorId}" onclick="copyToClipboard('${vectorId}')" title="Click to copy">${serializedVector}</div></td></tr>
+                                <tr><td><strong>Public Key:</strong> <div class="copyable-output" id="${publicKeyId}" onclick="copyToClipboard('${publicKeyId}')" title="Click to copy">${tx.public_key}</div></td></tr>
+                                <tr><td><strong>Vector Signature:</strong> <div class="copyable-output" id="${vectorSignatureId}" onclick="copyToClipboard('${vectorSignatureId}')" title="Click to copy">${tx.vector_signature}</div></td></tr>
                             </table>
-                            <!-- Copy Feedbacks for Vector, Signature, Post Content, Public Key, and Vector Signature -->
                             <div class="copy-feedback" id="${copyFeedbackVectorId}">Copied!</div>
                             <div class="copy-feedback" id="${copyFeedbackSignatureId}">Copied!</div>
                             <div class="copy-feedback" id="${copyFeedbackPostContentId}">Copied!</div>
                             <div class="copy-feedback" id="${copyFeedbackPublicKeyId}">Copied!</div>
-                            <div class="copy-feedback" id="${copyFeedbackVectorSignatureId}">Copied!</div>
-                        `;
+                            <div class="copy-feedback" id="${copyFeedbackVectorSignatureId}">Copied!</div>`;
 
                         detailsRow.appendChild(detailsCell);
 
-                        // Toggle function to show/hide details
                         toggleDetailsBtn.onclick = () => {
                             if (detailsRow.style.display === 'none') {
                                 detailsRow.style.display = 'table-row';
@@ -1177,20 +1131,17 @@
                     }
                 }
 
-                // Show the transactions table if there are transactions
                 if (Object.keys(transactions).length > 0) {
                     blockTransactionsDiv.style.display = 'block';
                 } else {
                     blockTransactionsDiv.style.display = 'none';
                 }
 
-                // Show the block information
                 processingMessage.style.display = 'none';
                 blockInfoDiv.style.display = 'block';
             })
             .catch(error => {
-                console.error('Block Explorer Error:', error); // Debugging line
-                // Display error message
+                console.error('Block Explorer Error:', error);
                 resultDiv.classList.add('error');
                 blockErrorMessageDiv.innerText = `Error: ${error.message}`;
                 blockErrorMessageDiv.style.display = 'block';
