@@ -601,28 +601,35 @@
 
         // Replace this URL with your actual API endpoint if needed
         const blockCountElement = document.getElementById('blockCount');
-        let currentCount = 0;
 
         fetch("https://api.sentichain.com/blockchain/get_chain_length?network=mainnet")
-          .then(res => res.json())
-          .then(data => {
-              const targetCount = data.chain_length;
-              const increment = () => {
-                  if (currentCount < targetCount) {
-                      currentCount++;
-                      blockCountElement.textContent = currentCount;
-                      requestAnimationFrame(increment);
-                  } else {
-                      blockCountElement.textContent = targetCount;
-                  }
-              };
-              increment();
-          })
-          .catch(err => {
-              // If API fails, show a placeholder
-              blockCountElement.textContent = "N/A";
-              console.error(err);
-          });
+            .then(res => res.json())
+            .then(data => {
+                const targetCount = data.chain_length;
+                // Start from either (targetCount - 20) or 0, whichever is greater
+                let currentCount = Math.max(targetCount - 20, 0);
+
+                // Update the UI once initially
+                blockCountElement.textContent = currentCount;
+
+                // Increment function to animate the count up to targetCount
+                const increment = () => {
+                    if (currentCount < targetCount) {
+                        currentCount++;
+                        blockCountElement.textContent = currentCount;
+                        requestAnimationFrame(increment);
+                    } else {
+                        blockCountElement.textContent = targetCount;
+                    }
+                };
+
+                increment();
+            })
+            .catch(err => {
+                // If the API fails, show a placeholder
+                blockCountElement.textContent = "N/A";
+                console.error(err);
+            });
 
     </script>
 </body>
