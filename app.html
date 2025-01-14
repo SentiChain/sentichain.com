@@ -1,16 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>SentiChain</title>
-    <link rel="icon" href="favicon.svg" type="image/svg+xml">
+    <link rel="icon" href="favicon.svg" type="image/svg+xml" />
     <style>
-        /* Import Google Font */
         @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
 
-        /* Global Styles */
         * {
             box-sizing: border-box;
             margin: 0;
@@ -48,7 +47,6 @@
             color: #00FFC8;
         }
 
-        /* Base styling for .senti-link to match h2 appearance */
         h2 .senti-link {
             color: inherit;
             text-decoration: none;
@@ -71,51 +69,6 @@
             cursor: pointer;
         }
 
-        /* API Key Section */
-        .api-key-section {
-            padding: 0 20px 20px 20px;
-            margin-bottom: 20px;
-        }
-
-        .api-key-section label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 500;
-        }
-
-        .api-key-section input[type="text"] {
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 10px;
-            border: none;
-            border-radius: 8px;
-            background-color: #2C2C2C;
-            color: #E0E0E0;
-            font-size: 16px;
-            outline: none;
-        }
-
-        .api-key-section button {
-            background: linear-gradient(45deg, #00FFC8, #007BFF);
-            border: none;
-            color: #121212;
-            padding: 10px 20px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 16px;
-            width: 100%;
-        }
-
-        .api-key-section button:hover {
-            background: linear-gradient(45deg, #007BFF, #00FFC8);
-        }
-
-        .api-key-error {
-            color: #FF5555;
-            font-size: 14px;
-            margin-top: 5px;
-        }
-
         .sidebar a {
             display: flex;
             align-items: center;
@@ -128,7 +81,8 @@
             margin: 5px 10px;
         }
 
-        .sidebar a:hover, .sidebar a.active {
+        .sidebar a:hover,
+        .sidebar a.active {
             background: #00FFC8;
             color: #121212;
         }
@@ -145,7 +99,7 @@
             transition: margin-left 0.3s;
         }
 
-        .sidebar.collapsed + .main-content {
+        .sidebar.collapsed+.main-content {
             margin-left: 60px;
         }
 
@@ -155,16 +109,27 @@
             border-radius: 12px;
             box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
             transition: background-color 0.3s;
+            text-align: left;
         }
 
-        /* Forms */
+        /* Tab Content */
+        .tabcontent {
+            display: none;
+        }
+
+        .tabcontent h1 {
+            margin-bottom: 20px;
+        }
+
+        /* Forms & Inputs */
         label {
             display: block;
             margin-bottom: 8px;
             font-weight: 500;
         }
 
-        input[type="text"], textarea, select {
+        input[type="text"],
+        select {
             width: 100%;
             padding: 12px 15px;
             margin-bottom: 20px;
@@ -177,12 +142,12 @@
             transition: box-shadow 0.3s;
         }
 
-        input[type="text"]:focus, textarea:focus, select:focus {
+        input[type="text"]:focus,
+        select:focus {
             box-shadow: 0 0 10px #00FFC8;
         }
 
-        /* Buttons */
-        .submit-btn, .copy-btn {
+        .submit-btn {
             background: linear-gradient(45deg, #00FFC8, #007BFF);
             border: none;
             color: #121212;
@@ -194,19 +159,12 @@
             width: 100%;
         }
 
-        .submit-btn:hover, .copy-btn:hover {
+        .submit-btn:hover {
             background: linear-gradient(45deg, #007BFF, #00FFC8);
             transform: translateY(-2px);
         }
 
-        .copy-btn {
-            padding: 8px 16px;
-            margin-left: 10px;
-            font-size: 14px;
-            width: 100%;
-        }
-
-        /* Result Boxes */
+        /* Result & Copy Feedback */
         .result {
             background-color: #2C2C2C;
             padding: 20px;
@@ -240,48 +198,7 @@
             opacity: 1;
         }
 
-        /* Processing Message */
-        #processingMessage {
-            font-style: italic;
-            margin-bottom: 10px;
-            color: #00FFC8;
-        }
-
-        /* Public Key Textarea */
-        textarea[readonly] {
-            background-color: #2C2C2C;
-            cursor: default;
-        }
-
-        /* Scrollable Vector Output and Other Copyable Outputs */
-        .copyable-output {
-            max-height: 200px;
-            overflow-x: auto;
-            overflow-y: auto;
-            white-space: pre-wrap;
-            word-wrap: break-word;
-            background-color: #2C2C2C;
-            padding: 10px;
-            border-radius: 8px;
-            margin-bottom: 10px;
-            cursor: pointer;
-        }
-
-        /* Scrollable Signature Output */
-        .signature-output {
-            max-height: 100px;
-            overflow-x: auto;
-            overflow-y: auto;
-            white-space: pre-wrap;
-            word-wrap: break-word;
-            background-color: #2C2C2C;
-            padding: 10px;
-            border-radius: 8px;
-            margin-bottom: 10px;
-            cursor: pointer;
-        }
-
-        /* Block Explorer Specific Styles */
+        /* Block Explorer */
         .block-explorer-form {
             display: flex;
             flex-direction: column;
@@ -295,7 +212,12 @@
             margin-top: 20px;
         }
 
-        /* Block Header Layout */
+        #processingMessage {
+            font-style: italic;
+            margin-bottom: 10px;
+            color: #00FFC8;
+        }
+
         .block-info-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -328,7 +250,7 @@
             background-color: #3C3C3C;
         }
 
-        /* Transactions Table Styles */
+        /* Transactions Table */
         #transactionsTable {
             width: 100%;
             border-collapse: collapse;
@@ -337,7 +259,8 @@
             word-wrap: break-word;
         }
 
-        #transactionsTable th, #transactionsTable td {
+        #transactionsTable th,
+        #transactionsTable td {
             border: 1px solid #333;
             padding: 10px;
             text-align: left;
@@ -371,19 +294,115 @@
             text-decoration: underline;
         }
 
-        /* Details Row Styles */
         #transactionsTable tr.details-row td {
             background-color: #1E1E1E;
             padding: 15px;
         }
 
-        /* Transactions Header Font Matching */
         #transactionsTable thead th {
             font-weight: 700;
             font-size: 16px;
         }
 
-        /* Responsive Design */
+        .details-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        .details-table td {
+            padding: 8px;
+            border-bottom: 1px solid #444;
+            overflow-wrap: break-word;
+            word-break: break-word;
+        }
+
+        .details-table td strong {
+            display: block;
+            margin-bottom: 5px;
+            color: #00FFC8;
+        }
+
+        /* Event Map */
+        #controlPanel {
+            display: flex;
+            flex-direction: column;
+            align-items: stretch;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 12px 15px;
+            border: none;
+            border-radius: 8px;
+            background-color: #2C2C2C;
+            color: #E0E0E0;
+            font-size: 16px;
+            outline: none;
+            transition: box-shadow 0.3s;
+        }
+
+        .input-field:focus {
+            box-shadow: 0 0 10px #00FFC8;
+        }
+
+        .btn {
+            width: 100%;
+            background: linear-gradient(45deg, #00FFC8, #007BFF);
+            border: none;
+            color: #121212;
+            padding: 12px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background 0.3s, transform 0.2s;
+        }
+
+        .btn:hover {
+            background: linear-gradient(45deg, #007BFF, #00FFC8);
+            transform: translateY(-2px);
+        }
+
+        #blockSlider {
+            width: 100%;
+        }
+
+        #pointsCanvas {
+            display: block;
+            margin: 0 auto;
+            border: 1px solid #444;
+            background-color: #111;
+            width: 100%;
+            min-height: 500px;
+        }
+
+        #tooltip {
+            position: absolute;
+            display: none;
+            background-color: #2C2C2C;
+            color: #00FFC8;
+            padding: 8px;
+            border-radius: 6px;
+            pointer-events: none;
+            max-width: 300px;
+            z-index: 9999;
+            font-size: 14px;
+            line-height: 1.4em;
+            white-space: pre-wrap;
+            border: 1px solid #00FFC8;
+        }
+
+        #autoSlideLabel {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        /* Responsive */
         @media (max-width: 768px) {
             .sidebar {
                 width: 60px;
@@ -405,15 +424,10 @@
                 margin-left: 60px;
             }
 
-            #transactionsTable th, #transactionsTable td {
+            #transactionsTable th,
+            #transactionsTable td {
                 padding: 8px;
                 font-size: 14px;
-            }
-
-            .submit-btn, .copy-btn {
-                padding: 10px 16px;
-                font-size: 14px;
-                width: 100%;
             }
 
             .block-info-grid {
@@ -425,63 +439,27 @@
                 width: 100%;
             }
         }
-
-        /* Additional Styles for Details Table */
-        .details-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 10px;
-        }
-
-        .details-table td {
-            padding: 8px;
-            border-bottom: 1px solid #444;
-            overflow-wrap: break-word;
-            word-break: break-word;
-        }
-
-        .details-table td strong {
-            display: block;
-            margin-bottom: 5px;
-            color: #00FFC8;
-        }
-
-        .tabcontent h1 {
-            margin-bottom: 20px;
-        }
     </style>
 </head>
-<body>
 
+<body>
     <!-- Sidebar Navigation -->
     <div class="sidebar">
         <h2><a href="/" class="senti-link">SentiChain</a></h2>
 
-        <!-- API Key Input Section -->
-        <div class="api-key-section">
-            <input type="text" id="apiKeyInput" placeholder="Enter your API Key">
-            <button id="saveApiKeyBtn">Save API Key</button>
-            <div id="apiKeyError" class="api-key-error" style="display: none;">API Key is required for POST requests.</div>
-        </div>
-
+        <!-- Two Tabs Only -->
         <a href="#" class="tablinks active" onclick="openTab(event, 'BlockExplorer')">
             <i>🔎</i><span>Block Explorer</span>
         </a>
-        <a href="#" class="tablinks" onclick="openTab(event, 'VectorizeSign')">
-            <i>🔬</i><span>Vectorize & Sign</span>
-        </a>
-        <a href="#" class="tablinks" onclick="openTab(event, 'VerifySignature')">
-            <i>🔍</i><span>Verify Signature</span>
-        </a>
-        <a href="#" class="tablinks" onclick="openTab(event, 'PublicKey')">
-            <i>🔑</i><span>Public Key</span>
+        <a href="#" class="tablinks" onclick="openTab(event, 'EventMap')">
+            <i>🗺️</i><span>Event Map</span>
         </a>
     </div>
 
     <!-- Main Content -->
     <div class="main-content">
         <div class="container">
-            <!-- Block Explorer Tab Content -->
+            <!-- Block Explorer -->
             <div id="BlockExplorer" class="tabcontent" style="display: block;">
                 <h1>Block Explorer</h1>
                 <form id="blockExplorerForm" class="block-explorer-form">
@@ -493,7 +471,7 @@
                     </select>
 
                     <label for="blockNumber">Enter Block Number:</label>
-                    <input type="text" id="blockNumber" name="blockNumber" placeholder="e.g., 100" required>
+                    <input type="text" id="blockNumber" name="blockNumber" placeholder="e.g., 100" required />
 
                     <button type="submit" class="submit-btn">Get Block</button>
                 </form>
@@ -507,40 +485,44 @@
 
                     <!-- Processing Message -->
                     <div id="blockProcessingMessage">Fetching block data...</div>
-                    
+
                     <!-- Error Message -->
                     <div id="blockErrorMessage" class="error" style="display: none;"></div>
-                    
-                    <!-- Block Header Information -->
+
+                    <!-- Block Header -->
                     <div id="blockInfo" style="display: none;">
                         <h2>Block Header</h2>
                         <div class="block-info-grid">
                             <div class="block-info-item">
                                 <strong>Block Number:</strong>
-                                <span id="blockNumberInfo">100</span>
+                                <span id="blockNumberInfo"></span>
                             </div>
                             <div class="block-info-item">
                                 <strong>Hash:</strong>
-                                <span id="blockHash" class="clickable" onclick="copyToClipboard('blockHash')" title="Click to copy">abc123</span>
+                                <span id="blockHash" class="clickable" onclick="copyToClipboard('blockHash')"
+                                    title="Click to copy"></span>
                                 <div class="copy-feedback" id="copyFeedbackHash">Copied!</div>
                             </div>
                             <div class="block-info-item">
                                 <strong>Previous Hash:</strong>
-                                <span id="blockPreviousHash" class="clickable" onclick="copyToClipboard('blockPreviousHash')" title="Click to copy">prev123</span>
+                                <span id="blockPreviousHash" class="clickable"
+                                    onclick="copyToClipboard('blockPreviousHash')" title="Click to copy"></span>
                                 <div class="copy-feedback" id="copyFeedbackPreviousHash">Copied!</div>
                             </div>
                             <div class="block-info-item">
                                 <strong>Consensus Root:</strong>
-                                <span id="blockConsensusRoot" class="clickable" onclick="copyToClipboard('blockConsensusRoot')" title="Click to copy">consensus123</span>
+                                <span id="blockConsensusRoot" class="clickable"
+                                    onclick="copyToClipboard('blockConsensusRoot')" title="Click to copy"></span>
                                 <div class="copy-feedback" id="copyFeedbackConsensusRoot">Copied!</div>
                             </div>
                             <div class="block-info-item">
                                 <strong>Timestamp:</strong>
-                                <span id="blockTimestamp">2024-04-27 12:00:00</span>
+                                <span id="blockTimestamp"></span>
                             </div>
                             <div class="block-info-item">
                                 <strong>Validator:</strong>
-                                <span id="blockValidator" class="clickable" onclick="copyToClipboard('blockValidator')" title="Click to copy">validator123</span>
+                                <span id="blockValidator" class="clickable" onclick="copyToClipboard('blockValidator')"
+                                    title="Click to copy"></span>
                                 <div class="copy-feedback" id="copyFeedbackValidator">Copied!</div>
                             </div>
                         </div>
@@ -557,7 +539,7 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <!-- Transaction rows will be inserted here dynamically -->
+                                    <!-- Dynamically appended rows -->
                                 </tbody>
                             </table>
                         </div>
@@ -565,172 +547,101 @@
                 </div>
             </div>
 
-            <!-- Vectorize & Sign Tab Content -->
-            <div id="VectorizeSign" class="tabcontent" style="display: none;">
-                <h1>Vectorize & Sign</h1>
-                <form id="vectorizeSignForm">
-                    <label for="sentence">Enter your sentence:</label>
-                    <input type="text" id="sentence" name="sentence" placeholder="e.g., I like to eat apple" required>
-                    <button type="submit" class="submit-btn">Submit</button>
-                </form>
-                <div id="vectorizeSignResult" class="result" style="display: none;">
-                    <!-- Copy Feedback for Vector -->
-                    <div class="copy-feedback" id="copyFeedbackVector">Copied!</div>
-                    
-                    <!-- Copy Feedback for Signature -->
-                    <div class="copy-feedback" id="copyFeedbackSignature">Copied!</div>
-                    
-                    <!-- Processing Message -->
-                    <div id="processingMessage">Processing...</div>
-                    
-                    <!-- Error Message -->
-                    <div id="errorMessage" class="error" style="display: none;"></div>
-                    
-                    <!-- Vector Output -->
-                    <div id="vectorResults" style="display: none;">
-                        <h2>Vector:</h2>
-                        <div class="copyable-output" id="vectorOutput" onclick="copyToClipboard('vectorOutput')" title="Click to copy">[0, 1, 2]</div>
-                    </div>
+            <!-- Event Map -->
+            <div id="EventMap" class="tabcontent" style="display: none;">
+                <h1>Event Map</h1>
 
-                    <!-- Signature Output -->
-                    <div id="signatureResults" style="display: none; margin-top: 20px;">
-                        <h2>Signature:</h2>
-                        <div class="signature-output" id="signatureOutput" onclick="copyToClipboard('signatureOutput')" title="Click to copy">abcdef123456</div>
-                    </div>
+                <!-- "Processing" or "Fetching" Message -->
+                <div id="mapProcessingMessage"
+                    style="display: none; color: #00FFC8; margin-bottom: 10px; font-style: italic;">
+                    Fetching event map data...
                 </div>
-            </div>
 
-            <!-- Verify Signature Tab Content -->
-            <div id="VerifySignature" class="tabcontent" style="display: none;">
-                <h1>Verify Signature</h1>
-                <form id="verifySignatureForm">
-                    <label for="vector">Enter your vector (e.g., [0.0, 1.0, 2.0]):</label>
-                    <input type="text" id="vector" name="vector" placeholder='e.g., [0.0, 1.0, 2.0]' required>
-                    
-                    <label for="signature">Enter your signature:</label>
-                    <input type="text" id="signature" name="signature" placeholder="e.g., abcdef123456" required>
-                    
-                    <button type="submit" class="submit-btn">Verify</button>
-                </form>
-                <div id="verifySignatureResult" class="result" style="display: none;"></div>
-            </div>
-
-            <!-- Public Key Tab Content -->
-            <div id="PublicKey" class="tabcontent" style="display: none;">
-                <h1>Public Key</h1>
-                <button id="getPublicKeyBtn" class="submit-btn">Get Public Key</button>
-                <div id="publicKeyResult" class="result" style="display: none; margin-top: 20px;">
-                    <!-- Copy Feedback -->
-                    <div class="copy-feedback" id="copyFeedbackPublicKey">Copied!</div>
-                    
-                    <!-- Error Message -->
-                    <div id="publicKeyErrorMessage" class="error" style="display: none;"></div>
-                    
-                    <!-- Public Key Display -->
-                    <p><strong>Public Key:</strong></p>
-                    <textarea id="publicKeyOutput" readonly rows="8" onclick="copyToClipboard('publicKeyOutput')" title="Click to copy"></textarea>
+                <div id="controlPanel">
+                    <input type="text" id="startBlockInput" class="input-field" placeholder="Start Block" />
+                    <input type="text" id="endBlockInput" class="input-field" placeholder="End Block" />
+                    <button id="fetchRangeButton" class="btn">Fetch Range</button>
                 </div>
-            </div>
 
+                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 20px;">
+                    <input type="range" id="blockSlider" min="0" max="0" value="0" step="1" style="flex: 1;" />
+                    <label for="autoSlideCheckbox" id="autoSlideLabel">
+                        <input type="checkbox" id="autoSlideCheckbox" style="cursor:pointer;" />
+                        Auto Slide
+                    </label>
+                </div>
+
+                <canvas id="pointsCanvas"></canvas>
+                <div id="tooltip"></div>
+            </div>
         </div>
     </div>
 
     <!-- JavaScript -->
     <script>
-        let apiKey = ""; // Global variable to store the API key
-
-        document.getElementById('saveApiKeyBtn').addEventListener('click', () => {
-            const inputKey = document.getElementById('apiKeyInput').value.trim();
-            if (!inputKey) {
-                // Show error if key is empty
-                document.getElementById('apiKeyError').style.display = 'block';
-            } else {
-                apiKey = inputKey;
-                document.getElementById('apiKeyError').style.display = 'none';
-                alert('API Key saved successfully!');
-            }
-        });
-
-        // Tab functionality
+        /*******************************************
+         * 1) Tab Handling
+         *******************************************/
         function openTab(evt, tabName) {
-            const tablinks = document.querySelectorAll('.tablinks');
-            tablinks.forEach(tab => tab.classList.remove('active'));
+            const tablinks = document.querySelectorAll(".tablinks");
+            tablinks.forEach((tab) => tab.classList.remove("active"));
 
-            const tabcontents = document.querySelectorAll('.tabcontent');
-            tabcontents.forEach(content => content.style.display = 'none');
+            const tabcontents = document.querySelectorAll(".tabcontent");
+            tabcontents.forEach((content) => (content.style.display = "none"));
 
-            document.getElementById(tabName).style.display = 'block';
-            evt.currentTarget.classList.add('active');
+            document.getElementById(tabName).style.display = "block";
+            evt.currentTarget.classList.add("active");
         }
 
-        // Function to copy text to clipboard
+        /*******************************************
+         * 2) Copy to Clipboard
+         *******************************************/
         function copyToClipboard(elementId) {
-            let text;
-            if (elementId === 'publicKeyOutput') {
-                text = document.getElementById(elementId).value;
-            } else {
-                const element = document.getElementById(elementId);
-                text = element.innerText;
-            }
+            let text = "";
+            const element = document.getElementById(elementId);
+            if (element) text = element.innerText;
 
-            navigator.clipboard.writeText(text).then(() => {
-                let feedbackId;
+            navigator.clipboard
+                .writeText(text)
+                .then(() => {
+                    let feedbackId;
+                    if (elementId.startsWith("block")) {
+                        const suffix = elementId.replace("block", "");
+                        feedbackId =
+                            "copyFeedback" + suffix.charAt(0).toUpperCase() + suffix.slice(1);
+                    } else if (elementId.startsWith("transaction")) {
+                        const suffix = elementId.replace(/transaction[A-Z][a-z]+_/, "");
+                        const prefix = elementId.match(/transaction([A-Za-z]+)/)[1];
+                        feedbackId =
+                            "copyFeedback" +
+                            prefix.charAt(0).toUpperCase() +
+                            prefix.slice(1) +
+                            "_" +
+                            suffix;
+                    } else {
+                        feedbackId = "copyFeedback" + elementId.replace("Output", "");
+                    }
 
-                if (elementId.startsWith('block')) {
-                    const suffix = elementId.replace('block', '');
-                    feedbackId = 'copyFeedback' + suffix.charAt(0).toUpperCase() + suffix.slice(1);
-                } else if (elementId.startsWith('transactionVector')) {
-                    const suffix = elementId.replace('transactionVector_', '');
-                    feedbackId = 'copyFeedbackVector_' + suffix;
-                } else if (elementId.startsWith('transactionSignature')) {
-                    const suffix = elementId.replace('transactionSignature_', '');
-                    feedbackId = 'copyFeedbackSignature_' + suffix;
-                } else if (elementId.startsWith('transactionPostContent')) {
-                    const suffix = elementId.replace('transactionPostContent_', '');
-                    feedbackId = 'copyFeedbackPostContent_' + suffix;
-                } else if (elementId.startsWith('transactionPublicKey')) {
-                    const suffix = elementId.replace('transactionPublicKey_', '');
-                    feedbackId = 'copyFeedbackPublicKey_' + suffix;
-                } else if (elementId.startsWith('transactionVectorSignature')) {
-                    const suffix = elementId.replace('transactionVectorSignature_', '');
-                    feedbackId = 'copyFeedbackVectorSignature_' + suffix;
-                } else {
-                    feedbackId = 'copyFeedback' + capitalizeFirstLetter(elementId.replace('Output', ''));
-                }
+                    const feedback = document.getElementById(feedbackId);
+                    if (feedback) {
+                        feedback.classList.add("show");
+                        setTimeout(() => {
+                            feedback.classList.remove("show");
+                        }, 2000);
+                    }
 
-                const feedback = document.getElementById(feedbackId);
-                if (feedback) {
-                    feedback.classList.add('show');
-                    setTimeout(() => {
-                        feedback.classList.remove('show');
-                    }, 2000);
-                }
-
-                const element = document.getElementById(elementId);
-                if (element) {
-                    const originalColor = element.style.backgroundColor;
-                    element.style.backgroundColor = '#00FFC8';
-                    setTimeout(() => {
-                        element.style.backgroundColor = originalColor;
-                    }, 500);
-                }
-            }).catch(err => {
-                console.error('Failed to copy: ', err);
-                alert('Failed to copy the content. Please try manually.');
-            });
-        }
-
-        function capitalizeFirstLetter(string) {
-            return string.charAt(0).toUpperCase() + string.slice(1);
-        }
-
-        function serializeVector(vector) {
-            return "[" + vector.map(n => {
-                if (Object.is(n, -0)) {
-                    return '-0.0';
-                }
-                return (Number.isInteger(n) ? n.toFixed(1) : n);
-            }).join(", ") + "]";
+                    if (element) {
+                        const originalColor = element.style.backgroundColor;
+                        element.style.backgroundColor = "#00FFC8";
+                        setTimeout(() => {
+                            element.style.backgroundColor = originalColor;
+                        }, 500);
+                    }
+                })
+                .catch((err) => {
+                    console.error("Failed to copy: ", err);
+                    alert("Failed to copy the content. Please try manually.");
+                });
         }
 
         function formatTimestamp(timestamp) {
@@ -738,419 +649,616 @@
             return date.toLocaleString();
         }
 
-        // Vectorize & Sign Form Handling (POST requires API key)
-        document.getElementById('vectorizeSignForm').addEventListener('submit', function(event) {
-            event.preventDefault();
-            const sentenceInput = document.getElementById('sentence');
-            const sentence = sentenceInput.value.trim();
-            const resultDiv = document.getElementById('vectorizeSignResult');
-            const processingMessage = document.getElementById('processingMessage');
-            const vectorResultsDiv = document.getElementById('vectorResults');
-            const signatureResultsDiv = document.getElementById('signatureResults');
-            const errorMessageDiv = document.getElementById('errorMessage');
-
-            // Clear previous results
-            resultDiv.classList.remove('error');
-            processingMessage.style.display = 'none';
-            vectorResultsDiv.style.display = 'none';
-            signatureResultsDiv.style.display = 'none';
-            errorMessageDiv.style.display = 'none';
-            document.getElementById('vectorOutput').innerText = '';
-            document.getElementById('signatureOutput').innerText = '';
-
-            if (!sentence) {
-                errorMessageDiv.innerText = 'Please enter a sentence.';
-                errorMessageDiv.style.display = 'block';
-                resultDiv.style.display = 'block';
-                return;
-            }
-
-            // Check if API key is provided
-            if (!apiKey) {
-                errorMessageDiv.innerText = 'API Key is required for this request.';
-                errorMessageDiv.style.display = 'block';
-                resultDiv.style.display = 'block';
-                return;
-            }
-
-            processingMessage.style.display = 'block';
-            resultDiv.style.display = 'block';
-
-            const BASE_URL = "https://api.sentichain.com/vectorizer/vectorize_and_sign";
-
-            fetch(BASE_URL, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-API-KEY': apiKey
-                },
-                body: JSON.stringify({ sentence: sentence })
-            })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error(`Server error: ${response.status} ${response.statusText}`);
-                }
-                return response.json();
-            })
-            .then(data => {
-                if (!data.vector || !data.signature) {
-                    throw new Error('Invalid response format from server.');
-                }
-
-                const serializedVector = serializeVector(data.vector);
-                document.getElementById('vectorOutput').innerText = serializedVector;
-                document.getElementById('signatureOutput').innerText = data.signature;
-
-                // Populate the Verify Signature form automatically
-                document.getElementById('vector').value = serializedVector;
-                document.getElementById('signature').value = data.signature;
-
-                processingMessage.style.display = 'none';
-                vectorResultsDiv.style.display = 'block';
-                signatureResultsDiv.style.display = 'block';
-            })
-            .catch(error => {
-                console.error('Vectorize & Sign Error:', error);
-                errorMessageDiv.innerText = `Error: ${error.message}`;
-                errorMessageDiv.style.display = 'block';
-                processingMessage.style.display = 'none';
-                vectorResultsDiv.style.display = 'none';
-                signatureResultsDiv.style.display = 'none';
-            });
-        });
-
-        // Verify Signature Form Handling (POST requires API key)
-        document.getElementById('verifySignatureForm').addEventListener('submit', function(event) {
+        /*******************************************
+         * 3) Block Explorer Logic
+         *******************************************/
+        const blockExplorerForm = document.getElementById("blockExplorerForm");
+        blockExplorerForm.addEventListener("submit", function (event) {
             event.preventDefault();
 
-            const vectorInput = document.getElementById('vector');
-            const signatureInput = document.getElementById('signature');
-            const vectorText = vectorInput.value.trim();
-            const signature = signatureInput.value.trim();
-            const resultDiv = document.getElementById('verifySignatureResult');
-
-            // Clear previous results and errors
-            resultDiv.style.display = 'none';
-            resultDiv.classList.remove('error');
-            resultDiv.innerHTML = '';
-
-            if (!vectorText || !signature) {
-                resultDiv.classList.add('error');
-                resultDiv.innerHTML = 'Please enter both vector and signature.';
-                resultDiv.style.display = 'block';
-                return;
-            }
-
-            let vector;
-            try {
-                vector = JSON.parse(vectorText);
-                if (!Array.isArray(vector)) {
-                    throw new Error('Vector must be a list.');
-                }
-                for (let i = 0; i < vector.length; i++) {
-                    if (typeof vector[i] !== 'number') {
-                        throw new Error('All elements in the vector must be numbers.');
-                    }
-                }
-            } catch (e) {
-                resultDiv.classList.add('error');
-                resultDiv.innerHTML = 'Vector must be in valid list format (e.g., [0.0, 1.0, 2.0]).';
-                resultDiv.style.display = 'block';
-                return;
-            }
-
-            // Check if API key is provided
-            if (!apiKey) {
-                resultDiv.classList.add('error');
-                resultDiv.innerHTML = 'API Key is required for this request.';
-                resultDiv.style.display = 'block';
-                return;
-            }
-
-            const parsedVector = vector.map(n => {
-                if (n === 0 && (1 / n === -Infinity)) {
-                    return -0.0;
-                }
-                return n;
-            });
-
-            resultDiv.innerHTML = 'Verifying...';
-            resultDiv.style.display = 'block';
-
-            const PUBLIC_KEY_URL = "https://api.sentichain.com/vectorizer/get_vectorizer_public_key";
-            const VERIFY_URL = "https://api.sentichain.com/vectorizer/verify_vector_signature";
-
-            // Get public key (GET - no API key needed)
-            fetch(PUBLIC_KEY_URL, {
-                method: 'GET',
-                headers: { 'Content-Type': 'application/json' }
-            })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error(`Error fetching public key: ${response.status} ${response.statusText}`);
-                }
-                return response.json();
-            })
-            .then(publicKeyData => {
-                const public_key = publicKeyData.public_key;
-                if (!public_key) {
-                    throw new Error('Public key not found.');
-                }
-
-                // Verify signature (POST requires API key)
-                return fetch(VERIFY_URL, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-API-KEY': apiKey
-                    },
-                    body: JSON.stringify({ vector: parsedVector, signature: signature, public_key: public_key })
-                });
-            })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error(`Verification server error: ${response.status} ${response.statusText}`);
-                }
-                return response.json();
-            })
-            .then(data => {
-                if (typeof data.is_valid !== 'boolean') {
-                    throw new Error('Invalid response format from server.');
-                }
-
-                resultDiv.innerHTML = 
-                    `<h2>Verification Result:</h2>
-                    <p><strong>Is Valid:</strong> ${data.is_valid ? '✅ Signature is valid.' : '❌ Signature is invalid.'}</p>`;
-            })
-            .catch(error => {
-                console.error('Verify Signature Error:', error);
-                resultDiv.classList.add('error');
-                resultDiv.innerHTML = `Error: ${error.message}`;
-            });
-        });
-
-        // Public Key Button Handling (GET - no API key needed)
-        document.getElementById('getPublicKeyBtn').addEventListener('click', function() {
-            const publicKeyResultDiv = document.getElementById('publicKeyResult');
-            const publicKeyOutput = document.getElementById('publicKeyOutput');
-            const publicKeyErrorMessage = document.getElementById('publicKeyErrorMessage');
-
-            publicKeyResultDiv.classList.remove('error');
-            publicKeyErrorMessage.style.display = 'none';
-            publicKeyOutput.value = '';
-
-            publicKeyResultDiv.style.display = 'block';
-            publicKeyOutput.value = 'Fetching public key...';
-
-            const PUBLIC_KEY_URL = "https://api.sentichain.com/vectorizer/get_vectorizer_public_key";
-
-            fetch(PUBLIC_KEY_URL, {
-                method: 'GET',
-                headers: { 'Content-Type': 'application/json' }
-            })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error(`Error fetching public key: ${response.status} ${response.statusText}`);
-                }
-                return response.json();
-            })
-            .then(data => {
-                if (!data.public_key) {
-                    throw new Error('Public key not found in the response.');
-                }
-                let publicKeyFormatted = data.public_key.replace(/\n/g, '\\n');
-                publicKeyOutput.value = publicKeyFormatted;
-                publicKeyOutput.onclick = () => copyToClipboard('publicKeyOutput');
-            })
-            .catch(error => {
-                console.error('Get Public Key Error:', error);
-                publicKeyResultDiv.classList.add('error');
-                publicKeyErrorMessage.innerText = `Error: ${error.message}`;
-                publicKeyErrorMessage.style.display = 'block';
-                publicKeyOutput.value = '';
-            });
-        });
-
-        // Block Explorer Form Handling (GET - no API key needed)
-        document.getElementById('blockExplorerForm').addEventListener('submit', function(event) {
-            event.preventDefault();
-
-            const networkSelect = document.getElementById('network');
-            const blockNumberInput = document.getElementById('blockNumber');
+            const networkSelect = document.getElementById("network");
+            const blockNumberInput = document.getElementById("blockNumber");
             const network = networkSelect.value;
             const blockNumber = blockNumberInput.value.trim();
-            const resultDiv = document.getElementById('blockExplorerResult');
-            const processingMessage = document.getElementById('blockProcessingMessage');
-            const blockInfoDiv = document.getElementById('blockInfo');
-            const blockHashSpan = document.getElementById('blockHash');
-            const blockNumberInfoSpan = document.getElementById('blockNumberInfo');
-            const blockTimestampSpan = document.getElementById('blockTimestamp');
-            const blockTransactionsDiv = document.getElementById('blockTransactions');
-            const blockConsensusRootSpan = document.getElementById('blockConsensusRoot');
-            const blockPreviousHashSpan = document.getElementById('blockPreviousHash');
-            const blockValidatorSpan = document.getElementById('blockValidator');
-            const blockErrorMessageDiv = document.getElementById('blockErrorMessage');
-            const transactionsTableBody = document.querySelector('#transactionsTable tbody');
 
-            resultDiv.classList.remove('error');
-            processingMessage.style.display = 'none';
-            blockInfoDiv.style.display = 'none';
-            blockErrorMessageDiv.style.display = 'none';
-            blockHashSpan.innerText = '';
-            blockNumberInfoSpan.innerText = '';
-            blockTimestampSpan.innerText = '';
-            blockConsensusRootSpan.innerText = '';
-            blockPreviousHashSpan.innerText = '';
-            blockValidatorSpan.innerText = '';
-            transactionsTableBody.innerHTML = '';
-            blockTransactionsDiv.style.display = 'none';
+            const resultDiv = document.getElementById("blockExplorerResult");
+            const processingMessage = document.getElementById("blockProcessingMessage");
+            const blockInfoDiv = document.getElementById("blockInfo");
+            const blockHashSpan = document.getElementById("blockHash");
+            const blockNumberInfoSpan = document.getElementById("blockNumberInfo");
+            const blockTimestampSpan = document.getElementById("blockTimestamp");
+            const blockTransactionsDiv = document.getElementById("blockTransactions");
+            const blockConsensusRootSpan = document.getElementById("blockConsensusRoot");
+            const blockPreviousHashSpan = document.getElementById("blockPreviousHash");
+            const blockValidatorSpan = document.getElementById("blockValidator");
+            const blockErrorMessageDiv = document.getElementById("blockErrorMessage");
+            const transactionsTableBody = document.querySelector(
+                "#transactionsTable tbody"
+            );
+
+            // reset
+            resultDiv.classList.remove("error");
+            processingMessage.style.display = "none";
+            blockInfoDiv.style.display = "none";
+            blockErrorMessageDiv.style.display = "none";
+            blockHashSpan.innerText = "";
+            blockNumberInfoSpan.innerText = "";
+            blockTimestampSpan.innerText = "";
+            blockConsensusRootSpan.innerText = "";
+            blockPreviousHashSpan.innerText = "";
+            blockValidatorSpan.innerText = "";
+            transactionsTableBody.innerHTML = "";
+            blockTransactionsDiv.style.display = "none";
 
             if (!network) {
-                blockErrorMessageDiv.innerText = 'Please select a network.';
-                blockErrorMessageDiv.style.display = 'block';
-                resultDiv.style.display = 'block';
+                blockErrorMessageDiv.innerText = "Please select a network.";
+                blockErrorMessageDiv.style.display = "block";
+                resultDiv.style.display = "block";
                 return;
             }
-
             if (blockNumber === "" || isNaN(blockNumber) || parseInt(blockNumber) < 0) {
-                blockErrorMessageDiv.innerText = 'Please enter a valid block number.';
-                blockErrorMessageDiv.style.display = 'block';
-                resultDiv.style.display = 'block';
+                blockErrorMessageDiv.innerText = "Please enter a valid block number.";
+                blockErrorMessageDiv.style.display = "block";
+                resultDiv.style.display = "block";
                 return;
             }
 
-            processingMessage.style.display = 'block';
-            resultDiv.style.display = 'block';
+            processingMessage.style.display = "block";
+            resultDiv.style.display = "block";
 
-            const GET_BLOCK_BY_NUMBER_URL = `https://api.sentichain.com/blockchain/get_block_by_number?network=${encodeURIComponent(network)}&block_number=${encodeURIComponent(parseInt(blockNumber))}`;
+            const GET_BLOCK_BY_NUMBER_URL = `https://api.sentichain.com/blockchain/get_block_by_number?network=${encodeURIComponent(
+                network
+            )}&block_number=${encodeURIComponent(parseInt(blockNumber))}`;
 
             fetch(GET_BLOCK_BY_NUMBER_URL, {
-                method: 'GET',
-                headers: { 'Content-Type': 'application/json' }
+                method: "GET",
+                headers: { "Content-Type": "application/json" },
             })
-            .then(response => {
-                if (response.status === 404) {
-                    throw new Error('Block not found.');
-                }
-                if (!response.ok) {
-                    throw new Error(`Server error: ${response.status} ${response.statusText}`);
-                }
-                return response.json();
-            })
-            .then(data => {
-                if (!('block' in data)) {
-                    throw new Error('Missing "block" data in response.');
-                }
-
-                const block = data.block;
-                const requiredFields = ['block_number', 'consensus_root', 'hash', 'previous_hash', 'timestamp', 'transactions', 'validator'];
-                for (let field of requiredFields) {
-                    if (!(field in block)) {
-                        throw new Error(`Missing field in response: ${field}`);
+                .then((response) => {
+                    if (response.status === 404) {
+                        throw new Error("Block not found.");
                     }
-                }
+                    if (!response.ok) {
+                        throw new Error(`Server error: ${response.status} ${response.statusText}`);
+                    }
+                    return response.json();
+                })
+                .then((data) => {
+                    if (!("block" in data)) {
+                        throw new Error('Missing "block" data in response.');
+                    }
 
-                blockNumberInfoSpan.innerText = block.block_number;
-                blockHashSpan.innerText = block.hash;
-                blockPreviousHashSpan.innerText = block.previous_hash;
-                blockConsensusRootSpan.innerText = block.consensus_root;
-                blockTimestampSpan.innerText = formatTimestamp(block.timestamp);
-                blockValidatorSpan.innerText = block.validator;
+                    const block = data.block;
+                    const requiredFields = [
+                        "block_number",
+                        "consensus_root",
+                        "hash",
+                        "previous_hash",
+                        "timestamp",
+                        "transactions",
+                        "validator",
+                    ];
+                    for (let field of requiredFields) {
+                        if (!(field in block)) {
+                            throw new Error(`Missing field in response: ${field}`);
+                        }
+                    }
 
-                const transactions = block.transactions;
-                for (let txHash in transactions) {
-                    if (transactions.hasOwnProperty(txHash)) {
-                        const tx = transactions[txHash];
-                        const row = document.createElement('tr');
+                    // Fill block info
+                    blockNumberInfoSpan.innerText = block.block_number;
+                    blockHashSpan.innerText = block.hash;
+                    blockPreviousHashSpan.innerText = block.previous_hash;
+                    blockConsensusRootSpan.innerText = block.consensus_root;
+                    blockTimestampSpan.innerText = formatTimestamp(block.timestamp);
+                    blockValidatorSpan.innerText = block.validator;
 
-                        const txHashCell = document.createElement('td');
-                        txHashCell.innerText = txHash;
-                        row.appendChild(txHashCell);
+                    // Transactions
+                    const transactions = block.transactions;
+                    for (let txHash in transactions) {
+                        if (transactions.hasOwnProperty(txHash)) {
+                            const tx = transactions[txHash];
+                            const row = document.createElement("tr");
 
-                        const timestampCell = document.createElement('td');
-                        timestampCell.innerText = formatTimestamp(tx.post_timestamp);
-                        row.appendChild(timestampCell);
+                            const txHashCell = document.createElement("td");
+                            txHashCell.innerText = txHash;
+                            row.appendChild(txHashCell);
 
-                        const actionsCell = document.createElement('td');
-                        const toggleDetailsBtn = document.createElement('button');
-                        toggleDetailsBtn.innerText = 'View Details';
-                        toggleDetailsBtn.classList.add('submit-btn');
+                            const timestampCell = document.createElement("td");
+                            timestampCell.innerText = formatTimestamp(tx.post_timestamp);
+                            row.appendChild(timestampCell);
 
-                        const detailsRow = document.createElement('tr');
-                        detailsRow.style.display = 'none';
-                        detailsRow.classList.add('details-row');
-                        const detailsCell = document.createElement('td');
-                        detailsCell.colSpan = 3;
+                            const actionsCell = document.createElement("td");
+                            const toggleDetailsBtn = document.createElement("button");
+                            toggleDetailsBtn.innerText = "View Details";
+                            toggleDetailsBtn.classList.add("submit-btn");
 
-                        const serializedVector = serializeVector(tx.vector);
-                        const sanitizedTxHash = txHash.replace(/[^a-zA-Z0-9]/g, '_');
-                        const vectorId = `transactionVector_${sanitizedTxHash}`;
-                        const signatureId = `transactionSignature_${sanitizedTxHash}`;
-                        const postContentId = `transactionPostContent_${sanitizedTxHash}`;
-                        const publicKeyId = `transactionPublicKey_${sanitizedTxHash}`;
-                        const vectorSignatureId = `transactionVectorSignature_${sanitizedTxHash}`;
-                        const copyFeedbackVectorId = `copyFeedbackVector_${sanitizedTxHash}`;
-                        const copyFeedbackSignatureId = `copyFeedbackSignature_${sanitizedTxHash}`;
-                        const copyFeedbackPostContentId = `copyFeedbackPostContent_${sanitizedTxHash}`;
-                        const copyFeedbackPublicKeyId = `copyFeedbackPublicKey_${sanitizedTxHash}`;
-                        const copyFeedbackVectorSignatureId = `copyFeedbackVectorSignature_${sanitizedTxHash}`;
+                            const detailsRow = document.createElement("tr");
+                            detailsRow.style.display = "none";
+                            detailsRow.classList.add("details-row");
+                            const detailsCell = document.createElement("td");
+                            detailsCell.colSpan = 3;
 
-                        detailsCell.innerHTML = 
-                            `<table class="details-table">
-                                <tr><td><strong>Nonce:</strong> ${tx.nonce}</td></tr>
-                                <tr><td><strong>Post Content:</strong> <div class="copyable-output" id="${postContentId}" onclick="copyToClipboard('${postContentId}')" title="Click to copy">${tx.post_content}</div></td></tr>
-                                <tr><td><strong>Post Link:</strong> <a href="https://x.com/${tx.post_link}" target="_blank">View Post</a></td></tr>
-                                <tr><td><strong>Sender:</strong> ${tx.sender}</td></tr>
-                                <tr><td><strong>Signature:</strong> <div class="signature-output" id="${signatureId}" onclick="copyToClipboard('${signatureId}')" title="Click to copy">${tx.signature}</div></td></tr>
-                                <tr><td><strong>Vector:</strong> <div class="copyable-output" id="${vectorId}" onclick="copyToClipboard('${vectorId}')" title="Click to copy">${serializedVector}</div></td></tr>
-                                <tr><td><strong>Public Key:</strong> <div class="copyable-output" id="${publicKeyId}" onclick="copyToClipboard('${publicKeyId}')" title="Click to copy">${tx.public_key}</div></td></tr>
-                                <tr><td><strong>Vector Signature:</strong> <div class="copyable-output" id="${vectorSignatureId}" onclick="copyToClipboard('${vectorSignatureId}')" title="Click to copy">${tx.vector_signature}</div></td></tr>
-                            </table>
-                            <div class="copy-feedback" id="${copyFeedbackVectorId}">Copied!</div>
-                            <div class="copy-feedback" id="${copyFeedbackSignatureId}">Copied!</div>
-                            <div class="copy-feedback" id="${copyFeedbackPostContentId}">Copied!</div>
-                            <div class="copy-feedback" id="${copyFeedbackPublicKeyId}">Copied!</div>
-                            <div class="copy-feedback" id="${copyFeedbackVectorSignatureId}">Copied!</div>`;
-
-                        detailsRow.appendChild(detailsCell);
-
-                        toggleDetailsBtn.onclick = () => {
-                            if (detailsRow.style.display === 'none') {
-                                detailsRow.style.display = 'table-row';
-                                toggleDetailsBtn.innerText = 'Hide Details';
-                            } else {
-                                detailsRow.style.display = 'none';
-                                toggleDetailsBtn.innerText = 'View Details';
+                            // Simple vector serialization
+                            function serializeVector(vec) {
+                                return `[${vec
+                                    .map((n) => (Number.isInteger(n) ? n.toFixed(1) : n))
+                                    .join(", ")}]`;
                             }
-                        };
+                            const serializedVector = serializeVector(tx.vector);
 
-                        actionsCell.appendChild(toggleDetailsBtn);
-                        row.appendChild(actionsCell);
+                            // ID suffix
+                            const sanitizedTxHash = txHash.replace(/[^a-zA-Z0-9]/g, "_");
+                            const vectorId = `transactionVector_${sanitizedTxHash}`;
+                            const signatureId = `transactionSignature_${sanitizedTxHash}`;
+                            const postContentId = `transactionPostContent_${sanitizedTxHash}`;
+                            const publicKeyId = `transactionPublicKey_${sanitizedTxHash}`;
+                            const vectorSignatureId = `transactionVectorSignature_${sanitizedTxHash}`;
 
-                        transactionsTableBody.appendChild(row);
-                        transactionsTableBody.appendChild(detailsRow);
+                            const copyFeedbackVectorId = `copyFeedbackVector_${sanitizedTxHash}`;
+                            const copyFeedbackSignatureId = `copyFeedbackSignature_${sanitizedTxHash}`;
+                            const copyFeedbackPostContentId = `copyFeedbackPostContent_${sanitizedTxHash}`;
+                            const copyFeedbackPublicKeyId = `copyFeedbackPublicKey_${sanitizedTxHash}`;
+                            const copyFeedbackVectorSignatureId = `copyFeedbackVectorSignature_${sanitizedTxHash}`;
+
+                            detailsCell.innerHTML = `
+                <table class="details-table">
+                  <tr>
+                    <td><strong>Nonce:</strong> ${tx.nonce}</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Post Content:</strong>
+                      <div
+                        class="copyable-output"
+                        id="${postContentId}"
+                        onclick="copyToClipboard('${postContentId}')"
+                        title="Click to copy"
+                      >
+                        ${tx.post_content}
+                      </div>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td><strong>Post Link:</strong>
+                      <a href="https://x.com/${tx.post_link}" target="_blank">
+                        View Post
+                      </a>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td><strong>Sender:</strong> ${tx.sender}</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Signature:</strong>
+                      <div
+                        class="signature-output"
+                        id="${signatureId}"
+                        onclick="copyToClipboard('${signatureId}')"
+                        title="Click to copy"
+                      >
+                        ${tx.signature}
+                      </div>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td><strong>Vector:</strong>
+                      <div
+                        class="copyable-output"
+                        id="${vectorId}"
+                        onclick="copyToClipboard('${vectorId}')"
+                        title="Click to copy"
+                      >
+                        ${serializedVector}
+                      </div>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td><strong>Public Key:</strong>
+                      <div
+                        class="copyable-output"
+                        id="${publicKeyId}"
+                        onclick="copyToClipboard('${publicKeyId}')"
+                        title="Click to copy"
+                      >
+                        ${tx.public_key}
+                      </div>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td><strong>Vector Signature:</strong>
+                      <div
+                        class="copyable-output"
+                        id="${vectorSignatureId}"
+                        onclick="copyToClipboard('${vectorSignatureId}')"
+                        title="Click to copy"
+                      >
+                        ${tx.vector_signature}
+                      </div>
+                    </td>
+                  </tr>
+                </table>
+                <div class="copy-feedback" id="${copyFeedbackVectorId}">Copied!</div>
+                <div class="copy-feedback" id="${copyFeedbackSignatureId}">Copied!</div>
+                <div class="copy-feedback" id="${copyFeedbackPostContentId}">Copied!</div>
+                <div class="copy-feedback" id="${copyFeedbackPublicKeyId}">Copied!</div>
+                <div class="copy-feedback" id="${copyFeedbackVectorSignatureId}">Copied!</div>
+              `;
+                            detailsRow.appendChild(detailsCell);
+
+                            toggleDetailsBtn.onclick = () => {
+                                if (detailsRow.style.display === "none") {
+                                    detailsRow.style.display = "table-row";
+                                    toggleDetailsBtn.innerText = "Hide Details";
+                                } else {
+                                    detailsRow.style.display = "none";
+                                    toggleDetailsBtn.innerText = "View Details";
+                                }
+                            };
+
+                            actionsCell.appendChild(toggleDetailsBtn);
+                            row.appendChild(actionsCell);
+
+                            transactionsTableBody.appendChild(row);
+                            transactionsTableBody.appendChild(detailsRow);
+                        }
+                    }
+
+                    if (Object.keys(transactions).length > 0) {
+                        blockTransactionsDiv.style.display = "block";
+                    }
+
+                    processingMessage.style.display = "none";
+                    blockInfoDiv.style.display = "block";
+                })
+                .catch((error) => {
+                    console.error("Block Explorer Error:", error);
+                    resultDiv.classList.add("error");
+                    blockErrorMessageDiv.innerText = `Error: ${error.message}`;
+                    blockErrorMessageDiv.style.display = "block";
+                    processingMessage.style.display = "none";
+                    blockInfoDiv.style.display = "none";
+                });
+        });
+
+        /*******************************************
+         * 4) Event Map Logic
+         *******************************************/
+        const canvas = document.getElementById("pointsCanvas");
+        const ctx = canvas.getContext("2d");
+        const tooltip = document.getElementById("tooltip");
+
+        const startBlockInput = document.getElementById("startBlockInput");
+        const endBlockInput = document.getElementById("endBlockInput");
+        const fetchRangeButton = document.getElementById("fetchRangeButton");
+        const mapProcessingMessage = document.getElementById("mapProcessingMessage");
+
+        const blockSlider = document.getElementById("blockSlider");
+        const autoSlideCheckbox = document.getElementById("autoSlideCheckbox");
+
+        let blockPointsData = {};
+        let allPoints = [];
+        let clusterInfo = {};
+        let allRangePoints = [];
+        let availableBlocks = [];
+
+        let minX, maxX, minY, maxY;
+        const margin = 50;
+        let autoSlideInterval = null;
+
+        function resizeCanvasToDisplaySize(canvas) {
+            const width = canvas.clientWidth;
+            const height = canvas.clientHeight;
+            if (canvas.width !== width || canvas.height !== height) {
+                canvas.width = width;
+                canvas.height = height || 400; // fallback if height is 0
+            }
+        }
+
+        window.addEventListener("resize", () => {
+            resizeCanvasToDisplaySize(canvas);
+            drawAll();
+        });
+
+        fetchRangeButton.addEventListener("click", async () => {
+            stopAutoSlide();
+
+            // Show the map processing message
+            mapProcessingMessage.style.display = "block";
+
+            const startBlock = parseInt(startBlockInput.value.trim(), 10);
+            const endBlock = parseInt(endBlockInput.value.trim(), 10);
+
+            if (
+                isNaN(startBlock) ||
+                isNaN(endBlock) ||
+                startBlock < 0 ||
+                endBlock < 0 ||
+                startBlock > endBlock
+            ) {
+                alert("Please enter valid start/end block numbers.");
+                mapProcessingMessage.style.display = "none";
+                return;
+            }
+
+            if (endBlock - startBlock > 100) {
+                alert("Please choose a range of 100 blocks or fewer.");
+                mapProcessingMessage.style.display = "none";
+                return;
+            }
+
+            const url = `https://api.sentichain.com/mapper/get_points_by_block_range?start_block=${startBlock}&end_block=${endBlock}`;
+            try {
+                const response = await fetch(url);
+                if (!response.ok) {
+                    throw new Error(`API returned status ${response.status}`);
+                }
+                const data = await response.json();
+                if (!data.points || !Array.isArray(data.points)) {
+                    throw new Error("Response does not contain a valid 'points' array.");
+                }
+
+                blockPointsData = {};
+                allRangePoints = [];
+                availableBlocks = [];
+
+                data.points.forEach((item) => {
+                    const bNum = item[0];
+                    if (!blockPointsData[bNum]) {
+                        blockPointsData[bNum] = [];
+                    }
+                    const pointObj = {
+                        blockNumber: bNum,
+                        postLink: item[1],
+                        postContent: item[2],
+                        x: item[3],
+                        y: item[4],
+                        clusterNumber: item[5],
+                        centroidX: item[6],
+                        centroidY: item[7],
+                        clusterSummaryShort: item[8],
+                        clusterSummaryLong: item[9],
+                    };
+                    blockPointsData[bNum].push(pointObj);
+                    allRangePoints.push(pointObj);
+                });
+
+                availableBlocks = Object.keys(blockPointsData)
+                    .map((b) => parseInt(b, 10))
+                    .sort((a, b) => a - b);
+
+                if (availableBlocks.length === 0) {
+                    alert("No blocks found with points in that range!");
+                    resetSlider();
+                    mapProcessingMessage.style.display = "none";
+                    return;
+                }
+
+                calculateBoundingBox(allRangePoints);
+                blockSlider.min = 0;
+                blockSlider.max = availableBlocks.length - 1;
+                blockSlider.value = 0;
+                blockSlider.step = 1;
+
+                loadBlockPointsByIndex(0);
+                resizeCanvasToDisplaySize(canvas);
+                drawAll();
+            } catch (err) {
+                alert("Error fetching range: " + err.message);
+                console.error(err);
+            } finally {
+                // Hide the map processing message
+                mapProcessingMessage.style.display = "none";
+            }
+        });
+
+        blockSlider.addEventListener("input", () => {
+            stopAutoSlide();
+            const idx = parseInt(blockSlider.value, 10);
+            loadBlockPointsByIndex(idx);
+            drawAll();
+        });
+
+        function loadBlockPointsByIndex(index) {
+            const blockNum = availableBlocks[index];
+            allPoints = blockPointsData[blockNum] || [];
+            setupClusterInfo(allPoints);
+        }
+
+        function resetSlider() {
+            blockSlider.min = 0;
+            blockSlider.max = 0;
+            blockSlider.value = 0;
+        }
+
+        autoSlideCheckbox.addEventListener("change", () => {
+            if (autoSlideCheckbox.checked) {
+                startAutoSlide();
+            } else {
+                stopAutoSlide();
+            }
+        });
+
+        function startAutoSlide() {
+            if (availableBlocks.length <= 1) return;
+            stopAutoSlide();
+            // Double the speed => 1 second
+            autoSlideInterval = setInterval(() => {
+                let idx = parseInt(blockSlider.value, 10);
+                idx++;
+                if (idx > availableBlocks.length - 1) {
+                    idx = 0;
+                }
+                blockSlider.value = idx;
+                loadBlockPointsByIndex(idx);
+                drawAll();
+            }, 1000);
+        }
+
+        function stopAutoSlide() {
+            if (autoSlideInterval) {
+                clearInterval(autoSlideInterval);
+                autoSlideInterval = null;
+            }
+        }
+
+        function calculateBoundingBox(pointsArray) {
+            if (pointsArray.length === 0) {
+                minX = -1;
+                maxX = 1;
+                minY = -1;
+                maxY = 1;
+                return;
+            }
+            minX = Math.min(...pointsArray.map((p) => Math.min(p.x, p.centroidX)));
+            maxX = Math.max(...pointsArray.map((p) => Math.max(p.x, p.centroidX)));
+            minY = Math.min(...pointsArray.map((p) => Math.min(p.y, p.centroidY)));
+            maxY = Math.max(...pointsArray.map((p) => Math.max(p.y, p.centroidY)));
+        }
+
+        function setupClusterInfo(pointsArray) {
+            clusterInfo = {};
+            pointsArray.forEach((p) => {
+                const cNum = p.clusterNumber;
+                if (!clusterInfo[cNum]) {
+                    clusterInfo[cNum] = {
+                        centroidX: p.centroidX,
+                        centroidY: p.centroidY,
+                        shortSummary: p.clusterSummaryShort,
+                        longSummary: p.clusterSummaryLong,
+                        color: `hsl(${(cNum * 50) % 360}, 100%, 50%)`,
+                    };
+                }
+            });
+        }
+
+        function drawAll() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // draw centroids first
+            Object.keys(clusterInfo).forEach((cNum) => {
+                drawCentroid(cNum);
+            });
+
+            // draw points
+            allPoints.forEach(drawPoint);
+
+            // summary text near centroids
+            Object.keys(clusterInfo).forEach((cNum) => {
+                drawShortSummaryText(cNum);
+            });
+        }
+
+        function scaleX(xVal) {
+            const scale = (canvas.width - 2 * margin) / (maxX - minX || 1);
+            return margin + (xVal - minX) * scale;
+        }
+
+        function scaleY(yVal) {
+            const scale = (canvas.height - 2 * margin) / (maxY - minY || 1);
+            return canvas.height - margin - (yVal - minY) * scale;
+        }
+
+        function drawPoint(point) {
+            const cInfo = clusterInfo[point.clusterNumber];
+            ctx.fillStyle = cInfo ? cInfo.color : "#fff";
+            const rX = scaleX(point.x);
+            const rY = scaleY(point.y);
+            ctx.beginPath();
+            ctx.arc(rX, rY, 4, 0, 2 * Math.PI);
+            ctx.fill();
+        }
+
+        function drawCentroid(clusterNumber) {
+            const info = clusterInfo[clusterNumber];
+            if (!info) return;
+            ctx.save();
+            ctx.fillStyle = info.color;
+            const cX = scaleX(info.centroidX);
+            const cY = scaleY(info.centroidY);
+
+            // Diamond shape
+            ctx.beginPath();
+            ctx.moveTo(cX, cY - 8);
+            ctx.lineTo(cX + 8, cY);
+            ctx.lineTo(cX, cY + 8);
+            ctx.lineTo(cX - 8, cY);
+            ctx.closePath();
+            ctx.fill();
+
+            ctx.restore();
+        }
+
+        function drawShortSummaryText(clusterNumber) {
+            const info = clusterInfo[clusterNumber];
+            if (!info) return;
+            ctx.save();
+            ctx.fillStyle = "#E0E0E0";
+            ctx.font = "14px 'Roboto', sans-serif";
+            const cX = scaleX(info.centroidX);
+            const cY = scaleY(info.centroidY);
+            ctx.fillText(info.shortSummary, cX + 10, cY - 10);
+            ctx.restore();
+        }
+
+        canvas.addEventListener("mousemove", (event) => {
+            const rect = canvas.getBoundingClientRect();
+            const mouseX = event.clientX - rect.left;
+            const mouseY = event.clientY - rect.top;
+            let hoveredObject = null;
+
+            // centroids first
+            for (let cNum in clusterInfo) {
+                const info = clusterInfo[cNum];
+                const cX = scaleX(info.centroidX);
+                const cY = scaleY(info.centroidY);
+                const dist = Math.hypot(mouseX - cX, mouseY - cY);
+                if (dist < 10) {
+                    hoveredObject = { type: "centroid", data: info };
+                    break;
+                }
+            }
+
+            // points if not centroid
+            if (!hoveredObject) {
+                for (let p of allPoints) {
+                    const pX = scaleX(p.x);
+                    const pY = scaleY(p.y);
+                    const dist = Math.hypot(mouseX - pX, mouseY - pY);
+                    if (dist < 6) {
+                        hoveredObject = { type: "point", data: p };
+                        break;
                     }
                 }
+            }
 
-                if (Object.keys(transactions).length > 0) {
-                    blockTransactionsDiv.style.display = 'block';
-                } else {
-                    blockTransactionsDiv.style.display = 'none';
-                }
+            if (!hoveredObject) {
+                tooltip.style.display = "none";
+                return;
+            }
 
-                processingMessage.style.display = 'none';
-                blockInfoDiv.style.display = 'block';
-            })
-            .catch(error => {
-                console.error('Block Explorer Error:', error);
-                resultDiv.classList.add('error');
-                blockErrorMessageDiv.innerText = `Error: ${error.message}`;
-                blockErrorMessageDiv.style.display = 'block';
-                processingMessage.style.display = 'none';
-                blockInfoDiv.style.display = 'none';
-            });
+            if (hoveredObject.type === "centroid") {
+                showTooltip(hoveredObject.data.longSummary, event.clientX, event.clientY);
+            } else if (hoveredObject.type === "point") {
+                showTooltip(hoveredObject.data.postContent, event.clientX, event.clientY);
+            }
+        });
+
+        function showTooltip(text, clientX, clientY) {
+            tooltip.innerText = text;
+            tooltip.style.display = "block";
+            tooltip.style.left = clientX + 10 + "px";
+            tooltip.style.top = clientY + 10 + "px";
+        }
+
+        canvas.addEventListener("mouseleave", () => {
+            tooltip.style.display = "none";
+        });
+
+        // On load
+        window.addEventListener("load", () => {
+            resizeCanvasToDisplaySize(canvas);
+            drawAll();
         });
     </script>
-
 </body>
+
 </html>
