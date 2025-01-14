@@ -1,1 +1,2 @@
-# SentiChain Frontend
+# SentiChain.com
+
