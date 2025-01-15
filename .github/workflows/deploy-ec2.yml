@@ -18,7 +18,9 @@ jobs:
           username: ec2-user
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
-            cd /var/www/html
+            cd /var/www
+            sudo chown -R ec2-user:ec2-user html
+            cd html
             git pull
             sudo chown -R apache:apache /var/www/html
             sudo systemctl restart httpd
