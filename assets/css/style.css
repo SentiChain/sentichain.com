@@ -320,11 +320,25 @@ footer {
     color: #00FFC8;
 }
 
-.senti-link {
+h2 .senti-link {
     color: inherit;
     text-decoration: none;
     font-size: 2em;
     font-weight: bold;
+    display: inline;
+    cursor: pointer;
+}
+
+.sidebar h2 .senti-link,
+.sidebar h2 .senti-link:hover,
+.sidebar h2 .senti-link:focus,
+.sidebar h2 .senti-link:active {
+    all: unset;
+    color: inherit;
+    text-decoration: none;
+    font-size: inherit;
+    font-weight: bold;
+    display: inline;
     cursor: pointer;
 }
 
