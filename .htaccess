@@ -1,0 +1,14 @@
+# Enable the rewrite engine
+RewriteEngine On
+
+# 1) Redirect .html → extensionless (301 permanent)
+#    This ensures search engines and users see /terms instead of /terms.html
+RewriteCond %{THE_REQUEST} \s/+(.*)\.html [NC]
+RewriteRule ^ %1 [R=301,L]
+
+# 2) Internally rewrite extensionless → .html (only if the .html file exists)
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME}\.html -f
+RewriteRule ^(.*)$ $1.html [L]
+
