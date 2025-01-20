@@ -89,7 +89,7 @@ if (canvas) {
 
     class BlackHole {
         constructor() {
-            this.x = canvas.width / 2;
+            this.x = 2 * canvas.width / 3;
             this.y = canvas.height / 2;
             this.baseRadius = 100;
             this.growth = 0;

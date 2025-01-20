@@ -65,10 +65,23 @@ a:hover {
 
 .overlay h1 {
     position: absolute;
-    top: 50%;
-    left: 50%;
+    top: 40%;
+    left: 30%;
     transform: translate(-50%, -50%);
-    font-size: 4rem;
+    font-size: 6rem;
+    color: #00FFC8;
+    text-shadow: 0 0 10px #00FFC8, 0 0 20px #00FFC8;
+    cursor: pointer;
+    font-weight: 700;
+}
+
+.subtitle {
+    position: absolute;
+    top: 55%;
+    left: 30%;
+    text-align: left;
+    transform: translate(-50%, -50%);
+    font-size: 3rem;
     color: #00FFC8;
     text-shadow: 0 0 10px #00FFC8, 0 0 20px #00FFC8;
     cursor: pointer;
