@@ -534,7 +534,7 @@ select:focus {
     cursor: pointer;
     padding: 5px;
     border-radius: 4px;
-    word-break: break-all;
+    word-break: break-word;
     overflow-wrap: break-word;
 }
 
@@ -734,10 +734,6 @@ select:focus {
 
 /* ----------------------------------------------------
    5) TERMS & CONDITIONS PAGES
-   (They mostly have text and headings, so the above 
-   base rules are often enough. We'll just ensure 
-   headings, paragraphs, and container styling are 
-   consistent.)
 -------------------------------------------------------*/
 .container h1,
 .container h2,
@@ -795,4 +791,90 @@ select:focus {
 
 .legal-container strong {
     color: #00FFC8;
+}
+
+/* ====================================================
+   RESPONSIVE OVERRIDES FOR MOBILE (Hide Rocket)
+   ==================================================== */
+@media (max-width: 768px) {
+
+    /* HERO TEXT (TITLE + SUBTITLE) */
+    .overlay h1 {
+        top: 30%;
+        left: 50%;
+        font-size: 2.5rem;
+        transform: translate(-50%, -50%);
+    }
+
+    .subtitle {
+        top: 45%;
+        left: 50%;
+        font-size: 1.5rem;
+        transform: translate(-50%, -50%);
+        text-align: center;
+    }
+
+    /* INTRO SECTION */
+    .intro-section {
+        padding: 60px 20px;
+        min-height: auto;
+    }
+
+    .intro-section h2 {
+        font-size: 2rem;
+        margin-bottom: 20px;
+    }
+
+    .intro-section p {
+        font-size: 1rem;
+        margin-bottom: 30px;
+    }
+
+    /* ROCKET & LAYER BOXES */
+    /* Hide the rocket (and optional lines/points) on mobile */
+    .rocket {
+        display: none;
+    }
+
+    .layer-line,
+    .layer-point {
+        display: none;
+    }
+
+    /* We'll keep the layer text boxes (layer-box) visible */
+
+    .rocket-wrapper {
+        /* Now that the rocket is hidden, you could remove or keep the flex layout as desired */
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .layer-box {
+        position: static;
+        width: 90%;
+        margin: 0 auto 20px auto;
+    }
+
+    /* METRICS SECTION */
+    .metrics-section h2 {
+        font-size: 2rem;
+        margin-bottom: 30px;
+    }
+
+    .metrics-container {
+        flex-direction: column;
+        align-items: center;
+        gap: 20px;
+    }
+
+    .metric-box {
+        width: 80%;
+        margin: 0 auto;
+    }
+
+    /* FOOTER */
+    footer p {
+        font-size: 0.8rem;
+    }
 }
