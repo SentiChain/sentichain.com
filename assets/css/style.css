@@ -534,7 +534,7 @@ select:focus {
     cursor: pointer;
     padding: 5px;
     border-radius: 4px;
-    word-break: break-all;
+    word-break: break-word;
     overflow-wrap: break-word;
 }
 
@@ -694,50 +694,144 @@ select:focus {
     user-select: none;
 }
 
-/* Responsive (app.html sidebar, etc.) */
+/* ====================================================
+   MOBILE OVERRIDES FOR app.html (under 768px)
+   ==================================================== */
 @media (max-width: 768px) {
+
+    /* Make the sidebar horizontal and sit at the top */
     .sidebar {
-        width: 60px;
+        position: static;
+        /* remove fixed positioning so it can flow normally */
+        width: 100%;
+        /* full width at the top */
+        height: auto;
+        /* no fixed height */
+        display: flex;
+        /* lay out links/icons in a row */
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
+        border-bottom: 1px solid #2C2C2C;
+        /* optional separator line */
+        padding: 10px 0;
+        /* spacing inside the top bar */
     }
 
-    .sidebar.collapsed {
-        width: 60px;
-    }
-
+    /* Remove or adjust the title (SentiChain) if you want it smaller or hidden on mobile */
     .sidebar h2 {
         display: none;
+        /* slightly smaller on mobile */
     }
 
-    .sidebar a span {
-        display: none;
+    /* Each link is laid out horizontally */
+    .sidebar a {
+        display: inline-flex;
+        /* icon + text in a row */
+        align-items: center;
+        /* center vertically */
+        justify-content: center;
+        /* center horizontally */
+        margin: 0 5px;
+        padding: 8px 12px;
+        font-size: 0.9rem;
+        /* slightly smaller text if desired */
     }
 
+    /* Optionally hide the text and show icons only */
+    /* 
+  .sidebar a span {
+    display: none;
+  }
+  */
+
+    /* MAIN CONTENT: no left margin needed, move down a bit if the top bar has height */
     .main-content {
-        margin-left: 60px;
+        margin-left: 0 !important;
+        margin-top: 10px;
+        /* push content down below the new top bar */
+        padding: 20px;
+        /* slightly reduced side padding on mobile */
     }
 
-    #transactionsTable th,
-    #transactionsTable td {
-        padding: 8px;
-        font-size: 14px;
+    /* CONTAINER: Make forms + controls stack better */
+    .container {
+        padding: 20px;
     }
 
-    .block-info-grid {
-        grid-template-columns: 1fr;
+    /* Block Explorer form: stack the select + input + button */
+    .block-explorer-form {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        /* space between items */
     }
 
-    .block-info-item span.clickable {
-        display: block;
+    .block-explorer-form select,
+    .block-explorer-form input[type="text"] {
         width: 100%;
+        /* full width for mobile */
     }
+
+    /* Event Map "controlPanel" also stacks vertically */
+    #controlPanel {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 10px;
+    }
+
+    /* Range + checkbox container: stack them or keep them inline
+       If you want them stacked, uncomment below:
+    */
+    /*
+    #blockSlider {
+      margin-bottom: 10px;
+    }
+    #autoSlideLabel {
+      margin-top: 10px;
+    }
+    */
+
+    /* TABLES: Make them more scrollable on smaller screens (optional) */
+    #transactionsTable,
+    #transactionsTable thead,
+    #transactionsTable tbody,
+    #transactionsTable th,
+    #transactionsTable td,
+    .details-table {
+        display: block;
+        /* This turns the table into a scrollable block on very narrow screens */
+        width: 100%;
+        overflow-x: auto;
+    }
+
+    #transactionsTable tr {
+        display: flex;
+        flex-direction: column;
+        margin-bottom: 10px;
+        border-bottom: 1px solid #333;
+        max-height: 300px;
+        overflow-y: auto;
+    }
+
+    #transactionsTable td {
+        border: none;
+        padding: 8px 0;
+    }
+
+    #transactionsTable thead {
+        display: none;
+        /* Hide the table header row if you prefer a list-like layout */
+    }
+
+    /* Alternatively, if you do NOT want to transform the table to blocks,
+       you can omit the lines above. The table will still shrink, but
+       might overflow horizontally on small phones.
+    */
 }
 
 /* ----------------------------------------------------
    5) TERMS & CONDITIONS PAGES
-   (They mostly have text and headings, so the above 
-   base rules are often enough. We'll just ensure 
-   headings, paragraphs, and container styling are 
-   consistent.)
 -------------------------------------------------------*/
 .container h1,
 .container h2,
@@ -795,4 +889,95 @@ select:focus {
 
 .legal-container strong {
     color: #00FFC8;
+}
+
+/* ====================================================
+   RESPONSIVE OVERRIDES FOR MOBILE (Hide Rocket)
+   ==================================================== */
+@media (max-width: 768px) {
+
+    /* HERO TEXT (TITLE + SUBTITLE) */
+    .overlay h1 {
+        top: 30%;
+        left: 50%;
+        font-size: 3.5rem;
+        transform: translate(-50%, -50%);
+    }
+
+    .subtitle {
+        top: 45%;
+        left: 50%;
+        font-size: 2.5rem;
+        transform: translate(-50%, -50%);
+        text-align: center;
+    }
+
+    /* INTRO SECTION */
+    .intro-section {
+        padding: 60px 20px;
+        min-height: auto;
+    }
+
+    .intro-section h2 {
+        font-size: 2rem;
+        margin-bottom: 20px;
+    }
+
+    .intro-section p {
+        font-size: 1rem;
+        margin-bottom: 30px;
+    }
+
+    /* ROCKET & LAYER BOXES */
+    /* Hide the rocket (and optional lines/points) on mobile */
+    .rocket {
+        display: none;
+    }
+
+    .layer-line,
+    .layer-point {
+        display: none;
+    }
+
+    /* We'll keep the layer text boxes (layer-box) visible */
+
+    .rocket-wrapper {
+        /* Now that the rocket is hidden, you could remove or keep the flex layout as desired */
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .layer-box {
+        position: static;
+        width: 90%;
+        margin: 0 auto 20px auto;
+    }
+
+    /* METRICS SECTION */
+    .metrics-section h2 {
+        font-size: 2rem;
+        margin-bottom: 30px;
+    }
+
+    .metrics-container {
+        flex-direction: column;
+        align-items: center;
+        gap: 20px;
+    }
+
+    .metric-box {
+        width: 80%;
+        margin: 0 auto;
+    }
+
+    /* FOOTER */
+    footer p {
+        font-size: 0.8rem;
+    }
+
+    /* horizontally center icon (and text, if present) */
+    .sidebar a {
+        justify-content: center;
+    }
 }
