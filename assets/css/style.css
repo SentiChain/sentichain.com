@@ -699,33 +699,59 @@ select:focus {
    ==================================================== */
 @media (max-width: 768px) {
 
-    /* SIDEBAR: Force it to the collapsed appearance on mobile */
+    /* Make the sidebar horizontal and sit at the top */
     .sidebar {
-        width: 60px;
-        overflow: visible;
-        /* optional: if you want the menu items not clipped */
+        position: static;
+        /* remove fixed positioning so it can flow normally */
+        width: 100%;
+        /* full width at the top */
+        height: auto;
+        /* no fixed height */
+        display: flex;
+        /* lay out links/icons in a row */
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
+        border-bottom: 1px solid #2C2C2C;
+        /* optional separator line */
+        padding: 10px 0;
+        /* spacing inside the top bar */
     }
 
+    /* Remove or adjust the title (SentiChain) if you want it smaller or hidden on mobile */
     .sidebar h2 {
         display: none;
-        /* hide full title */
+        /* slightly smaller on mobile */
     }
 
-    .sidebar a span {
-        display: none;
-        /* hide link text, keep icons */
+    /* Each link is laid out horizontally */
+    .sidebar a {
+        display: inline-flex;
+        /* icon + text in a row */
+        align-items: center;
+        /* center vertically */
+        justify-content: center;
+        /* center horizontally */
+        margin: 0 5px;
+        padding: 8px 12px;
+        font-size: 0.9rem;
+        /* slightly smaller text if desired */
     }
 
-    .sidebar.collapsed {
-        width: 60px;
-        /* ensure consistent width */
-    }
+    /* Optionally hide the text and show icons only */
+    /* 
+  .sidebar a span {
+    display: none;
+  }
+  */
 
-    /* MAIN CONTENT: Reduce left margin + padding */
+    /* MAIN CONTENT: no left margin needed, move down a bit if the top bar has height */
     .main-content {
-        margin-left: 60px;
+        margin-left: 0 !important;
+        margin-top: 10px;
+        /* push content down below the new top bar */
         padding: 20px;
-        /* slightly less padding on mobile */
+        /* slightly reduced side padding on mobile */
     }
 
     /* CONTAINER: Make forms + controls stack better */
@@ -784,6 +810,8 @@ select:focus {
         flex-direction: column;
         margin-bottom: 10px;
         border-bottom: 1px solid #333;
+        max-height: 300px;
+        overflow-y: auto;
     }
 
     #transactionsTable td {
@@ -946,5 +974,10 @@ select:focus {
     /* FOOTER */
     footer p {
         font-size: 0.8rem;
+    }
+
+    /* horizontally center icon (and text, if present) */
+    .sidebar a {
+        justify-content: center;
     }
 }
