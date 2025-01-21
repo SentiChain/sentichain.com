@@ -694,42 +694,112 @@ select:focus {
     user-select: none;
 }
 
-/* Responsive (app.html sidebar, etc.) */
+/* ====================================================
+   MOBILE OVERRIDES FOR app.html (under 768px)
+   ==================================================== */
 @media (max-width: 768px) {
+
+    /* SIDEBAR: Force it to the collapsed appearance on mobile */
     .sidebar {
         width: 60px;
-    }
-
-    .sidebar.collapsed {
-        width: 60px;
+        overflow: visible;
+        /* optional: if you want the menu items not clipped */
     }
 
     .sidebar h2 {
         display: none;
+        /* hide full title */
     }
 
     .sidebar a span {
         display: none;
+        /* hide link text, keep icons */
     }
 
+    .sidebar.collapsed {
+        width: 60px;
+        /* ensure consistent width */
+    }
+
+    /* MAIN CONTENT: Reduce left margin + padding */
     .main-content {
         margin-left: 60px;
+        padding: 20px;
+        /* slightly less padding on mobile */
     }
 
-    #transactionsTable th,
-    #transactionsTable td {
-        padding: 8px;
-        font-size: 14px;
+    /* CONTAINER: Make forms + controls stack better */
+    .container {
+        padding: 20px;
     }
 
-    .block-info-grid {
-        grid-template-columns: 1fr;
+    /* Block Explorer form: stack the select + input + button */
+    .block-explorer-form {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        /* space between items */
     }
 
-    .block-info-item span.clickable {
-        display: block;
+    .block-explorer-form select,
+    .block-explorer-form input[type="text"] {
         width: 100%;
+        /* full width for mobile */
     }
+
+    /* Event Map "controlPanel" also stacks vertically */
+    #controlPanel {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 10px;
+    }
+
+    /* Range + checkbox container: stack them or keep them inline
+       If you want them stacked, uncomment below:
+    */
+    /*
+    #blockSlider {
+      margin-bottom: 10px;
+    }
+    #autoSlideLabel {
+      margin-top: 10px;
+    }
+    */
+
+    /* TABLES: Make them more scrollable on smaller screens (optional) */
+    #transactionsTable,
+    #transactionsTable thead,
+    #transactionsTable tbody,
+    #transactionsTable th,
+    #transactionsTable td,
+    .details-table {
+        display: block;
+        /* This turns the table into a scrollable block on very narrow screens */
+        width: 100%;
+        overflow-x: auto;
+    }
+
+    #transactionsTable tr {
+        display: flex;
+        flex-direction: column;
+        margin-bottom: 10px;
+        border-bottom: 1px solid #333;
+    }
+
+    #transactionsTable td {
+        border: none;
+        padding: 8px 0;
+    }
+
+    #transactionsTable thead {
+        display: none;
+        /* Hide the table header row if you prefer a list-like layout */
+    }
+
+    /* Alternatively, if you do NOT want to transform the table to blocks,
+       you can omit the lines above. The table will still shrink, but
+       might overflow horizontally on small phones.
+    */
 }
 
 /* ----------------------------------------------------
