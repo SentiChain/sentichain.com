@@ -802,14 +802,14 @@ select:focus {
     .overlay h1 {
         top: 30%;
         left: 50%;
-        font-size: 2.5rem;
+        font-size: 3.5rem;
         transform: translate(-50%, -50%);
     }
 
     .subtitle {
         top: 45%;
         left: 50%;
-        font-size: 1.5rem;
+        font-size: 2.5rem;
         transform: translate(-50%, -50%);
         text-align: center;
     }
