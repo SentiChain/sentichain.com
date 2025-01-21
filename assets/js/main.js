@@ -8,12 +8,15 @@ if (canvas) {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
 
-    window.addEventListener('resize', throttle(() => {
+    // Default intervals
+    let explosionInterval = 5000; // desktop default
+
+    window.addEventListener('resize', () => {
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
         blackHole.x = canvas.width / 2;
         blackHole.y = canvas.height / 2;
-    }, 200));
+    });
 
     function random(min, max) {
         return Math.random() * (max - min) + min;
@@ -35,7 +38,7 @@ if (canvas) {
         }
         reset() {
             const angle = random(0, Math.PI * 2);
-            const distance = random(canvas.width * 0.3, canvas.width * 0.5);
+            const distance = random(canvas.width * 2, canvas.width * 0.5);
             this.x = blackHole.x + Math.cos(angle) * distance;
             this.y = blackHole.y + Math.sin(angle) * distance;
             const dx = blackHole.x - this.x;
@@ -168,7 +171,6 @@ if (canvas) {
         stars.push(new Star());
     }
 
-    let explosionInterval = 5000;
     let lastExplosion = Date.now();
     let animationRunning = true;
 
