@@ -379,7 +379,10 @@ h2 .senti-link {
     margin: 5px 10px;
 }
 
-.sidebar a:hover,
+.sidebar a:hover {
+    text-decoration: none;
+}
+
 .sidebar a.active {
     background: #00FFC8;
     color: #121212;
@@ -750,13 +753,6 @@ select:focus {
         font-size: 0.9rem;
         /* slightly smaller text if desired */
     }
-
-    /* Optionally hide the text and show icons only */
-    /* 
-  .sidebar a span {
-    display: none;
-  }
-  */
 
     /* MAIN CONTENT: no left margin needed, move down a bit if the top bar has height */
     .main-content {
