@@ -84,6 +84,19 @@ a:hover {
     font-size: 3rem;
     color: #00FFC8;
     text-shadow: 0 0 10px #00FFC8, 0 0 20px #00FFC8;
+    cursor: default;
+    font-weight: 700;
+}
+
+.subtitle-link {
+    position: absolute;
+    top: 65%;
+    left: 27%;
+    text-align: left;
+    transform: translate(-50%, -50%);
+    font-size: 1.5rem;
+    color: #00FFC8;
+    text-shadow: 0 0 10px #00FFC8, 0 0 20px #00FFC8;
     cursor: pointer;
     font-weight: 700;
 }
@@ -896,7 +909,6 @@ select:focus {
    ==================================================== */
 @media (max-width: 768px) {
 
-    /* HERO TEXT (TITLE + SUBTITLE) */
     .overlay h1 {
         top: 35%;
         left: 50%;
@@ -907,7 +919,15 @@ select:focus {
     .subtitle {
         top: 50%;
         left: 50%;
-        font-size: 2.5rem;
+        font-size: 2rem;
+        transform: translate(-50%, -50%);
+        text-align: center;
+    }
+
+    .subtitle-link {
+        top: 63%;
+        left: 50%;
+        font-size: 1rem;
         transform: translate(-50%, -50%);
         text-align: center;
     }
