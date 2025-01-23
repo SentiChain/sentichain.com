@@ -196,28 +196,84 @@ if (canvas) {
     }
     animate();
 
-    // Fetch block count (for the "Network Status" section)
-    const blockCountElement = document.getElementById('blockCount');
-    if (blockCountElement) {
+    // Fetch block height (for the "Network Status" section)
+    const blockHeightElement = document.getElementById('blockHeight');
+    if (blockHeightElement) {
         fetch("https://api.sentichain.com/blockchain/get_chain_length?network=mainnet")
             .then(res => res.json())
             .then(data => {
                 const targetCount = data.chain_length;
                 let currentCount = Math.max(targetCount - 20, 0);
-                blockCountElement.textContent = currentCount;
+                blockHeightElement.textContent = currentCount;
                 const increment = () => {
                     if (currentCount < targetCount) {
                         currentCount++;
-                        blockCountElement.textContent = currentCount;
+                        blockHeightElement.textContent = currentCount;
                         requestAnimationFrame(increment);
                     } else {
-                        blockCountElement.textContent = targetCount;
+                        blockHeightElement.textContent = targetCount;
                     }
                 };
                 increment();
             })
             .catch(err => {
-                blockCountElement.textContent = "N/A";
+                blockHeightElement.textContent = "N/A";
+                console.error(err);
+            });
+    }
+
+    // Fetch block timestamp (for the "Network Status" section)
+    const blockTimestampElement = document.getElementById('blockTimestamp');
+    if (blockTimestampElement) {
+        fetch("https://api.sentichain.com/blockchain/get_last_block_time?network=mainnet")
+            .then(res => res.json())
+            .then(data => {
+                const timestamp = data.last_block_time;
+                if (timestamp && !isNaN(timestamp)) {
+                    // Convert to date in UTC
+                    const date = new Date(timestamp * 1000);
+
+                    const year = date.getUTCFullYear();
+                    const month = String(date.getUTCMonth() + 1).padStart(2, '0');
+                    const day = String(date.getUTCDate()).padStart(2, '0');
+                    const hours = String(date.getUTCHours()).padStart(2, '0');
+                    const minutes = String(date.getUTCMinutes()).padStart(2, '0');
+                    const seconds = String(date.getUTCSeconds()).padStart(2, '0');
+
+                    blockTimestampElement.textContent =
+                        `${year}-${month}-${day} ${hours}:${minutes}:${seconds} (UTC)`;
+                } else {
+                    blockTimestampElement.textContent = "N/A";
+                }
+            })
+            .catch(err => {
+                blockTimestampElement.textContent = "N/A";
+                console.error(err);
+            });
+    }
+
+    // Fetch txn count (for the "Network Status" section)
+    const txnCountElement = document.getElementById('txnCount');
+    if (txnCountElement) {
+        fetch("https://api.sentichain.com/blockchain/get_total_number_of_transactions?network=mainnet")
+            .then(res => res.json())
+            .then(data => {
+                const targetCount = data.total_tx_count;
+                let currentCount = Math.max(targetCount - 20, 0);
+                txnCountElement.textContent = currentCount;
+                const increment = () => {
+                    if (currentCount < targetCount) {
+                        currentCount++;
+                        txnCountElement.textContent = currentCount;
+                        requestAnimationFrame(increment);
+                    } else {
+                        txnCountElement.textContent = targetCount;
+                    }
+                };
+                increment();
+            })
+            .catch(err => {
+                txnCountElement.textContent = "N/A";
                 console.error(err);
             });
     }
