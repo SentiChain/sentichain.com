@@ -336,7 +336,7 @@ if (blockExplorerForm) {
         processingMessage.style.display = "block";
         resultDiv.style.display = "block";
 
-        const GET_BLOCK_BY_NUMBER_URL = `https://api.sentichain.com/blockchain/get_block_by_number_no_embedding?network=${encodeURIComponent(network)}&block_number=${encodeURIComponent(parseInt(blockNumber))}`;
+        const GET_BLOCK_BY_NUMBER_URL = `https://api.sentichain.com/blockchain/get_block_by_number?network=${encodeURIComponent(network)}&block_number=${encodeURIComponent(parseInt(blockNumber))}`;
 
         fetch(GET_BLOCK_BY_NUMBER_URL, {
             method: "GET",
@@ -727,7 +727,7 @@ if (eventMapCanvas) {
                 return;
             }
 
-            const url = `https://api.sentichain.com/mapper/get_points_by_block_range?start_block=${startBlock}&end_block=${endBlock}`;
+            const url = `https://api.sentichain.com/mapper/get_points_by_block_range_no_embedding?start_block=${startBlock}&end_block=${endBlock}`;
             try {
                 const response = await fetch(url);
                 if (!response.ok) {
