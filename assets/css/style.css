@@ -259,6 +259,20 @@ a:hover {
     margin-bottom: 40px;
     text-transform: uppercase;
     text-shadow: 0 0 10px #00FFC8;
+    animation: blink 2s infinite;
+}
+
+.metrics-section p {
+    font-size: 1.2rem;
+    line-height: 1.6;
+    color: #ccc;
+    max-width: 800px;
+    margin: 0 auto 60px auto;
+}
+
+.metrics-section p2 {
+    font-size: 1.2rem;
+    color: #ccc;
 }
 
 .metrics-container {
