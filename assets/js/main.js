@@ -700,7 +700,6 @@ if (eventMapCanvas) {
         }
     }
 
-    // Add event listeners if present
     if (fetchRangeButton) {
         fetchRangeButton.addEventListener("click", async () => {
             stopAutoSlide();
@@ -811,9 +810,43 @@ if (eventMapCanvas) {
         });
     }
 
-    window.addEventListener("resize", () => {
-        resizeCanvasToDisplaySize(eventMapCanvas);
-        drawAll();
+    // -------------
+    // NEW LOGIC BELOW
+    // -------------
+    window.addEventListener("load", () => {
+        // If either input is empty, fetch chain length and set defaults
+        if (!startBlockInput.value.trim() || !endBlockInput.value.trim()) {
+            fetch("https://api.sentichain.com/blockchain/get_chain_length?network=mainnet")
+                .then(res => res.json())
+                .then(data => {
+                    const chainLength = data.chain_length;
+                    // Default to the last block as "end"
+                    const defaultEnd = chainLength - 1;
+                    // Default start is "end - 50" or 0, whichever is larger
+                    const defaultStart = Math.max(defaultEnd - 50, 0);
+
+                    // If the end block field is still empty, populate it
+                    if (!endBlockInput.value.trim()) {
+                        endBlockInput.value = defaultEnd;
+                    }
+                    // If the start block field is still empty, populate it
+                    if (!startBlockInput.value.trim()) {
+                        startBlockInput.value = defaultStart;
+                    }
+                })
+                .catch(err => {
+                    console.error("Error fetching chain length:", err);
+                })
+                .finally(() => {
+                    // Resize/draw after defaults are set
+                    resizeCanvasToDisplaySize(eventMapCanvas);
+                    drawAll();
+                });
+        } else {
+            // Fields are already set, just resize and draw
+            resizeCanvasToDisplaySize(eventMapCanvas);
+            drawAll();
+        }
     });
 
     eventMapCanvas.addEventListener("mousemove", (event) => {
@@ -868,10 +901,5 @@ if (eventMapCanvas) {
 
     eventMapCanvas.addEventListener("mouseleave", () => {
         tooltip.style.display = "none";
-    });
-
-    window.addEventListener("load", () => {
-        resizeCanvasToDisplaySize(eventMapCanvas);
-        drawAll();
     });
 }

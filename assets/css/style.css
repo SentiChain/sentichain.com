@@ -396,7 +396,7 @@ h2 .senti-link {
 /* Main Content */
 .main-content {
     margin-left: 250px;
-    padding: 40px 30px;
+    padding: 0px 30px;
     transition: margin-left 0.3s;
 }
 
