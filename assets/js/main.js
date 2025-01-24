@@ -838,6 +838,9 @@ if (eventMapCanvas) {
                 loadBlockPointsByIndex(0);
                 resizeCanvasToDisplaySize(eventMapCanvas);
                 drawAll();
+
+                // Start auto-slide by default (checkbox is unchecked).
+                startAutoSlide();
             } catch (err) {
                 alert("Error fetching range: " + err.message);
                 console.error(err);
@@ -859,9 +862,9 @@ if (eventMapCanvas) {
     if (autoSlideCheckbox) {
         autoSlideCheckbox.addEventListener("change", () => {
             if (autoSlideCheckbox.checked) {
-                startAutoSlide();
-            } else {
                 stopAutoSlide();
+            } else {
+                startAutoSlide();
             }
         });
     }
