@@ -642,7 +642,7 @@ if (eventMapCanvas) {
 
     /**
      * Build a "zodiac-like" set of lines for each cluster's points.
-     * We’ll do a minimal spanning tree so it's connected but not too busy.
+     * We'll do a minimal spanning tree so it's connected but not too busy.
      */
     function buildLinesForCluster(points) {
         if (points.length < 2) return []; // no lines if single point
@@ -679,8 +679,12 @@ if (eventMapCanvas) {
                 // all done or no possible edges
                 break;
             }
-            // add that edge
-            lines.push(bestEdge);
+            // attach random lineBlinkOffset for each MST edge
+            lines.push({
+                i: bestEdge[0],
+                j: bestEdge[1],
+                blinkOffset: randomRange(0, 2 * Math.PI),
+            });
             // mark the new node as used
             used.add(bestEdge[1]);
         }
@@ -689,7 +693,6 @@ if (eventMapCanvas) {
 
     // We'll store clusterEdges in each cluster's info, so we can draw them later.
     function setupClusterInfo(pointsArray) {
-        // Clear old
         clusterInfo = {};
 
         // Group by cluster
@@ -721,7 +724,7 @@ if (eventMapCanvas) {
                 color: `hsl(${hue}, 100%, 50%)`,  // default cluster color
                 hue,
                 points: clusterPoints,
-                lines,
+                lines, // array of { i, j, blinkOffset }
             };
         });
     }
@@ -730,7 +733,7 @@ if (eventMapCanvas) {
     function drawAll() {
         ctxMap.clearRect(0, 0, eventMapCanvas.width, eventMapCanvas.height);
 
-        // 1. Draw lines for each cluster
+        // 1. Draw lines for each cluster (with blinking)
         Object.keys(clusterInfo).forEach((cNum) => {
             drawZodiacLines(clusterInfo[cNum]);
         });
@@ -746,30 +749,35 @@ if (eventMapCanvas) {
     }
 
     // Minimal “zodiac lines” within each cluster
-    // stored in clusterInfo[cNum].lines = [ [i1, i2], [i3, i4], ...]
     function drawZodiacLines(cluster) {
         if (!cluster.lines || cluster.lines.length === 0) return;
 
-        const lineColor = `hsla(${cluster.hue}, 100%, 25%, 0.4)`;
+        const currentTime = (performance.now() - eventMapStartTime) / 1000;
 
-        ctxMap.save();
-        ctxMap.strokeStyle = lineColor;
-        ctxMap.lineWidth = 1.5;
-        ctxMap.beginPath();
+        cluster.lines.forEach((lineObj) => {
+            // each line has a blink offset
+            const flicker = 0.5 + 0.5 * Math.sin((currentTime * 2.0) + lineObj.blinkOffset);
+            const alpha = 0.3 + 0.7 * flicker;
 
-        cluster.lines.forEach(([i, j]) => {
-            const p1 = cluster.points[i];
-            const p2 = cluster.points[j];
+            const strokeColor = `hsla(${cluster.hue}, 100%, 20%, ${alpha})`;
+
+            ctxMap.save();
+            ctxMap.strokeStyle = strokeColor;
+            ctxMap.lineWidth = 1.5;
+            ctxMap.beginPath();
+
+            const p1 = cluster.points[lineObj.i];
+            const p2 = cluster.points[lineObj.j];
             const x1 = scaleX(p1.x);
             const y1 = scaleY(p1.y);
             const x2 = scaleX(p2.x);
             const y2 = scaleY(p2.y);
+
             ctxMap.moveTo(x1, y1);
             ctxMap.lineTo(x2, y2);
+            ctxMap.stroke();
+            ctxMap.restore();
         });
-
-        ctxMap.stroke();
-        ctxMap.restore();
     }
 
     // Flickering point
@@ -782,8 +790,7 @@ if (eventMapCanvas) {
         // find cluster color
         const cNum = point.clusterNumber;
         const cInfo = clusterInfo[cNum];
-        // fallback color if missing
-        let fillColor = "hsla(0,0%,100%,1)";
+        let fillColor = "hsla(0, 0%, 100%, 1)";
         if (cInfo) {
             fillColor = `hsla(${cInfo.hue}, 100%, 50%, ${alpha})`;
         }
@@ -968,6 +975,7 @@ if (eventMapCanvas) {
                         centroidY: item[7],
                         clusterSummaryShort: item[8],
                         clusterSummaryLong: item[9],
+                        // random offset for blinking
                         blinkOffset: randomRange(0, 2 * Math.PI),
                     };
                     blockPointsData[bNum].push(pointObj);
