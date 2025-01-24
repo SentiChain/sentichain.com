@@ -522,11 +522,18 @@ select:focus {
 /* Block Explorer */
 .block-explorer-form {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
 }
 
-.block-explorer-form label {
-    margin-top: 10px;
+.block-explorer-form label,
+.block-explorer-form select,
+.block-explorer-form input[type="text"],
+.block-explorer-form button {
+    margin: 0;
+    line-height: normal;
 }
 
 .block-explorer-result {
@@ -648,8 +655,8 @@ select:focus {
 /* Event Map */
 #controlPanel {
     display: flex;
-    flex-direction: column;
-    align-items: stretch;
+    flex-direction: row;
+    align-items: center;
     gap: 10px;
     margin-bottom: 20px;
 }
@@ -680,11 +687,19 @@ select:focus {
     cursor: pointer;
     font-size: 16px;
     transition: background 0.3s, transform 0.2s;
+    margin: 0;
 }
 
 .btn:hover {
     background: linear-gradient(45deg, #007BFF, #00FFC8);
     transform: translateY(-2px);
+}
+
+/* Remove extra margins on inputs/labels if any */
+#controlPanel label,
+#controlPanel .input-field {
+    margin: 0;
+    line-height: normal;
 }
 
 #blockSlider {
@@ -697,7 +712,7 @@ select:focus {
     border: 1px solid #444;
     background-color: #111;
     width: 100%;
-    min-height: 500px;
+    min-height: 80vh;
 }
 
 #tooltip {
@@ -772,9 +787,7 @@ select:focus {
     .main-content {
         margin-left: 0 !important;
         margin-top: 10px;
-        /* push content down below the new top bar */
         padding: 20px;
-        /* slightly reduced side padding on mobile */
     }
 
     /* CONTAINER: Make forms + controls stack better */
@@ -802,18 +815,6 @@ select:focus {
         align-items: stretch;
         gap: 10px;
     }
-
-    /* Range + checkbox container: stack them or keep them inline
-       If you want them stacked, uncomment below:
-    */
-    /*
-    #blockSlider {
-      margin-bottom: 10px;
-    }
-    #autoSlideLabel {
-      margin-top: 10px;
-    }
-    */
 
     /* TABLES: Make them more scrollable on smaller screens (optional) */
     #transactionsTable,
