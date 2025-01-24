@@ -152,10 +152,12 @@ if (canvas) {
             ctx.fillStyle = diskGradient;
             ctx.fill();
             ctx.restore();
+
             ctx.beginPath();
             ctx.arc(this.x, this.y, r, 0, Math.PI * 2);
             ctx.fillStyle = this.color;
             ctx.fill();
+
             ctx.beginPath();
             ctx.arc(this.x, this.y, r * 1.1, 0, Math.PI * 2);
             ctx.strokeStyle = `hsla(${this.ringHue}, 100%, 50%, 0.01)`;
@@ -620,27 +622,23 @@ if (eventMapCanvas) {
     const margin = 50;
     let autoSlideInterval = null;
 
+    // For blinking star effect
+    let isEventMapAnimating = false;
+    let eventMapStartTime = performance.now();
+
+    // Local random function (reusing the pattern from above if needed)
+    function randomRange(min, max) {
+        return Math.random() * (max - min) + min;
+    }
+
     function resizeCanvasToDisplaySize(canvasElem) {
         const width = canvasElem.clientWidth;
         const height = canvasElem.clientHeight;
         if (canvasElem.width !== width || canvasElem.height !== height) {
             canvasElem.width = width;
-            canvasElem.height = height || 400; // fallback if height is 0
+            // if there's no fixed height, pick a fallback
+            canvasElem.height = height || 400;
         }
-    }
-
-    function drawAll() {
-        ctxMap.clearRect(0, 0, eventMapCanvas.width, eventMapCanvas.height);
-        // draw centroids first
-        Object.keys(clusterInfo).forEach((cNum) => {
-            drawCentroid(cNum);
-        });
-        // draw points
-        allPoints.forEach(drawPoint);
-        // summary text near centroids
-        Object.keys(clusterInfo).forEach((cNum) => {
-            drawShortSummaryText(cNum);
-        });
     }
 
     function scaleX(xVal) {
@@ -653,24 +651,64 @@ if (eventMapCanvas) {
         return eventMapCanvas.height - margin - (yVal - minY) * scale;
     }
 
+    // Main draw function that draws centroids + points + text
+    function drawAll() {
+        ctxMap.clearRect(0, 0, eventMapCanvas.width, eventMapCanvas.height);
+
+        // 1. Draw centroids first
+        Object.keys(clusterInfo).forEach((cNum) => {
+            drawCentroid(cNum);
+        });
+
+        // 2. Draw each point
+        allPoints.forEach(drawPoint);
+
+        // 3. Summary text near centroids
+        Object.keys(clusterInfo).forEach((cNum) => {
+            drawShortSummaryText(cNum);
+        });
+    }
+
+    // Draw a single data point with blinking effect
     function drawPoint(point) {
+        // Find cluster color or fallback
         const cInfo = clusterInfo[point.clusterNumber];
-        ctxMap.fillStyle = cInfo ? cInfo.color : "#fff";
+        // The base color is "hsl(...)", but we want to generate alpha
+        // We'll parse out the H, S, L from cInfo.color or store the hue only.
+
+        // For simplicity, let's store hue as well (done in setupClusterInfo).
+        // We'll do a flicker factor based on time:
+        const currentTime = (performance.now() - eventMapStartTime) / 1000;
+        // Adjust flicker speed or range as desired:
+        const flicker = 0.5 + 0.5 * Math.sin((currentTime * 2.0) + point.blinkOffset);
+        // flicker in [0,1], so overall alpha is e.g. 0.3 + 0.7*flicker => [0.3..1.0]
+        const alpha = 0.3 + 0.7 * flicker;
+
+        // The final color for filling
+        // We stored: clusterInfo[cNum].hue for the hue
+        // or if you prefer to parse the original "hsl()" string, you can do so.
+        let fillColor = `hsla(${cInfo.hue}, 100%, 50%, ${alpha})`;
+
         const rX = scaleX(point.x);
         const rY = scaleY(point.y);
+
         ctxMap.beginPath();
         ctxMap.arc(rX, rY, 4, 0, 2 * Math.PI);
+        ctxMap.fillStyle = fillColor;
         ctxMap.fill();
     }
 
     function drawCentroid(clusterNumber) {
         const info = clusterInfo[clusterNumber];
         if (!info) return;
-        ctxMap.save();
-        ctxMap.fillStyle = info.color;
+
         const cX = scaleX(info.centroidX);
         const cY = scaleY(info.centroidY);
-        // Diamond shape
+
+        // We'll just draw a diamond shape with the cluster's base color (no flicker)
+        // If you want centroids to flicker as well, do the same alpha trick
+        ctxMap.save();
+        ctxMap.fillStyle = info.color; // original color or do "hsla(info.hue, 100%, 50%, 1.0)"
         ctxMap.beginPath();
         ctxMap.moveTo(cX, cY - 8);
         ctxMap.lineTo(cX + 8, cY);
@@ -691,7 +729,6 @@ if (eventMapCanvas) {
             const metrics = ctx.measureText(testLine);
             const testWidth = metrics.width;
 
-            // If the test line is too long, draw the line and reset
             if (testWidth > maxWidth && n > 0) {
                 ctx.fillText(line, x, currentY);
                 line = words[n] + " ";
@@ -700,7 +737,6 @@ if (eventMapCanvas) {
                 line = testLine;
             }
         }
-        // Draw any leftover text
         if (line) {
             ctx.fillText(line, x, currentY);
         }
@@ -732,6 +768,7 @@ if (eventMapCanvas) {
             minY = -1; maxY = 1;
             return;
         }
+        // also consider centroid positions
         minX = Math.min(...pointsArray.map((p) => Math.min(p.x, p.centroidX)));
         maxX = Math.max(...pointsArray.map((p) => Math.max(p.x, p.centroidX)));
         minY = Math.min(...pointsArray.map((p) => Math.min(p.y, p.centroidY)));
@@ -743,12 +780,17 @@ if (eventMapCanvas) {
         pointsArray.forEach((p) => {
             const cNum = p.clusterNumber;
             if (!clusterInfo[cNum]) {
+                // Instead of storing a single color string, let's store hue as well
+                const hue = (cNum * 50) % 360;
                 clusterInfo[cNum] = {
                     centroidX: p.centroidX,
                     centroidY: p.centroidY,
                     shortSummary: p.clusterSummaryShort,
                     longSummary: p.clusterSummaryLong,
-                    color: `hsl(${(cNum * 50) % 360}, 100%, 50%)`,
+                    // Original color:
+                    color: `hsl(${hue}, 100%, 50%)`,
+                    // Additional field for blinking alpha
+                    hue: hue,
                 };
             }
         });
@@ -778,8 +820,7 @@ if (eventMapCanvas) {
             }
             blockSlider.value = idx;
             loadBlockPointsByIndex(idx);
-            drawAll();
-        }, 500);
+        }, 1000); // changed to 1s for clarity
     }
 
     function stopAutoSlide() {
@@ -787,6 +828,14 @@ if (eventMapCanvas) {
             clearInterval(autoSlideInterval);
             autoSlideInterval = null;
         }
+    }
+
+    // The main animation loop for blinking effect
+    function animateEventMap() {
+        if (!isEventMapAnimating) return;
+        // Re-draw with blinking effect
+        drawAll();
+        requestAnimationFrame(animateEventMap);
     }
 
     if (fetchRangeButton) {
@@ -846,6 +895,8 @@ if (eventMapCanvas) {
                         centroidY: item[7],
                         clusterSummaryShort: item[8],
                         clusterSummaryLong: item[9],
+                        // New: random offset for blinking
+                        blinkOffset: randomRange(0, 2 * Math.PI),
                     };
                     blockPointsData[bNum].push(pointObj);
                     allRangePoints.push(pointObj);
@@ -870,7 +921,12 @@ if (eventMapCanvas) {
 
                 loadBlockPointsByIndex(0);
                 resizeCanvasToDisplaySize(eventMapCanvas);
-                drawAll();
+
+                // Once we have data, we ensure the blinking animation runs
+                if (!isEventMapAnimating) {
+                    isEventMapAnimating = true;
+                    animateEventMap();
+                }
 
                 // Start auto-slide by default (checkbox is unchecked).
                 startAutoSlide();
@@ -888,7 +944,6 @@ if (eventMapCanvas) {
             stopAutoSlide();
             const idx = parseInt(blockSlider.value, 10);
             loadBlockPointsByIndex(idx);
-            drawAll();
         });
     }
 
@@ -902,26 +957,19 @@ if (eventMapCanvas) {
         });
     }
 
-    // -------------
-    // NEW LOGIC BELOW
-    // -------------
+    // On page load, try to set default start/end if empty
     window.addEventListener("load", () => {
-        // If either input is empty, fetch chain length and set defaults
         if (!startBlockInput.value.trim() || !endBlockInput.value.trim()) {
             fetch("https://api.sentichain.com/blockchain/get_chain_length?network=mainnet")
                 .then(res => res.json())
                 .then(data => {
                     const chainLength = data.chain_length;
-                    // Default to the last block as "end"
                     const defaultEnd = chainLength - 1;
-                    // Default start is "end - 50" or 0, whichever is larger
                     const defaultStart = Math.max(defaultEnd - 50, 0);
 
-                    // If the end block field is still empty, populate it
                     if (!endBlockInput.value.trim()) {
                         endBlockInput.value = defaultEnd;
                     }
-                    // If the start block field is still empty, populate it
                     if (!startBlockInput.value.trim()) {
                         startBlockInput.value = defaultStart;
                     }
@@ -930,12 +978,10 @@ if (eventMapCanvas) {
                     console.error("Error fetching chain length:", err);
                 })
                 .finally(() => {
-                    // Resize/draw after defaults are set
                     resizeCanvasToDisplaySize(eventMapCanvas);
                     drawAll();
                 });
         } else {
-            // Fields are already set, just resize and draw
             resizeCanvasToDisplaySize(eventMapCanvas);
             drawAll();
         }
@@ -947,7 +993,7 @@ if (eventMapCanvas) {
         const mouseY = event.clientY - rect.top;
         let hoveredObject = null;
 
-        // check centroids
+        // Check centroids
         for (let cNum in clusterInfo) {
             const info = clusterInfo[cNum];
             const cX = scaleX(info.centroidX);
@@ -959,7 +1005,7 @@ if (eventMapCanvas) {
             }
         }
 
-        // check points if not centroid
+        // Check points if not centroid
         if (!hoveredObject) {
             for (let p of allPoints) {
                 const pX = scaleX(p.x);
