@@ -188,7 +188,7 @@ if (canvas) {
     }
     animate();
 
-    // Fetch block height (for the "Network Status" section)
+    // Fetch block height
     const blockHeightElement = document.getElementById('blockHeight');
     if (blockHeightElement) {
         fetch("https://api.sentichain.com/blockchain/get_chain_length?network=mainnet")
@@ -214,7 +214,7 @@ if (canvas) {
             });
     }
 
-    // Fetch block timestamp (for the "Network Status" section)
+    // Fetch block timestamp
     const blockTimestampElement = document.getElementById('blockTimestamp');
     if (blockTimestampElement) {
         fetch("https://api.sentichain.com/blockchain/get_last_block_time?network=mainnet")
@@ -222,9 +222,7 @@ if (canvas) {
             .then(data => {
                 const timestamp = data.last_block_time;
                 if (timestamp && !isNaN(timestamp)) {
-                    // Convert to date in UTC
                     const date = new Date(timestamp * 1000);
-
                     const year = date.getUTCFullYear();
                     const month = String(date.getUTCMonth() + 1).padStart(2, '0');
                     const day = String(date.getUTCDate()).padStart(2, '0');
@@ -244,7 +242,7 @@ if (canvas) {
             });
     }
 
-    // Fetch txn count (for the "Network Status" section)
+    // Fetch txn count
     const txnCountElement = document.getElementById('txnCount');
     if (txnCountElement) {
         fetch("https://api.sentichain.com/blockchain/get_total_number_of_transactions?network=mainnet")
@@ -290,7 +288,6 @@ function copyToClipboard(elementId) {
     navigator.clipboard
         .writeText(text)
         .then(() => {
-            // figure out which feedback element to show
             let feedbackId;
             if (elementId.startsWith("block")) {
                 const suffix = elementId.replace("block", "");
@@ -612,11 +609,25 @@ if (eventMapCanvas) {
     const margin = 50;
     let autoSlideInterval = null;
 
-    // For blinking star effect
     let isEventMapAnimating = false;
     let eventMapStartTime = performance.now();
 
-    // Local random function
+    // userView is our "camera" in data coords
+    let userView = { x: 0, y: 0, width: 1, height: 1 };
+
+    // For panning
+    let isPanning = false;
+    let panStartX = 0;
+    let panStartY = 0;
+    let initViewX = 0;
+    let initViewY = 0;
+
+    // For pinch
+    let pinchMode = false;
+    let initialPinchDist = 0;
+    let initialPinchCenter = { x: 0, y: 0 }; // in screen coords
+    let initViewOnPinch = { x: 0, y: 0, width: 1, height: 1 };
+
     function randomRange(min, max) {
         return Math.random() * (max - min) + min;
     }
@@ -631,26 +642,40 @@ if (eventMapCanvas) {
     }
 
     function scaleX(xVal) {
-        const scale = (eventMapCanvas.width - 2 * margin) / (maxX - minX || 1);
-        return margin + (xVal - minX) * scale;
+        const scale = (eventMapCanvas.width - 2 * margin) / (userView.width || 1);
+        return margin + (xVal - userView.x) * scale;
     }
 
     function scaleY(yVal) {
-        const scale = (eventMapCanvas.height - 2 * margin) / (maxY - minY || 1);
-        return eventMapCanvas.height - margin - (yVal - minY) * scale;
+        const scale = (eventMapCanvas.height - 2 * margin) / (userView.height || 1);
+        return eventMapCanvas.height - margin - (yVal - userView.y) * scale;
     }
 
-    /**
-     * Build a "zodiac-like" set of lines for each cluster's points.
-     * We'll do a minimal spanning tree so it's connected but not too busy.
-     */
-    function buildLinesForCluster(points) {
-        if (points.length < 2) return []; // no lines if single point
+    function clampUserView() {
+        // If userView is bigger than bounding box, clamp it
+        if (userView.width > (maxX - minX)) {
+            userView.width = (maxX - minX);
+        }
+        if (userView.height > (maxY - minY)) {
+            userView.height = (maxY - minY);
+        }
+        // clamp x
+        if (userView.x < minX) userView.x = minX;
+        if (userView.x + userView.width > maxX) {
+            userView.x = maxX - userView.width;
+        }
+        // clamp y
+        if (userView.y < minY) userView.y = minY;
+        if (userView.y + userView.height > maxY) {
+            userView.y = maxY - userView.height;
+        }
+    }
 
-        // Convert array -> an MST. We'll do a simple Prim's approach.
+    function buildLinesForCluster(points) {
+        if (points.length < 2) return [];
         const lines = [];
         const used = new Set();
-        used.add(0); // pick first point as "in MST"
+        used.add(0);
         const n = points.length;
 
         const dist = (i, j) => {
@@ -662,9 +687,7 @@ if (eventMapCanvas) {
         while (used.size < n) {
             let bestEdge = null;
             let minDistance = Infinity;
-
             for (let i of used) {
-                // from used set to any not-used
                 for (let j = 0; j < n; j++) {
                     if (!used.has(j)) {
                         const d = dist(i, j);
@@ -675,27 +698,19 @@ if (eventMapCanvas) {
                     }
                 }
             }
-            if (!bestEdge) {
-                // all done or no possible edges
-                break;
-            }
-            // attach random lineBlinkOffset for each MST edge
+            if (!bestEdge) break;
             lines.push({
                 i: bestEdge[0],
                 j: bestEdge[1],
                 blinkOffset: randomRange(0, 2 * Math.PI),
             });
-            // mark the new node as used
             used.add(bestEdge[1]);
         }
         return lines;
     }
 
-    // We'll store clusterEdges in each cluster's info, so we can draw them later.
     function setupClusterInfo(pointsArray) {
         clusterInfo = {};
-
-        // Group by cluster
         const clusterMap = {};
         pointsArray.forEach((p) => {
             const cNum = p.clusterNumber;
@@ -705,61 +720,44 @@ if (eventMapCanvas) {
             clusterMap[cNum].push(p);
         });
 
-        // For each cluster, store color + centroid + lines
         Object.keys(clusterMap).forEach((cNumStr) => {
             const cNum = parseInt(cNumStr, 10);
             const clusterPoints = clusterMap[cNum];
-
-            // pick a hue
             const hue = (cNum * 50) % 360;
-            // build MST lines among clusterPoints
             const lines = buildLinesForCluster(clusterPoints);
 
-            // add to clusterInfo
             clusterInfo[cNum] = {
-                centroidX: clusterPoints[0].centroidX, // all have same centroid in data
+                centroidX: clusterPoints[0].centroidX,
                 centroidY: clusterPoints[0].centroidY,
                 shortSummary: clusterPoints[0].clusterSummaryShort,
                 longSummary: clusterPoints[0].clusterSummaryLong,
-                color: `hsl(${hue}, 100%, 50%)`,  // default cluster color
+                color: `hsl(${hue}, 100%, 50%)`,
                 hue,
                 points: clusterPoints,
-                lines, // array of { i, j, blinkOffset }
+                lines,
             };
         });
     }
 
-    // Main draw function: lines -> points -> text
     function drawAll() {
         ctxMap.clearRect(0, 0, eventMapCanvas.width, eventMapCanvas.height);
-
-        // 1. Draw lines for each cluster (with blinking)
         Object.keys(clusterInfo).forEach((cNum) => {
             drawZodiacLines(clusterInfo[cNum]);
         });
-
-        // 2. Draw each flickering point
         allPoints.forEach(drawPoint);
-
-        // 3. Draw centroids + text
         Object.keys(clusterInfo).forEach((cNum) => {
             drawCentroid(clusterInfo[cNum]);
             drawShortSummaryText(clusterInfo[cNum]);
         });
     }
 
-    // Minimal “zodiac lines” within each cluster
     function drawZodiacLines(cluster) {
         if (!cluster.lines || cluster.lines.length === 0) return;
-
         const currentTime = (performance.now() - eventMapStartTime) / 1000;
-
         cluster.lines.forEach((lineObj) => {
-            // each line has a blink offset
             const flicker = 0.5 + 0.5 * Math.sin((currentTime * 2.0) + lineObj.blinkOffset);
-            const alpha = 0.3 + 0.7 * flicker;
-
-            const strokeColor = `hsla(${cluster.hue}, 100%, 20%, ${alpha})`;
+            const alpha = 0.2 + 0.7 * flicker;
+            const strokeColor = `hsla(${cluster.hue}, 100%, 25%, ${alpha})`;
 
             ctxMap.save();
             ctxMap.strokeStyle = strokeColor;
@@ -780,17 +778,13 @@ if (eventMapCanvas) {
         });
     }
 
-    // Flickering point
     function drawPoint(point) {
         const currentTime = (performance.now() - eventMapStartTime) / 1000;
-        // adjust flicker speed + amplitude
         const flicker = 0.5 + 0.5 * Math.sin((currentTime * 2.0) + point.blinkOffset);
         const alpha = 0.3 + 0.7 * flicker;
 
-        // find cluster color
-        const cNum = point.clusterNumber;
-        const cInfo = clusterInfo[cNum];
-        let fillColor = "hsla(0, 0%, 100%, 1)";
+        const cInfo = clusterInfo[point.clusterNumber];
+        let fillColor = "hsla(0,0%,100%,1)";
         if (cInfo) {
             fillColor = `hsla(${cInfo.hue}, 100%, 50%, ${alpha})`;
         }
@@ -804,14 +798,11 @@ if (eventMapCanvas) {
         ctxMap.fill();
     }
 
-    // Draw the diamond centroid
     function drawCentroid(cluster) {
-        if (!cluster) return;
         const cX = scaleX(cluster.centroidX);
         const cY = scaleY(cluster.centroidY);
 
         ctxMap.save();
-        // no alpha flicker for centroid
         ctxMap.fillStyle = cluster.color;
         ctxMap.beginPath();
         ctxMap.moveTo(cX, cY - 8);
@@ -824,7 +815,6 @@ if (eventMapCanvas) {
     }
 
     function drawShortSummaryText(cluster) {
-        if (!cluster) return;
         ctxMap.save();
         ctxMap.fillStyle = "#E0E0E0";
         ctxMap.font = "14px 'Roboto', sans-serif";
@@ -833,12 +823,10 @@ if (eventMapCanvas) {
 
         const maxWidth = 150;
         const lineHeight = 16;
-
         const textX = cX + 10;
         const textY = cY - 10;
 
         wrapText(ctxMap, cluster.shortSummary, textX, textY, maxWidth, lineHeight);
-
         ctxMap.restore();
     }
 
@@ -865,6 +853,7 @@ if (eventMapCanvas) {
         }
     }
 
+    // Calculate bounding box (minX, maxX, etc.).
     function calculateBoundingBox(pointsArray) {
         if (pointsArray.length === 0) {
             minX = -1; maxX = 1;
@@ -892,7 +881,6 @@ if (eventMapCanvas) {
     function startAutoSlide() {
         if (availableBlocks.length <= 1) return;
         stopAutoSlide();
-        // speed => e.g. 1 second
         autoSlideInterval = setInterval(() => {
             let idx = parseInt(blockSlider.value, 10);
             idx++;
@@ -911,13 +899,183 @@ if (eventMapCanvas) {
         }
     }
 
-    // The main animation loop for the Event Map
     function animateEventMap() {
         if (!isEventMapAnimating) return;
         drawAll();
         requestAnimationFrame(animateEventMap);
     }
 
+    /*************************************
+     * "Fit bounding box" with small margin
+     * so it doesn't look too zoomed out
+     *************************************/
+    function initUserView() {
+        const dataWidth = (maxX - minX);
+        const dataHeight = (maxY - minY);
+        // Add a small factor so data doesn't look super tight
+        const factor = 1.1; // e.g. 10% extra
+        userView.width = dataWidth * factor;
+        userView.height = dataHeight * factor;
+
+        // center on bounding box center
+        const dataCenterX = (minX + maxX) / 2;
+        const dataCenterY = (minY + maxY) / 2;
+
+        userView.x = dataCenterX - userView.width / 2;
+        userView.y = dataCenterY - userView.height / 2;
+
+        clampUserView();
+    }
+
+    /*************************************
+     * MOUSE WHEEL ZOOM
+     *************************************/
+    eventMapCanvas.addEventListener("wheel", (e) => {
+        e.preventDefault();
+        if (!allPoints.length) return;
+
+        const zoomFactor = (e.deltaY < 0) ? 0.9 : 1.1;
+        const rect = eventMapCanvas.getBoundingClientRect();
+        const mouseX = e.clientX - rect.left;
+        const mouseY = e.clientY - rect.top;
+
+        const scaleXdata = userView.width / (eventMapCanvas.width - 2 * margin);
+        const scaleYdata = userView.height / (eventMapCanvas.height - 2 * margin);
+
+        const dataX = userView.x + (mouseX - margin) * scaleXdata;
+        const dataY = userView.y + (eventMapCanvas.height - margin - mouseY) * scaleYdata;
+
+        userView.width *= zoomFactor;
+        userView.height *= zoomFactor;
+
+        userView.x = dataX - (dataX - userView.x) * zoomFactor;
+        userView.y = dataY - (dataY - userView.y) * zoomFactor;
+
+        clampUserView();
+    }, { passive: false });
+
+    /*************************************
+     * MOBILE PINCH-TO-ZOOM
+     *************************************/
+    eventMapCanvas.addEventListener("touchstart", (e) => {
+        if (e.touches.length === 1) {
+            // single finger => start panning
+            isPanning = true;
+            pinchMode = false;
+            panStartX = e.touches[0].clientX;
+            panStartY = e.touches[0].clientY;
+            initViewX = userView.x;
+            initViewY = userView.y;
+        } else if (e.touches.length === 2) {
+            // two fingers => pinch
+            pinchMode = true;
+            isPanning = false;
+            initialPinchDist = getTouchDistance(e);
+            initialPinchCenter = getTouchCenter(e);
+            // store the current userView for reference
+            initViewOnPinch = {
+                x: userView.x,
+                y: userView.y,
+                width: userView.width,
+                height: userView.height
+            };
+        }
+    }, { passive: false });
+
+    eventMapCanvas.addEventListener("touchmove", (e) => {
+        if (pinchMode && e.touches.length === 2) {
+            e.preventDefault();
+            // pinch logic
+            const newDist = getTouchDistance(e);
+            const ratio = newDist / initialPinchDist;
+
+            // find new width, height
+            userView.width = initViewOnPinch.width / ratio;
+            userView.height = initViewOnPinch.height / ratio;
+
+            // find the pinch center in screen coords (still the same "initialPinchCenter")
+            const scaleXdata = initViewOnPinch.width / (eventMapCanvas.width - 2 * margin);
+            const scaleYdata = initViewOnPinch.height / (eventMapCanvas.height - 2 * margin);
+
+            // convert initialPinchCenter to data coords based on initViewOnPinch
+            const dataX = initViewOnPinch.x + (initialPinchCenter.x - margin) * scaleXdata;
+            const dataY = initViewOnPinch.y + (eventMapCanvas.height - margin - initialPinchCenter.y) * scaleYdata;
+
+            // keep center the same
+            userView.x = dataX - (dataX - initViewOnPinch.x) / ratio;
+            userView.y = dataY - (dataY - initViewOnPinch.y) / ratio;
+            clampUserView();
+        } else if (isPanning && e.touches.length === 1) {
+            e.preventDefault();
+            // single-finger pan
+            const dx = e.touches[0].clientX - panStartX;
+            const dy = e.touches[0].clientY - panStartY;
+            const scaleXdata = userView.width / (eventMapCanvas.width - 2 * margin);
+            const scaleYdata = userView.height / (eventMapCanvas.height - 2 * margin);
+
+            userView.x = initViewX - dx * scaleXdata;
+            userView.y = initViewY + dy * scaleYdata;
+            clampUserView();
+        }
+    }, { passive: false });
+
+    eventMapCanvas.addEventListener("touchend", (e) => {
+        if (e.touches.length < 2) {
+            pinchMode = false;
+        }
+        if (e.touches.length === 0) {
+            isPanning = false;
+        }
+    });
+
+    // Helpers for pinch
+    function getTouchDistance(e) {
+        if (e.touches.length < 2) return 1;
+        const dx = e.touches[0].clientX - e.touches[1].clientX;
+        const dy = e.touches[0].clientY - e.touches[1].clientY;
+        return Math.sqrt(dx * dx + dy * dy);
+    }
+    function getTouchCenter(e) {
+        if (e.touches.length < 2) {
+            return { x: 0, y: 0 };
+        }
+        return {
+            x: (e.touches[0].clientX + e.touches[1].clientX) / 2,
+            y: (e.touches[0].clientY + e.touches[1].clientY) / 2,
+        };
+    }
+
+    /*************************************
+     * MOUSE PANNING
+     *************************************/
+    eventMapCanvas.addEventListener("mousedown", (e) => {
+        isPanning = true;
+        pinchMode = false;
+        panStartX = e.clientX;
+        panStartY = e.clientY;
+        initViewX = userView.x;
+        initViewY = userView.y;
+    });
+
+    eventMapCanvas.addEventListener("mousemove", (e) => {
+        if (!isPanning) return;
+        const dx = e.clientX - panStartX;
+        const dy = e.clientY - panStartY;
+        const scaleXdata = userView.width / (eventMapCanvas.width - 2 * margin);
+        const scaleYdata = userView.height / (eventMapCanvas.height - 2 * margin);
+
+        userView.x = initViewX - dx * scaleXdata;
+        userView.y = initViewY + dy * scaleYdata;
+        clampUserView();
+    });
+
+    window.addEventListener("mouseup", () => {
+        isPanning = false;
+    });
+
+    /*************************************
+     * DATA FETCH
+     *************************************/
     if (fetchRangeButton) {
         fetchRangeButton.addEventListener("click", async () => {
             stopAutoSlide();
@@ -975,7 +1133,6 @@ if (eventMapCanvas) {
                         centroidY: item[7],
                         clusterSummaryShort: item[8],
                         clusterSummaryLong: item[9],
-                        // random offset for blinking
                         blinkOffset: randomRange(0, 2 * Math.PI),
                     };
                     blockPointsData[bNum].push(pointObj);
@@ -1002,13 +1159,14 @@ if (eventMapCanvas) {
                 loadBlockPointsByIndex(0);
                 resizeCanvasToDisplaySize(eventMapCanvas);
 
-                // Once we have data, ensure blinking animation runs
+                // init userView with a factor so it won't be super zoomed-out
+                initUserView();
+
                 if (!isEventMapAnimating) {
                     isEventMapAnimating = true;
                     animateEventMap();
                 }
 
-                // Start auto-slide by default (checkbox is unchecked).
                 startAutoSlide();
             } catch (err) {
                 alert("Error fetching range: " + err.message);
@@ -1037,7 +1195,6 @@ if (eventMapCanvas) {
         });
     }
 
-    // On page load, try to set default start/end if empty
     window.addEventListener("load", () => {
         if (!startBlockInput.value.trim() || !endBlockInput.value.trim()) {
             fetch("https://api.sentichain.com/blockchain/get_chain_length?network=mainnet")
@@ -1067,7 +1224,12 @@ if (eventMapCanvas) {
         }
     });
 
+    // Tooltips
     eventMapCanvas.addEventListener("mousemove", (event) => {
+        if (isPanning || pinchMode) {
+            tooltip.style.display = "none";
+            return;
+        }
         const rect = eventMapCanvas.getBoundingClientRect();
         const mouseX = event.clientX - rect.left;
         const mouseY = event.clientY - rect.top;
@@ -1085,7 +1247,7 @@ if (eventMapCanvas) {
             }
         }
 
-        // Check points if not centroid
+        // Check points
         if (!hoveredObject) {
             for (let p of allPoints) {
                 const pX = scaleX(p.x);
