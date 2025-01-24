@@ -746,7 +746,7 @@ if (eventMapCanvas) {
             blockSlider.value = idx;
             loadBlockPointsByIndex(idx);
             drawAll();
-        }, 1000);
+        }, 500);
     }
 
     function stopAutoSlide() {
