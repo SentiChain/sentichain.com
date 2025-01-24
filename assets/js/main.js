@@ -22,16 +22,6 @@ if (canvas) {
         return Math.random() * (max - min) + min;
     }
 
-    function throttle(fn, wait) {
-        let time = Date.now();
-        return function () {
-            if ((time + wait - Date.now()) < 0) {
-                fn();
-                time = Date.now();
-            }
-        }
-    }
-
     class Star {
         constructor() {
             this.reset();
@@ -626,7 +616,7 @@ if (eventMapCanvas) {
     let isEventMapAnimating = false;
     let eventMapStartTime = performance.now();
 
-    // Local random function (reusing the pattern from above if needed)
+    // Local random function
     function randomRange(min, max) {
         return Math.random() * (max - min) + min;
     }
@@ -636,7 +626,6 @@ if (eventMapCanvas) {
         const height = canvasElem.clientHeight;
         if (canvasElem.width !== width || canvasElem.height !== height) {
             canvasElem.width = width;
-            // if there's no fixed height, pick a fallback
             canvasElem.height = height || 400;
         }
     }
@@ -651,43 +640,153 @@ if (eventMapCanvas) {
         return eventMapCanvas.height - margin - (yVal - minY) * scale;
     }
 
-    // Main draw function that draws centroids + points + text
-    function drawAll() {
-        ctxMap.clearRect(0, 0, eventMapCanvas.width, eventMapCanvas.height);
+    /**
+     * Build a "zodiac-like" set of lines for each cluster's points.
+     * We’ll do a minimal spanning tree so it's connected but not too busy.
+     */
+    function buildLinesForCluster(points) {
+        if (points.length < 2) return []; // no lines if single point
 
-        // 1. Draw centroids first
-        Object.keys(clusterInfo).forEach((cNum) => {
-            drawCentroid(cNum);
+        // Convert array -> an MST. We'll do a simple Prim's approach.
+        const lines = [];
+        const used = new Set();
+        used.add(0); // pick first point as "in MST"
+        const n = points.length;
+
+        const dist = (i, j) => {
+            const dx = points[i].x - points[j].x;
+            const dy = points[i].y - points[j].y;
+            return Math.sqrt(dx * dx + dy * dy);
+        };
+
+        while (used.size < n) {
+            let bestEdge = null;
+            let minDistance = Infinity;
+
+            for (let i of used) {
+                // from used set to any not-used
+                for (let j = 0; j < n; j++) {
+                    if (!used.has(j)) {
+                        const d = dist(i, j);
+                        if (d < minDistance) {
+                            minDistance = d;
+                            bestEdge = [i, j];
+                        }
+                    }
+                }
+            }
+            if (!bestEdge) {
+                // all done or no possible edges
+                break;
+            }
+            // add that edge
+            lines.push(bestEdge);
+            // mark the new node as used
+            used.add(bestEdge[1]);
+        }
+        return lines;
+    }
+
+    // We'll store clusterEdges in each cluster's info, so we can draw them later.
+    function setupClusterInfo(pointsArray) {
+        // Clear old
+        clusterInfo = {};
+
+        // Group by cluster
+        const clusterMap = {};
+        pointsArray.forEach((p) => {
+            const cNum = p.clusterNumber;
+            if (!clusterMap[cNum]) {
+                clusterMap[cNum] = [];
+            }
+            clusterMap[cNum].push(p);
         });
 
-        // 2. Draw each point
-        allPoints.forEach(drawPoint);
+        // For each cluster, store color + centroid + lines
+        Object.keys(clusterMap).forEach((cNumStr) => {
+            const cNum = parseInt(cNumStr, 10);
+            const clusterPoints = clusterMap[cNum];
 
-        // 3. Summary text near centroids
-        Object.keys(clusterInfo).forEach((cNum) => {
-            drawShortSummaryText(cNum);
+            // pick a hue
+            const hue = (cNum * 50) % 360;
+            // build MST lines among clusterPoints
+            const lines = buildLinesForCluster(clusterPoints);
+
+            // add to clusterInfo
+            clusterInfo[cNum] = {
+                centroidX: clusterPoints[0].centroidX, // all have same centroid in data
+                centroidY: clusterPoints[0].centroidY,
+                shortSummary: clusterPoints[0].clusterSummaryShort,
+                longSummary: clusterPoints[0].clusterSummaryLong,
+                color: `hsl(${hue}, 100%, 50%)`,  // default cluster color
+                hue,
+                points: clusterPoints,
+                lines,
+            };
         });
     }
 
-    // Draw a single data point with blinking effect
-    function drawPoint(point) {
-        // Find cluster color or fallback
-        const cInfo = clusterInfo[point.clusterNumber];
-        // The base color is "hsl(...)", but we want to generate alpha
-        // We'll parse out the H, S, L from cInfo.color or store the hue only.
+    // Main draw function: lines -> points -> text
+    function drawAll() {
+        ctxMap.clearRect(0, 0, eventMapCanvas.width, eventMapCanvas.height);
 
-        // For simplicity, let's store hue as well (done in setupClusterInfo).
-        // We'll do a flicker factor based on time:
+        // 1. Draw lines for each cluster
+        Object.keys(clusterInfo).forEach((cNum) => {
+            drawZodiacLines(clusterInfo[cNum]);
+        });
+
+        // 2. Draw each flickering point
+        allPoints.forEach(drawPoint);
+
+        // 3. Draw centroids + text
+        Object.keys(clusterInfo).forEach((cNum) => {
+            drawCentroid(clusterInfo[cNum]);
+            drawShortSummaryText(clusterInfo[cNum]);
+        });
+    }
+
+    // Minimal “zodiac lines” within each cluster
+    // stored in clusterInfo[cNum].lines = [ [i1, i2], [i3, i4], ...]
+    function drawZodiacLines(cluster) {
+        if (!cluster.lines || cluster.lines.length === 0) return;
+
+        const lineColor = `hsla(${cluster.hue}, 100%, 25%, 0.4)`;
+
+        ctxMap.save();
+        ctxMap.strokeStyle = lineColor;
+        ctxMap.lineWidth = 1.5;
+        ctxMap.beginPath();
+
+        cluster.lines.forEach(([i, j]) => {
+            const p1 = cluster.points[i];
+            const p2 = cluster.points[j];
+            const x1 = scaleX(p1.x);
+            const y1 = scaleY(p1.y);
+            const x2 = scaleX(p2.x);
+            const y2 = scaleY(p2.y);
+            ctxMap.moveTo(x1, y1);
+            ctxMap.lineTo(x2, y2);
+        });
+
+        ctxMap.stroke();
+        ctxMap.restore();
+    }
+
+    // Flickering point
+    function drawPoint(point) {
         const currentTime = (performance.now() - eventMapStartTime) / 1000;
-        // Adjust flicker speed or range as desired:
+        // adjust flicker speed + amplitude
         const flicker = 0.5 + 0.5 * Math.sin((currentTime * 2.0) + point.blinkOffset);
-        // flicker in [0,1], so overall alpha is e.g. 0.3 + 0.7*flicker => [0.3..1.0]
         const alpha = 0.3 + 0.7 * flicker;
 
-        // The final color for filling
-        // We stored: clusterInfo[cNum].hue for the hue
-        // or if you prefer to parse the original "hsl()" string, you can do so.
-        let fillColor = `hsla(${cInfo.hue}, 100%, 50%, ${alpha})`;
+        // find cluster color
+        const cNum = point.clusterNumber;
+        const cInfo = clusterInfo[cNum];
+        // fallback color if missing
+        let fillColor = "hsla(0,0%,100%,1)";
+        if (cInfo) {
+            fillColor = `hsla(${cInfo.hue}, 100%, 50%, ${alpha})`;
+        }
 
         const rX = scaleX(point.x);
         const rY = scaleY(point.y);
@@ -698,17 +797,15 @@ if (eventMapCanvas) {
         ctxMap.fill();
     }
 
-    function drawCentroid(clusterNumber) {
-        const info = clusterInfo[clusterNumber];
-        if (!info) return;
+    // Draw the diamond centroid
+    function drawCentroid(cluster) {
+        if (!cluster) return;
+        const cX = scaleX(cluster.centroidX);
+        const cY = scaleY(cluster.centroidY);
 
-        const cX = scaleX(info.centroidX);
-        const cY = scaleY(info.centroidY);
-
-        // We'll just draw a diamond shape with the cluster's base color (no flicker)
-        // If you want centroids to flicker as well, do the same alpha trick
         ctxMap.save();
-        ctxMap.fillStyle = info.color; // original color or do "hsla(info.hue, 100%, 50%, 1.0)"
+        // no alpha flicker for centroid
+        ctxMap.fillStyle = cluster.color;
         ctxMap.beginPath();
         ctxMap.moveTo(cX, cY - 8);
         ctxMap.lineTo(cX + 8, cY);
@@ -716,6 +813,25 @@ if (eventMapCanvas) {
         ctxMap.lineTo(cX - 8, cY);
         ctxMap.closePath();
         ctxMap.fill();
+        ctxMap.restore();
+    }
+
+    function drawShortSummaryText(cluster) {
+        if (!cluster) return;
+        ctxMap.save();
+        ctxMap.fillStyle = "#E0E0E0";
+        ctxMap.font = "14px 'Roboto', sans-serif";
+        const cX = scaleX(cluster.centroidX);
+        const cY = scaleY(cluster.centroidY);
+
+        const maxWidth = 150;
+        const lineHeight = 16;
+
+        const textX = cX + 10;
+        const textY = cY - 10;
+
+        wrapText(ctxMap, cluster.shortSummary, textX, textY, maxWidth, lineHeight);
+
         ctxMap.restore();
     }
 
@@ -742,58 +858,16 @@ if (eventMapCanvas) {
         }
     }
 
-    function drawShortSummaryText(clusterNumber) {
-        const info = clusterInfo[clusterNumber];
-        if (!info) return;
-        ctxMap.save();
-        ctxMap.fillStyle = "#E0E0E0";
-        ctxMap.font = "14px 'Roboto', sans-serif";
-        const cX = scaleX(info.centroidX);
-        const cY = scaleY(info.centroidY);
-
-        const maxWidth = 150;
-        const lineHeight = 16;
-
-        const textX = cX + 10;
-        const textY = cY - 10;
-
-        wrapText(ctxMap, info.shortSummary, textX, textY, maxWidth, lineHeight);
-
-        ctxMap.restore();
-    }
-
     function calculateBoundingBox(pointsArray) {
         if (pointsArray.length === 0) {
             minX = -1; maxX = 1;
             minY = -1; maxY = 1;
             return;
         }
-        // also consider centroid positions
         minX = Math.min(...pointsArray.map((p) => Math.min(p.x, p.centroidX)));
         maxX = Math.max(...pointsArray.map((p) => Math.max(p.x, p.centroidX)));
         minY = Math.min(...pointsArray.map((p) => Math.min(p.y, p.centroidY)));
         maxY = Math.max(...pointsArray.map((p) => Math.max(p.y, p.centroidY)));
-    }
-
-    function setupClusterInfo(pointsArray) {
-        clusterInfo = {};
-        pointsArray.forEach((p) => {
-            const cNum = p.clusterNumber;
-            if (!clusterInfo[cNum]) {
-                // Instead of storing a single color string, let's store hue as well
-                const hue = (cNum * 50) % 360;
-                clusterInfo[cNum] = {
-                    centroidX: p.centroidX,
-                    centroidY: p.centroidY,
-                    shortSummary: p.clusterSummaryShort,
-                    longSummary: p.clusterSummaryLong,
-                    // Original color:
-                    color: `hsl(${hue}, 100%, 50%)`,
-                    // Additional field for blinking alpha
-                    hue: hue,
-                };
-            }
-        });
     }
 
     function loadBlockPointsByIndex(index) {
@@ -811,7 +885,7 @@ if (eventMapCanvas) {
     function startAutoSlide() {
         if (availableBlocks.length <= 1) return;
         stopAutoSlide();
-        // speed => 1 second
+        // speed => e.g. 1 second
         autoSlideInterval = setInterval(() => {
             let idx = parseInt(blockSlider.value, 10);
             idx++;
@@ -820,7 +894,7 @@ if (eventMapCanvas) {
             }
             blockSlider.value = idx;
             loadBlockPointsByIndex(idx);
-        }, 1000); // changed to 1s for clarity
+        }, 1000);
     }
 
     function stopAutoSlide() {
@@ -830,10 +904,9 @@ if (eventMapCanvas) {
         }
     }
 
-    // The main animation loop for blinking effect
+    // The main animation loop for the Event Map
     function animateEventMap() {
         if (!isEventMapAnimating) return;
-        // Re-draw with blinking effect
         drawAll();
         requestAnimationFrame(animateEventMap);
     }
@@ -895,7 +968,6 @@ if (eventMapCanvas) {
                         centroidY: item[7],
                         clusterSummaryShort: item[8],
                         clusterSummaryLong: item[9],
-                        // New: random offset for blinking
                         blinkOffset: randomRange(0, 2 * Math.PI),
                     };
                     blockPointsData[bNum].push(pointObj);
@@ -922,7 +994,7 @@ if (eventMapCanvas) {
                 loadBlockPointsByIndex(0);
                 resizeCanvasToDisplaySize(eventMapCanvas);
 
-                // Once we have data, we ensure the blinking animation runs
+                // Once we have data, ensure blinking animation runs
                 if (!isEventMapAnimating) {
                     isEventMapAnimating = true;
                     animateEventMap();
