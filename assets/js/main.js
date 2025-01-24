@@ -681,6 +681,31 @@ if (eventMapCanvas) {
         ctxMap.restore();
     }
 
+    function wrapText(ctx, text, x, y, maxWidth, lineHeight) {
+        const words = text.split(" ");
+        let line = "";
+        let currentY = y;
+
+        for (let n = 0; n < words.length; n++) {
+            const testLine = line + words[n] + " ";
+            const metrics = ctx.measureText(testLine);
+            const testWidth = metrics.width;
+
+            // If the test line is too long, draw the line and reset
+            if (testWidth > maxWidth && n > 0) {
+                ctx.fillText(line, x, currentY);
+                line = words[n] + " ";
+                currentY += lineHeight;
+            } else {
+                line = testLine;
+            }
+        }
+        // Draw any leftover text
+        if (line) {
+            ctx.fillText(line, x, currentY);
+        }
+    }
+
     function drawShortSummaryText(clusterNumber) {
         const info = clusterInfo[clusterNumber];
         if (!info) return;
@@ -689,7 +714,15 @@ if (eventMapCanvas) {
         ctxMap.font = "14px 'Roboto', sans-serif";
         const cX = scaleX(info.centroidX);
         const cY = scaleY(info.centroidY);
-        ctxMap.fillText(info.shortSummary, cX + 10, cY - 10);
+
+        const maxWidth = 150;
+        const lineHeight = 16;
+
+        const textX = cX + 10;
+        const textY = cY - 10;
+
+        wrapText(ctxMap, info.shortSummary, textX, textY, maxWidth, lineHeight);
+
         ctxMap.restore();
     }
 
