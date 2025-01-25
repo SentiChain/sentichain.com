@@ -62,6 +62,7 @@
       </svg>
 
       <!-- Layer 3 Content (Top, Left) -->
+      <!-- No changes for Layer 3 here -->
       <div class="layer-box layer3-box">
         <h3>Layer 3</h3>
         Bet on tomorrow’s sentiment shifts. From presidential outcomes to crypto surges, harness the power of collective
@@ -71,7 +72,8 @@
       <div class="layer-point layer3-point"></div>
 
       <!-- Layer 2 Content (Middle, Right) -->
-      <div class="layer-box layer2-box">
+      <!-- Entire box is now clickable: going to Event Map -->
+      <div class="layer-box layer2-box" onclick="window.location.href='/app?tab=EventMap'" style="cursor:pointer;">
         <h3>Layer 2</h3>
         2D map of live sentiment trends. Instantly grasp dominant discussions and market mood without sifting through
         millions of data points.
@@ -80,7 +82,8 @@
       <div class="layer-point layer2-point"></div>
 
       <!-- Layer 1 Content (Bottom, Left) -->
-      <div class="layer-box layer1-box">
+      <!-- Entire box is now clickable: going to Block Explorer -->
+      <div class="layer-box layer1-box" onclick="window.location.href='/app?tab=BlockExplorer'" style="cursor:pointer;">
         <h3>Layer 1</h3>
         Proof of Verification safeguards sentiment data integrity. Each block is secured by a Merkle Root, ensuring an
         unalterable ledger of market sentiments.
@@ -97,6 +100,7 @@
     </p>
 
     <div class="metrics-container">
+      <!-- Clicking these will fetch the last block in Block Explorer -->
       <div class="metric-box">
         <h3>Block Height</h3>
         <p2 id="blockHeight">0</p2>
@@ -122,6 +126,35 @@
 
   <!-- Link to our consolidated JS (placed at end of body) -->
   <script src="assets/js/main.js"></script>
+
+  <script>
+    // Make Block Height, Block Time, and Transactions clickable
+    // to open Block Explorer and fetch the last block automatically
+    window.addEventListener('DOMContentLoaded', () => {
+      const bh = document.getElementById('blockHeight');
+      const bt = document.getElementById('blockTimestamp');
+      const tx = document.getElementById('txnCount');
+
+      if (bh) {
+        bh.style.cursor = 'pointer';
+        bh.addEventListener('click', () => {
+          window.location.href = '/app?tab=BlockExplorer&block=last';
+        });
+      }
+      if (bt) {
+        bt.style.cursor = 'pointer';
+        bt.addEventListener('click', () => {
+          window.location.href = '/app?tab=BlockExplorer&block=last';
+        });
+      }
+      if (tx) {
+        tx.style.cursor = 'pointer';
+        tx.addEventListener('click', () => {
+          window.location.href = '/app?tab=BlockExplorer&block=last';
+        });
+      }
+    });
+  </script>
 </body>
 
 </html>
