@@ -1015,7 +1015,7 @@ if (eventMapCanvas) {
                 const dataY =
                     initViewOnPinch.y +
                     (eventMapCanvas.height - margin - initialPinchCenter.y) *
-                        scaleYdata;
+                    scaleYdata;
 
                 userView.x = dataX - (dataX - initViewOnPinch.x) / ratio;
                 userView.y = dataY - (dataY - initViewOnPinch.y) / ratio;

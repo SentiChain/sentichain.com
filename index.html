@@ -62,7 +62,6 @@
       </svg>
 
       <!-- Layer 3 Content (Top, Left) -->
-      <!-- No changes for Layer 3 here -->
       <div class="layer-box layer3-box">
         <h3>Layer 3</h3>
         Bet on tomorrow’s sentiment shifts. From presidential outcomes to crypto surges, harness the power of collective
@@ -72,7 +71,7 @@
       <div class="layer-point layer3-point"></div>
 
       <!-- Layer 2 Content (Middle, Right) -->
-      <!-- Entire box is now clickable: going to Event Map -->
+      <!-- Entire box is clickable: going to Event Map -->
       <div class="layer-box layer2-box" onclick="window.location.href='/app?tab=EventMap'" style="cursor:pointer;">
         <h3>Layer 2</h3>
         2D map of live sentiment trends. Instantly grasp dominant discussions and market mood without sifting through
@@ -82,7 +81,7 @@
       <div class="layer-point layer2-point"></div>
 
       <!-- Layer 1 Content (Bottom, Left) -->
-      <!-- Entire box is now clickable: going to Block Explorer -->
+      <!-- Entire box is clickable: going to Block Explorer -->
       <div class="layer-box layer1-box" onclick="window.location.href='/app?tab=BlockExplorer'" style="cursor:pointer;">
         <h3>Layer 1</h3>
         Proof of Verification safeguards sentiment data integrity. Each block is secured by a Merkle Root, ensuring an
@@ -100,18 +99,18 @@
     </p>
 
     <div class="metrics-container">
-      <!-- Clicking these will fetch the last block in Block Explorer -->
-      <div class="metric-box">
+      <!-- Now the entire box is clickable, with an ID for easy JavaScript reference -->
+      <div class="metric-box" id="blockHeightBox">
         <h3>Block Height</h3>
-        <p2 id="blockHeight">0</p2>
+        <span id="blockHeight">0</span>
       </div>
-      <div class="metric-box">
+      <div class="metric-box" id="blockTimeBox">
         <h3>Block Time</h3>
-        <p2 id="blockTimestamp">0</p2>
+        <span id="blockTimestamp">0</span>
       </div>
-      <div class="metric-box">
+      <div class="metric-box" id="txnCountBox">
         <h3>Transactions</h3>
-        <p2 id="txnCount">0</p2>
+        <span id="txnCount">0</span>
       </div>
     </div>
   </section>
@@ -128,28 +127,27 @@
   <script src="assets/js/main.js"></script>
 
   <script>
-    // Make Block Height, Block Time, and Transactions clickable
-    // to open Block Explorer and fetch the last block automatically
-    window.addEventListener('DOMContentLoaded', () => {
-      const bh = document.getElementById('blockHeight');
-      const bt = document.getElementById('blockTimestamp');
-      const tx = document.getElementById('txnCount');
+    // Make the metric boxes truly clickable
+    document.addEventListener('DOMContentLoaded', () => {
+      const blockHeightBox = document.getElementById('blockHeightBox');
+      const blockTimeBox = document.getElementById('blockTimeBox');
+      const txnCountBox = document.getElementById('txnCountBox');
 
-      if (bh) {
-        bh.style.cursor = 'pointer';
-        bh.addEventListener('click', () => {
+      if (blockHeightBox) {
+        blockHeightBox.style.cursor = 'pointer';
+        blockHeightBox.addEventListener('click', () => {
           window.location.href = '/app?tab=BlockExplorer&block=last';
         });
       }
-      if (bt) {
-        bt.style.cursor = 'pointer';
-        bt.addEventListener('click', () => {
+      if (blockTimeBox) {
+        blockTimeBox.style.cursor = 'pointer';
+        blockTimeBox.addEventListener('click', () => {
           window.location.href = '/app?tab=BlockExplorer&block=last';
         });
       }
-      if (tx) {
-        tx.style.cursor = 'pointer';
-        tx.addEventListener('click', () => {
+      if (txnCountBox) {
+        txnCountBox.style.cursor = 'pointer';
+        txnCountBox.addEventListener('click', () => {
           window.location.href = '/app?tab=BlockExplorer&block=last';
         });
       }
