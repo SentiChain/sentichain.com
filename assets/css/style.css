@@ -71,7 +71,7 @@ a:hover {
     font-size: 6rem;
     color: #00FFC8;
     text-shadow: 0 0 10px #00FFC8, 0 0 20px #00FFC8;
-    cursor: pointer;
+    cursor: default;
     font-weight: 700;
 }
 
@@ -99,6 +99,41 @@ a:hover {
     text-shadow: 0 0 10px #00FFC8, 0 0 20px #00FFC8;
     cursor: pointer;
     font-weight: 700;
+}
+
+.menu-button {
+    position: absolute;
+    top: 60px;
+    right: 100px;
+    z-index: 999;
+}
+
+.menu-button button {
+    background: transparent;
+    border: 2px solid #00FFC8;
+    color: #00FFC8;
+    font-family: 'Roboto', sans-serif;
+    font-size: 1rem;
+    padding: 8px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.menu-button button:hover {
+    background-color: transparent;
+    color: #00FFC8;
+}
+
+@media (max-width: 768px) {
+    .menu-button {
+        top: 40px;
+        right: 60px;
+    }
+
+    .menu-button button {
+        font-size: 0.9rem;
+    }
 }
 
 @media (max-width: 768px) {

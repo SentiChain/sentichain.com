@@ -22,14 +22,20 @@
   <link rel="icon" href="favicon.svg" type="image/svg+xml" />
   <!-- Link to our consolidated CSS -->
   <link rel="stylesheet" href="assets/css/style.css" />
+
 </head>
 
 <body>
   <section class="hero-section">
+    <!-- Menu button -->
+    <div class="menu-button">
+      <button onclick="window.location.href='/app'">App</button>
+    </div>
+
     <!-- Black hole canvas -->
     <canvas id="animationCanvas"></canvas>
     <div class="overlay">
-      <h1 onclick="window.location.href='/app'">SentiChain</h1>
+      <h1>SentiChain</h1>
       <p class="subtitle">
         Decentralized<br>Sentiment Gathering
       </p>
@@ -44,7 +50,7 @@
     <p>
       The SentiChain ecosystem is built in layers, like a rocket. Each layer strengthens
       the foundation of sentiment data, refines it into insights, and culminates in
-      strategic foresight.<br>
+      strategic foresight.
     </p>
 
     <div class="rocket-wrapper">
@@ -71,7 +77,6 @@
       <div class="layer-point layer3-point"></div>
 
       <!-- Layer 2 Content (Middle, Right) -->
-      <!-- Entire box is clickable: going to Event Map -->
       <div class="layer-box layer2-box" onclick="window.location.href='/app?tab=EventMap'" style="cursor:pointer;">
         <h3>Layer 2</h3>
         2D map of live sentiment trends. Instantly grasp dominant discussions and market mood without sifting through
@@ -81,7 +86,6 @@
       <div class="layer-point layer2-point"></div>
 
       <!-- Layer 1 Content (Bottom, Left) -->
-      <!-- Entire box is clickable: going to Block Explorer -->
       <div class="layer-box layer1-box" onclick="window.location.href='/app?tab=BlockExplorer'" style="cursor:pointer;">
         <h3>Layer 1</h3>
         Proof of Verification safeguards sentiment data integrity. Each block is secured by a Merkle Root, ensuring an
@@ -95,11 +99,10 @@
   <section class="metrics-section">
     <h2>Network Status</h2>
     <p>
-      Every pulse of data fuels our journey in sentiment discovery.<br>
+      Every pulse of data fuels our journey in sentiment discovery.
     </p>
 
     <div class="metrics-container">
-      <!-- Now the entire box is clickable, with an ID for easy JavaScript reference -->
       <div class="metric-box" id="blockHeightBox">
         <h3>Block Height</h3>
         <span id="blockHeight">0</span>
@@ -127,30 +130,20 @@
   <script src="assets/js/main.js"></script>
 
   <script>
-    // Make the metric boxes truly clickable
+    // Make the metric boxes clickable (to fetch last block)
     document.addEventListener('DOMContentLoaded', () => {
       const blockHeightBox = document.getElementById('blockHeightBox');
       const blockTimeBox = document.getElementById('blockTimeBox');
       const txnCountBox = document.getElementById('txnCountBox');
 
-      if (blockHeightBox) {
-        blockHeightBox.style.cursor = 'pointer';
-        blockHeightBox.addEventListener('click', () => {
-          window.location.href = '/app?tab=BlockExplorer&block=last';
-        });
-      }
-      if (blockTimeBox) {
-        blockTimeBox.style.cursor = 'pointer';
-        blockTimeBox.addEventListener('click', () => {
-          window.location.href = '/app?tab=BlockExplorer&block=last';
-        });
-      }
-      if (txnCountBox) {
-        txnCountBox.style.cursor = 'pointer';
-        txnCountBox.addEventListener('click', () => {
-          window.location.href = '/app?tab=BlockExplorer&block=last';
-        });
-      }
+      [blockHeightBox, blockTimeBox, txnCountBox].forEach(box => {
+        if (box) {
+          box.style.cursor = 'pointer';
+          box.addEventListener('click', () => {
+            window.location.href = '/app?tab=BlockExplorer&block=last';
+          });
+        }
+      });
     });
   </script>
 </body>
