@@ -223,15 +223,10 @@ if (canvas) {
                 const timestamp = data.last_block_time;
                 if (timestamp && !isNaN(timestamp)) {
                     const date = new Date(timestamp * 1000);
-                    const year = date.getUTCFullYear();
-                    const month = String(date.getUTCMonth() + 1).padStart(2, '0');
-                    const day = String(date.getUTCDate()).padStart(2, '0');
-                    const hours = String(date.getUTCHours()).padStart(2, '0');
-                    const minutes = String(date.getUTCMinutes()).padStart(2, '0');
-                    const seconds = String(date.getUTCSeconds()).padStart(2, '0');
-
-                    blockTimestampElement.textContent =
-                        `${year}-${month}-${day} ${hours}:${minutes}:${seconds} (UTC)`;
+                    blockTimestampElement.textContent = date.toLocaleString("en-US", {
+                        timeZoneName: "short",
+                        hour12: false
+                    });
                 } else {
                     blockTimestampElement.textContent = 'N/A';
                 }
