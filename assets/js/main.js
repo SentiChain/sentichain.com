@@ -131,7 +131,10 @@ if (canvas) {
             ctx.rotate(this.ringRotation);
             ctx.scale(1.1, 1);
             const diskGradient = ctx.createRadialGradient(0, 0, r, 0, 0, outerRingRadius);
-            diskGradient.addColorStop(0, `hsla(${this.ringHue}, 100%, 50%, ${brightnessFactor})`);
+            diskGradient.addColorStop(
+                0,
+                `hsla(${this.ringHue}, 100%, 50%, ${brightnessFactor})`
+            );
             diskGradient.addColorStop(1, 'rgba(0, 0, 0, 0)');
             ctx.beginPath();
             ctx.arc(0, 0, outerRingRadius, 0, Math.PI * 2);
@@ -225,8 +228,7 @@ if (canvas) {
                     const minutes = String(date.getUTCMinutes()).padStart(2, '0');
                     const secs = String(date.getUTCSeconds()).padStart(2, '0');
 
-                    blockTimeElement.textContent =
-                        `${year}-${month}-${day} ${hours}:${minutes}:${secs} (UTC)`;
+                    blockTimeElement.textContent = `${year}-${month}-${day} ${hours}:${minutes}:${secs} (UTC)`;
 
                     let nowSec = Date.now() / 1000;
                     let elapsed = Math.round(nowSec - timestamp);
@@ -252,7 +254,9 @@ if (canvas) {
 
     const txnCountElement = document.getElementById('txnCount');
     if (txnCountElement) {
-        fetch('https://api.sentichain.com/blockchain/get_total_number_of_transactions?network=mainnet')
+        fetch(
+            'https://api.sentichain.com/blockchain/get_total_number_of_transactions?network=mainnet'
+        )
             .then((res) => res.json())
             .then((data) => {
                 const targetCount = data.total_tx_count;
@@ -283,6 +287,10 @@ function openTab(evt, tabName) {
     tabcontents.forEach((content) => (content.style.display = 'none'));
     document.getElementById(tabName).style.display = 'block';
     evt.currentTarget.classList.add('active');
+
+    if (tabName === 'EventMap') {
+        reflowEventMapCanvas();
+    }
 }
 
 function copyToClipboard(elementId) {
@@ -393,9 +401,7 @@ function doBlockExplorerFetch(network, blockNumber) {
                 throw new Error('Block not found.');
             }
             if (!response.ok) {
-                throw new Error(
-                    `Server error: ${response.status} ${response.statusText}`
-                );
+                throw new Error(`Server error: ${response.status} ${response.statusText}`);
             }
             return response.json();
         })
@@ -472,87 +478,87 @@ function doBlockExplorerFetch(network, blockNumber) {
                     const copyFeedbackVectorSignatureId = `copyFeedbackVectorSignature_${sanitizedTxHash}`;
 
                     detailsCell.innerHTML = `
-              <table class="details-table">
-                <tr>
-                  <td><strong>Nonce:</strong> ${tx.nonce}</td>
-                </tr>
-                <tr>
-                  <td><strong>Post Content:</strong>
-                    <div
-                      class="copyable-output"
-                      id="${postContentId}"
-                      onclick="copyToClipboard('${postContentId}')"
-                      title="Click to copy"
-                    >
-                      ${tx.post_content}
-                    </div>
-                  </td>
-                </tr>
-                <tr>
-                  <td><strong>Post Link:</strong>
-                    <a href="https://x.com/${tx.post_link}" target="_blank">
-                      View Post
-                    </a>
-                  </td>
-                </tr>
-                <tr>
-                  <td><strong>Sender:</strong> ${tx.sender}</td>
-                </tr>
-                <tr>
-                  <td><strong>Signature:</strong>
-                    <div
-                      class="signature-output"
-                      id="${signatureId}"
-                      onclick="copyToClipboard('${signatureId}')"
-                      title="Click to copy"
-                    >
-                      ${tx.signature}
-                    </div>
-                  </td>
-                </tr>
-                <tr>
-                  <td><strong>Vector:</strong>
-                    <div
-                      class="copyable-output"
-                      id="${vectorId}"
-                      onclick="copyToClipboard('${vectorId}')"
-                      title="Click to copy"
-                    >
-                      ${serializedVector}
-                    </div>
-                  </td>
-                </tr>
-                <tr>
-                  <td><strong>Public Key:</strong>
-                    <div
-                      class="copyable-output"
-                      id="${publicKeyId}"
-                      onclick="copyToClipboard('${publicKeyId}')"
-                      title="Click to copy"
-                    >
-                      ${tx.public_key}
-                    </div>
-                  </td>
-                </tr>
-                <tr>
-                  <td><strong>Vector Signature:</strong>
-                    <div
-                      class="copyable-output"
-                      id="${vectorSignatureId}"
-                      onclick="copyToClipboard('${vectorSignatureId}')"
-                      title="Click to copy"
-                    >
-                      ${tx.vector_signature}
-                    </div>
-                  </td>
-                </tr>
-              </table>
-              <div class="copy-feedback" id="${copyFeedbackVectorId}">Copied!</div>
-              <div class="copy-feedback" id="${copyFeedbackSignatureId}">Copied!</div>
-              <div class="copy-feedback" id="${copyFeedbackPostContentId}">Copied!</div>
-              <div class="copy-feedback" id="${copyFeedbackPublicKeyId}">Copied!</div>
-              <div class="copy-feedback" id="${copyFeedbackVectorSignatureId}">Copied!</div>
-            `;
+            <table class="details-table">
+              <tr>
+                <td><strong>Nonce:</strong> ${tx.nonce}</td>
+              </tr>
+              <tr>
+                <td><strong>Post Content:</strong>
+                  <div
+                    class="copyable-output"
+                    id="${postContentId}"
+                    onclick="copyToClipboard('${postContentId}')"
+                    title="Click to copy"
+                  >
+                    ${tx.post_content}
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td><strong>Post Link:</strong>
+                  <a href="https://x.com/${tx.post_link}" target="_blank">
+                    View Post
+                  </a>
+                </td>
+              </tr>
+              <tr>
+                <td><strong>Sender:</strong> ${tx.sender}</td>
+              </tr>
+              <tr>
+                <td><strong>Signature:</strong>
+                  <div
+                    class="signature-output"
+                    id="${signatureId}"
+                    onclick="copyToClipboard('${signatureId}')"
+                    title="Click to copy"
+                  >
+                    ${tx.signature}
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td><strong>Vector:</strong>
+                  <div
+                    class="copyable-output"
+                    id="${vectorId}"
+                    onclick="copyToClipboard('${vectorId}')"
+                    title="Click to copy"
+                  >
+                    ${serializedVector}
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td><strong>Public Key:</strong>
+                  <div
+                    class="copyable-output"
+                    id="${publicKeyId}"
+                    onclick="copyToClipboard('${publicKeyId}')"
+                    title="Click to copy"
+                  >
+                    ${tx.public_key}
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td><strong>Vector Signature:</strong>
+                  <div
+                    class="copyable-output"
+                    id="${vectorSignatureId}"
+                    onclick="copyToClipboard('${vectorSignatureId}')"
+                    title="Click to copy"
+                  >
+                    ${tx.vector_signature}
+                  </div>
+                </td>
+              </tr>
+            </table>
+            <div class="copy-feedback" id="${copyFeedbackVectorId}">Copied!</div>
+            <div class="copy-feedback" id="${copyFeedbackSignatureId}">Copied!</div>
+            <div class="copy-feedback" id="${copyFeedbackPostContentId}">Copied!</div>
+            <div class="copy-feedback" id="${copyFeedbackPublicKeyId}">Copied!</div>
+            <div class="copy-feedback" id="${copyFeedbackVectorSignatureId}">Copied!</div>
+          `;
                     detailsRow.appendChild(detailsCell);
 
                     toggleDetailsBtn.onclick = () => {
@@ -579,6 +585,7 @@ function doBlockExplorerFetch(network, blockNumber) {
         })
         .catch((error) => {
             console.error('Block Explorer Error:', error);
+            const resultDiv = document.getElementById('blockExplorerResult');
             resultDiv.classList.add('error');
             blockErrorMessageDiv.innerText = `Error: ${error.message}`;
             blockErrorMessageDiv.style.display = 'block';
@@ -601,6 +608,8 @@ if (blockExplorerForm) {
 }
 
 const eventMapCanvas = document.getElementById('pointsCanvas');
+let isEventMapAnimating = false;
+
 if (eventMapCanvas) {
     const mapProcessingMessage = document.getElementById('mapProcessingMessage');
     const startBlockInput = document.getElementById('startBlockInput');
@@ -609,7 +618,6 @@ if (eventMapCanvas) {
     const blockSlider = document.getElementById('blockSlider');
     const autoSlideCheckbox = document.getElementById('autoSlideCheckbox');
     const tooltip = document.getElementById('tooltip');
-
     const ctxMap = eventMapCanvas.getContext('2d');
 
     let blockPointsData = {};
@@ -621,8 +629,6 @@ if (eventMapCanvas) {
     let minX, maxX, minY, maxY;
     const margin = 50;
     let autoSlideInterval = null;
-
-    let isEventMapAnimating = false;
     let eventMapStartTime = performance.now();
 
     let userView = { x: 0, y: 0, width: 1, height: 1 };
@@ -929,6 +935,13 @@ if (eventMapCanvas) {
         clampUserView();
     }
 
+    function reflowEventMapCanvas() {
+        if (eventMapCanvas && document.getElementById('EventMap').style.display === 'block') {
+            resizeCanvasToDisplaySize(eventMapCanvas);
+            drawAll();
+        }
+    }
+
     eventMapCanvas.addEventListener(
         'wheel',
         (e) => {
@@ -1005,8 +1018,7 @@ if (eventMapCanvas) {
                     initViewOnPinch.x + (initialPinchCenter.x - margin) * scaleXdata;
                 const dataY =
                     initViewOnPinch.y +
-                    (eventMapCanvas.height - margin - initialPinchCenter.y) *
-                    scaleYdata;
+                    (eventMapCanvas.height - margin - initialPinchCenter.y) * scaleYdata;
 
                 userView.x = dataX - (dataX - initViewOnPinch.x) / ratio;
                 userView.y = dataY - (dataY - initViewOnPinch.y) / ratio;
@@ -1283,8 +1295,12 @@ if (eventMapCanvas) {
     eventMapCanvas.addEventListener('mouseleave', () => {
         tooltip.style.display = 'none';
     });
+
+    // We'll reflow the canvas on window resize
+    window.addEventListener('resize', reflowEventMapCanvas);
 }
 
+// === SIDEBAR TOGGLE LOGIC (applies to app.html) ===
 window.addEventListener('DOMContentLoaded', () => {
     const params = new URLSearchParams(window.location.search);
     const tab = params.get('tab');
@@ -1322,5 +1338,60 @@ window.addEventListener('DOMContentLoaded', () => {
             .catch((err) => {
                 console.error('Error fetching chain length: ', err);
             });
+    }
+
+    const sidebar = document.querySelector('.sidebar');
+    const toggleButton = document.getElementById('toggleSidebarButton');
+
+    // === NEW LOGIC FOR MOBILE ===
+    // If mobile width => always show sidebar, hide toggle button, skip toggling logic
+    if (window.innerWidth <= 768) {
+        if (sidebar) {
+            sidebar.classList.remove('collapsed'); // ensure it's shown
+        }
+        if (toggleButton) {
+            toggleButton.style.display = 'none';
+        }
+        return; // skip the rest of the toggle logic
+    }
+
+    // Otherwise (desktop) => do the normal toggle
+    if (sidebar && toggleButton) {
+        // Show or hide the button depending on sidebar's initial state
+        if (sidebar.classList.contains('collapsed')) {
+            toggleButton.style.display = 'block';
+        } else {
+            toggleButton.style.display = 'none';
+        }
+
+        // Clicking the floating button => expand sidebar
+        toggleButton.addEventListener('click', () => {
+            sidebar.classList.remove('collapsed');
+            toggleButton.style.display = 'none';
+        });
+
+        // If user clicks anywhere outside the sidebar (and not the toggle button) => collapse
+        document.addEventListener('click', (e) => {
+            // Only if sidebar is open
+            if (!sidebar.classList.contains('collapsed')) {
+                // If the click is outside sidebar AND outside toggle button => collapse
+                if (!sidebar.contains(e.target) && !toggleButton.contains(e.target)) {
+                    sidebar.classList.add('collapsed');
+                    toggleButton.style.display = 'block';
+                }
+            }
+        });
+
+        // After the sidebar finishes transitioning, reflow the EventMap canvas if needed
+        sidebar.addEventListener('transitionend', (e) => {
+            if (e.propertyName === 'width') {
+                // If the "EventMap" tab is open, re-draw
+                if (document.getElementById('EventMap')?.style.display === 'block') {
+                    if (typeof reflowEventMapCanvas === 'function') {
+                        reflowEventMapCanvas();
+                    }
+                }
+            }
+        });
     }
 });

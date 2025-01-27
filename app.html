@@ -11,7 +11,14 @@
 </head>
 
 <body>
-    <div class="sidebar">
+
+    <!-- FLOATING DOUBLE-ARROW BUTTON (hidden on mobile via CSS) -->
+    <div id="toggleSidebarButton" class="toggle-sidebar-button" style="display: none;">
+        »»
+    </div>
+
+    <!-- SIDEBAR: collapsed by default (desktop), forcibly open on mobile -->
+    <div class="sidebar collapsed">
         <h2><a href="/" class="senti-link">SentiChain</a></h2>
 
         <a href="#" class="tablinks active" onclick="openTab(event, 'BlockExplorer')">
@@ -110,8 +117,12 @@
                     </label>
                 </div>
 
-                <div id="mapProcessingMessage"
-                    style="display: none; color: #00FFC8; margin-bottom: 10px; font-style: italic;">
+                <div id="mapProcessingMessage" style="
+            display: none;
+            color: #00FFC8;
+            margin-bottom: 10px;
+            font-style: italic;
+          ">
                     Fetching event map data...
                 </div>
 
