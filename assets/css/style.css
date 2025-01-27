@@ -1,11 +1,5 @@
-/* ----------------------------------------------------
-   1) IMPORT FONTS
--------------------------------------------------------*/
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
 
-/* ----------------------------------------------------
-   2) RESET / BASE
--------------------------------------------------------*/
 * {
     margin: 0;
     padding: 0;
@@ -19,12 +13,10 @@ body {
     font-family: 'Roboto', sans-serif;
     color: #fff;
     background-color: #000;
-    /* can override if needed */
     overflow-x: hidden;
     overflow-y: auto;
 }
 
-/* Links */
 a {
     color: #00FFC8;
     text-decoration: none;
@@ -34,11 +26,6 @@ a:hover {
     text-decoration: underline;
 }
 
-/* ----------------------------------------------------
-   3) INDEX.HTML STYLES
--------------------------------------------------------*/
-
-/* Hero Section (the black hole canvas) */
 .hero-section {
     position: relative;
     width: 100%;
@@ -142,7 +129,6 @@ a:hover {
     }
 }
 
-/* Intro Section */
 .intro-section {
     position: relative;
     min-height: 120vh;
@@ -194,7 +180,6 @@ a:hover {
     transition: all 0.3s ease;
 }
 
-/* Layer label boxes near the rocket */
 .layer-box {
     position: absolute;
     background: rgba(0, 255, 200, 0.1);
@@ -227,7 +212,6 @@ a:hover {
     border-radius: 50%;
 }
 
-/* Specific positions for the rocket labels (approx) */
 .layer3-box {
     top: 10%;
     left: -420px;
@@ -279,7 +263,6 @@ a:hover {
     left: 70px;
 }
 
-/* Network Metrics Section */
 .metrics-section {
     background: #000;
     padding: 100px 20px;
@@ -313,7 +296,7 @@ a:hover {
 .metrics-container {
     display: flex;
     justify-content: center;
-    gap: 100px;
+    gap: 50px;
     flex-wrap: wrap;
 }
 
@@ -360,7 +343,6 @@ a:hover {
     opacity: 0.1;
 }
 
-/* Footer */
 footer {
     background: #000;
     color: #ccc;
@@ -369,9 +351,6 @@ footer {
     font-size: 0.9rem;
 }
 
-/* ----------------------------------------------------
-   4) APP.HTML STYLES (SIDEBAR, MAIN CONTENT, etc.)
--------------------------------------------------------*/
 .sidebar {
     position: fixed;
     top: 0;
@@ -442,7 +421,6 @@ h2 .senti-link {
     font-size: 18px;
 }
 
-/* Main Content */
 .main-content {
     margin-left: 250px;
     padding: 0px 30px;
@@ -466,10 +444,8 @@ h2 .senti-link {
     margin: 100px auto 0;
     padding: 0 20px;
     line-height: 1.6;
-    /* Other styling as desired */
 }
 
-/* Tabs */
 .tabcontent {
     display: none;
 }
@@ -478,7 +454,6 @@ h2 .senti-link {
     margin-bottom: 20px;
 }
 
-/* Forms & Inputs */
 label {
     display: block;
     margin-bottom: 8px;
@@ -521,7 +496,6 @@ select:focus {
     transform: translateY(-2px);
 }
 
-/* Results & Copy Feedback */
 .result {
     background-color: #2C2C2C;
     padding: 20px;
@@ -554,7 +528,6 @@ select:focus {
     opacity: 1;
 }
 
-/* Block Explorer */
 .block-explorer-form {
     display: flex;
     flex-direction: row;
@@ -614,7 +587,6 @@ select:focus {
     background-color: #3C3C3C;
 }
 
-/* Transactions Table */
 #transactionsTable {
     width: 100%;
     border-collapse: collapse;
@@ -687,7 +659,6 @@ select:focus {
     color: #00FFC8;
 }
 
-/* Event Map */
 #controlPanel {
     display: flex;
     flex-direction: row;
@@ -730,7 +701,6 @@ select:focus {
     transform: translateY(-2px);
 }
 
-/* Remove extra margins on inputs/labels if any */
 #controlPanel label,
 #controlPanel .input-field {
     margin: 0;
@@ -774,84 +744,59 @@ select:focus {
     user-select: none;
 }
 
-/* ====================================================
-   MOBILE OVERRIDES FOR app.html (under 768px)
-   ==================================================== */
 @media (max-width: 768px) {
-
-    /* Make the sidebar horizontal and sit at the top */
     .sidebar {
         position: static;
-        /* remove fixed positioning so it can flow normally */
         width: 100%;
-        /* full width at the top */
         height: auto;
-        /* no fixed height */
         display: flex;
-        /* lay out links/icons in a row */
         flex-direction: row;
         align-items: center;
         justify-content: center;
         border-bottom: 1px solid #2C2C2C;
-        /* optional separator line */
         padding: 10px 0;
-        /* spacing inside the top bar */
     }
 
-    /* Remove or adjust the title (SentiChain) if you want it smaller or hidden on mobile */
     .sidebar h2 {
         display: none;
-        /* slightly smaller on mobile */
     }
 
-    /* Each link is laid out horizontally */
     .sidebar a {
         display: inline-flex;
-        /* icon + text in a row */
         align-items: center;
-        /* center vertically */
         justify-content: center;
-        /* center horizontally */
         margin: 0 5px;
         padding: 8px 12px;
         font-size: 0.9rem;
-        /* slightly smaller text if desired */
     }
 
-    /* MAIN CONTENT: no left margin needed, move down a bit if the top bar has height */
     .main-content {
         margin-left: 0 !important;
         margin-top: 10px;
         padding: 20px;
     }
 
-    /* CONTAINER: Make forms + controls stack better */
     .container {
         padding: 20px;
     }
 
-    /* Block Explorer form: stack the select + input + button */
     .block-explorer-form {
         display: flex;
         flex-direction: column;
         gap: 10px;
-        /* space between items */
     }
 
     .block-explorer-form select,
     .block-explorer-form input[type="text"] {
         width: 100%;
-        /* full width for mobile */
     }
 
-    /* Event Map "controlPanel" also stacks vertically */
     #controlPanel {
         flex-direction: column;
         align-items: stretch;
         gap: 10px;
     }
 
-    /* TABLES: Make them more scrollable on smaller screens (optional) */
     #transactionsTable,
     #transactionsTable thead,
     #transactionsTable tbody,
@@ -859,7 +804,6 @@ select:focus {
     #transactionsTable td,
     .details-table {
         display: block;
-        /* This turns the table into a scrollable block on very narrow screens */
         width: 100%;
         overflow-x: auto;
     }
@@ -880,18 +824,9 @@ select:focus {
 
     #transactionsTable thead {
         display: none;
-        /* Hide the table header row if you prefer a list-like layout */
     }
-
-    /* Alternatively, if you do NOT want to transform the table to blocks,
-       you can omit the lines above. The table will still shrink, but
-       might overflow horizontally on small phones.
-    */
 }
 
-/* ----------------------------------------------------
-   5) TERMS & CONDITIONS PAGES
--------------------------------------------------------*/
 .container h1,
 .container h2,
 .container h3,
@@ -950,9 +885,6 @@ select:focus {
     color: #00FFC8;
 }
 
-/* ====================================================
-   RESPONSIVE OVERRIDES FOR MOBILE (Hide Rocket)
-   ==================================================== */
 @media (max-width: 768px) {
 
     .overlay h1 {
@@ -978,7 +910,6 @@ select:focus {
         text-align: center;
     }
 
-    /* INTRO SECTION */
     .intro-section {
         padding: 60px 20px;
         min-height: auto;
@@ -994,8 +925,6 @@ select:focus {
         margin-bottom: 30px;
     }
 
-    /* ROCKET & LAYER BOXES */
-    /* Hide the rocket (and optional lines/points) on mobile */
     .rocket {
         display: none;
     }
@@ -1005,10 +934,7 @@ select:focus {
         display: none;
     }
 
-    /* We'll keep the layer text boxes (layer-box) visible */
-
     .rocket-wrapper {
-        /* Now that the rocket is hidden, you could remove or keep the flex layout as desired */
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -1020,7 +946,6 @@ select:focus {
         margin: 0 auto 20px auto;
     }
 
-    /* METRICS SECTION */
     .metrics-section h2 {
         font-size: 2rem;
         margin-bottom: 30px;
@@ -1037,12 +962,10 @@ select:focus {
         margin: 0 auto;
     }
 
-    /* FOOTER */
     footer p {
         font-size: 0.8rem;
     }
 
-    /* horizontally center icon (and text, if present) */
     .sidebar a {
         justify-content: center;
     }

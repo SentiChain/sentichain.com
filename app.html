@@ -7,16 +7,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>SentiChain</title>
     <link rel="icon" href="favicon.svg" type="image/svg+xml" />
-    <!-- Consolidated CSS -->
     <link rel="stylesheet" href="assets/css/style.css" />
 </head>
 
 <body>
-    <!-- Sidebar Navigation -->
     <div class="sidebar">
         <h2><a href="/" class="senti-link">SentiChain</a></h2>
 
-        <!-- Two Tabs Only -->
         <a href="#" class="tablinks active" onclick="openTab(event, 'BlockExplorer')">
             <i>🔎</i><span>Block Explorer</span>
         </a>
@@ -25,10 +22,8 @@
         </a>
     </div>
 
-    <!-- Main Content -->
     <div class="main-content">
         <div class="container">
-            <!-- Block Explorer Tab -->
             <div id="BlockExplorer" class="tabcontent" style="display: block;">
                 <form id="blockExplorerForm" class="block-explorer-form">
                     <select id="network" name="network" required>
@@ -41,19 +36,13 @@
                 </form>
 
                 <div id="blockExplorerResult" class="result block-explorer-result" style="display: none;">
-                    <!-- Copy Feedback placeholders -->
                     <div class="copy-feedback" id="copyFeedbackHash">Copied!</div>
                     <div class="copy-feedback" id="copyFeedbackPreviousHash">Copied!</div>
                     <div class="copy-feedback" id="copyFeedbackConsensusRoot">Copied!</div>
                     <div class="copy-feedback" id="copyFeedbackValidator">Copied!</div>
 
-                    <!-- Processing Message -->
                     <div id="blockProcessingMessage">Fetching block data...</div>
-
-                    <!-- Error Message -->
                     <div id="blockErrorMessage" class="error" style="display: none;"></div>
-
-                    <!-- Block Header -->
                     <div id="blockInfo" style="display: none;">
                         <h2>Block Header</h2>
                         <div class="block-info-grid">
@@ -87,7 +76,6 @@
                             </div>
                         </div>
 
-                        <!-- Transactions Section -->
                         <div id="blockTransactions" style="display: none;">
                             <h3>Transactions:</h3>
                             <table id="transactionsTable">
@@ -107,7 +95,6 @@
                 </div>
             </div>
 
-            <!-- Event Map Tab -->
             <div id="EventMap" class="tabcontent" style="display: none;">
                 <div id="controlPanel">
                     <input type="text" id="startBlockInput" class="input-field" placeholder="Start Block: e.g. 100" />
@@ -123,7 +110,6 @@
                     </label>
                 </div>
 
-                <!-- "Processing" or "Fetching" Message -->
                 <div id="mapProcessingMessage"
                     style="display: none; color: #00FFC8; margin-bottom: 10px; font-style: italic;">
                     Fetching event map data...
@@ -135,7 +121,6 @@
         </div>
     </div>
 
-    <!-- Consolidated JS -->
     <script src="assets/js/main.js"></script>
 </body>
 

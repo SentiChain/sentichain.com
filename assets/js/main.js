@@ -1,6 +1,3 @@
-/****************************************************************************
- * 1) BLACK HOLE ANIMATION (Index Page)
- ****************************************************************************/
 const canvas = document.getElementById('animationCanvas');
 if (canvas) {
     const ctx = canvas.getContext('2d');
@@ -8,8 +5,7 @@ if (canvas) {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
 
-    // Default intervals
-    let explosionInterval = 5000; // desktop default
+    let explosionInterval = 5000;
 
     window.addEventListener('resize', () => {
         canvas.width = window.innerWidth;
@@ -188,7 +184,6 @@ if (canvas) {
     }
     animate();
 
-    // Fetch block height
     const blockHeightElement = document.getElementById('blockHeight');
     if (blockHeightElement) {
         fetch('https://api.sentichain.com/blockchain/get_chain_length?network=mainnet')
@@ -214,9 +209,9 @@ if (canvas) {
             });
     }
 
-    // Fetch block timestamp
-    const blockTimestampElement = document.getElementById('blockTimestamp');
-    if (blockTimestampElement) {
+    const blockTimeElement = document.getElementById('blockTime');
+    const timeElapsedElement = document.getElementById('timeElapsed');
+    if (blockTimeElement && timeElapsedElement) {
         fetch('https://api.sentichain.com/blockchain/get_last_block_time?network=mainnet')
             .then((res) => res.json())
             .then((data) => {
@@ -228,21 +223,33 @@ if (canvas) {
                     const day = String(date.getUTCDate()).padStart(2, '0');
                     const hours = String(date.getUTCHours()).padStart(2, '0');
                     const minutes = String(date.getUTCMinutes()).padStart(2, '0');
-                    const seconds = String(date.getUTCSeconds()).padStart(2, '0');
+                    const secs = String(date.getUTCSeconds()).padStart(2, '0');
 
-                    blockTimestampElement.textContent =
-                        `${year}-${month}-${day} ${hours}:${minutes}:${seconds} (UTC)`;
+                    blockTimeElement.textContent =
+                        `${year}-${month}-${day} ${hours}:${minutes}:${secs} (UTC)`;
+
+                    let nowSec = Date.now() / 1000;
+                    let elapsed = Math.round(nowSec - timestamp);
+                    if (elapsed < 0) elapsed = 0;
+
+                    timeElapsedElement.textContent = `${elapsed}s`;
+
+                    setInterval(() => {
+                        elapsed++;
+                        timeElapsedElement.textContent = `${elapsed}s`;
+                    }, 1000);
                 } else {
-                    blockTimestampElement.textContent = 'N/A';
+                    blockTimeElement.textContent = 'N/A';
+                    timeElapsedElement.textContent = 'N/A';
                 }
             })
             .catch((err) => {
-                blockTimestampElement.textContent = 'N/A';
+                blockTimeElement.textContent = 'N/A';
+                timeElapsedElement.textContent = 'N/A';
                 console.error(err);
             });
     }
 
-    // Fetch txn count
     const txnCountElement = document.getElementById('txnCount');
     if (txnCountElement) {
         fetch('https://api.sentichain.com/blockchain/get_total_number_of_transactions?network=mainnet')
@@ -269,9 +276,6 @@ if (canvas) {
     }
 }
 
-/****************************************************************************
- * 2) APP.HTML LOGIC (Block Explorer + Event Map)
- ****************************************************************************/
 function openTab(evt, tabName) {
     const tablinks = document.querySelectorAll('.tablinks');
     tablinks.forEach((tab) => tab.classList.remove('active'));
@@ -333,10 +337,6 @@ function formatTimestamp(timestamp) {
     return date.toLocaleString();
 }
 
-// ---------------------------------------------------------------------------
-// ADDED FOR REQUIREMENT: We'll refactor the block fetch logic into a function
-// so we can call it programmatically (e.g., to fetch the last block).
-// ---------------------------------------------------------------------------
 function doBlockExplorerFetch(network, blockNumber) {
     const resultDiv = document.getElementById('blockExplorerResult');
     const processingMessage = document.getElementById('blockProcessingMessage');
@@ -351,7 +351,6 @@ function doBlockExplorerFetch(network, blockNumber) {
     const blockErrorMessageDiv = document.getElementById('blockErrorMessage');
     const transactionsTableBody = document.querySelector('#transactionsTable tbody');
 
-    // reset
     resultDiv.classList.remove('error');
     processingMessage.style.display = 'none';
     blockInfoDiv.style.display = 'none';
@@ -420,7 +419,6 @@ function doBlockExplorerFetch(network, blockNumber) {
                 }
             }
 
-            // Fill block info
             blockNumberInfoSpan.innerText = block.block_number;
             blockHashSpan.innerText = block.hash;
             blockPreviousHashSpan.innerText = block.previous_hash;
@@ -428,7 +426,6 @@ function doBlockExplorerFetch(network, blockNumber) {
             blockTimestampSpan.innerText = formatTimestamp(block.timestamp);
             blockValidatorSpan.innerText = block.validator;
 
-            // Transactions
             const transactions = block.transactions;
             for (let txHash in transactions) {
                 if (transactions.hasOwnProperty(txHash)) {
@@ -461,7 +458,6 @@ function doBlockExplorerFetch(network, blockNumber) {
                     }
                     const serializedVector = serializeVector(tx.vector);
 
-                    // ID suffix
                     const sanitizedTxHash = txHash.replace(/[^a-zA-Z0-9]/g, '_');
                     const vectorId = `transactionVector_${sanitizedTxHash}`;
                     const signatureId = `transactionSignature_${sanitizedTxHash}`;
@@ -591,7 +587,6 @@ function doBlockExplorerFetch(network, blockNumber) {
         });
 }
 
-// Whenever the form is submitted
 const blockExplorerForm = document.getElementById('blockExplorerForm');
 if (blockExplorerForm) {
     blockExplorerForm.addEventListener('submit', function (event) {
@@ -605,7 +600,6 @@ if (blockExplorerForm) {
     });
 }
 
-/* Event Map Logic */
 const eventMapCanvas = document.getElementById('pointsCanvas');
 if (eventMapCanvas) {
     const mapProcessingMessage = document.getElementById('mapProcessingMessage');
@@ -631,17 +625,14 @@ if (eventMapCanvas) {
     let isEventMapAnimating = false;
     let eventMapStartTime = performance.now();
 
-    // userView is our "camera" in data coords
     let userView = { x: 0, y: 0, width: 1, height: 1 };
 
-    // For panning
     let isPanning = false;
     let panStartX = 0;
     let panStartY = 0;
     let initViewX = 0;
     let initViewY = 0;
 
-    // For pinch
     let pinchMode = false;
     let initialPinchDist = 0;
     let initialPinchCenter = { x: 0, y: 0 };
@@ -1294,17 +1285,12 @@ if (eventMapCanvas) {
     });
 }
 
-// ---------------------------------------------------------------------------
-// ADDED FOR REQUIREMENT: Open the correct tab if ?tab=..., and fetch last block if ?block=last
-// ---------------------------------------------------------------------------
 window.addEventListener('DOMContentLoaded', () => {
     const params = new URLSearchParams(window.location.search);
     const tab = params.get('tab');
     const blockParam = params.get('block');
 
-    // If tab=BlockExplorer or tab=EventMap, programmatically open that tab
     if (tab === 'BlockExplorer') {
-        // Simulate a click on the Block Explorer tab link
         const blockExplorerLink = document.querySelector(
             "a.tablinks[onclick*='BlockExplorer']"
         );
@@ -1318,9 +1304,7 @@ window.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // If block=last => fetch chain length => doBlockExplorerFetch with chain_length - 1
     if (blockParam === 'last') {
-        // Ensure Block Explorer tab is shown
         const blockExplorerLink = document.querySelector(
             "a.tablinks[onclick*='BlockExplorer']"
         );
