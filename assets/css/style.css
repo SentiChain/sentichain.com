@@ -720,6 +720,13 @@ select:focus {
 
 @media (max-width: 768px) {
 
+    .menu-button {
+        position: absolute;
+        top: 40px;
+        right: 20px;
+        z-index: 999;
+    }
+
     .toggle-sidebar-button {
         display: none !important;
     }
