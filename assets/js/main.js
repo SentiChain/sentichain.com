@@ -626,6 +626,8 @@ if (eventMapCanvas) {
     let allRangePoints = [];
     let availableBlocks = [];
 
+    let currentBlockNumber = 0;
+
     let minX, maxX, minY, maxY;
     const margin = 50;
     let autoSlideInterval = null;
@@ -762,6 +764,19 @@ if (eventMapCanvas) {
             drawCentroid(clusterInfo[cNum]);
             drawShortSummaryText(clusterInfo[cNum]);
         });
+        drawWatermark();
+    }
+
+    function drawWatermark() {
+        ctxMap.save();
+        ctxMap.font = "16px 'Roboto', sans-serif";
+        ctxMap.fillStyle = "rgba(255, 255, 255, 0.5)";
+
+        const text = `Block Height: ${currentBlockNumber}`;
+        const textWidth = ctxMap.measureText(text).width;
+
+        ctxMap.fillText(text, eventMapCanvas.width - textWidth - 10, 30);
+        ctxMap.restore();
     }
 
     function drawZodiacLines(cluster) {
@@ -882,6 +897,7 @@ if (eventMapCanvas) {
 
     function loadBlockPointsByIndex(index) {
         const blockNum = availableBlocks[index];
+        currentBlockNumber = blockNum;
         allPoints = blockPointsData[blockNum] || [];
         setupClusterInfo(allPoints);
     }
@@ -1064,7 +1080,6 @@ if (eventMapCanvas) {
             y: (e.touches[0].clientY + e.touches[1].clientY) / 2,
         };
     }
-
 
     eventMapCanvas.addEventListener('mousedown', (e) => {
         isPanning = true;
@@ -1297,6 +1312,9 @@ if (eventMapCanvas) {
     window.addEventListener('resize', reflowEventMapCanvas);
 }
 
+// ----------------------------------------------------------------------
+// TAB PARAMS LOADER
+// ----------------------------------------------------------------------
 window.addEventListener('DOMContentLoaded', () => {
     const params = new URLSearchParams(window.location.search);
     const tab = params.get('tab');
