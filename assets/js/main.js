@@ -1065,6 +1065,7 @@ if (eventMapCanvas) {
         };
     }
 
+
     eventMapCanvas.addEventListener('mousedown', (e) => {
         isPanning = true;
         pinchMode = false;
@@ -1237,7 +1238,6 @@ if (eventMapCanvas) {
         }
     });
 
-    // Tooltips
     eventMapCanvas.addEventListener('mousemove', (event) => {
         if (isPanning || pinchMode) {
             tooltip.style.display = 'none';
@@ -1248,7 +1248,6 @@ if (eventMapCanvas) {
         const mouseY = event.clientY - rect.top;
         let hoveredObject = null;
 
-        // Check centroids
         for (let cNum in clusterInfo) {
             const info = clusterInfo[cNum];
             const cX = scaleX(info.centroidX);
@@ -1260,7 +1259,6 @@ if (eventMapCanvas) {
             }
         }
 
-        // Check points
         if (!hoveredObject) {
             for (let p of allPoints) {
                 const pX = scaleX(p.x);
@@ -1296,11 +1294,9 @@ if (eventMapCanvas) {
         tooltip.style.display = 'none';
     });
 
-    // We'll reflow the canvas on window resize
     window.addEventListener('resize', reflowEventMapCanvas);
 }
 
-// === SIDEBAR TOGGLE LOGIC (applies to app.html) ===
 window.addEventListener('DOMContentLoaded', () => {
     const params = new URLSearchParams(window.location.search);
     const tab = params.get('tab');
@@ -1343,38 +1339,30 @@ window.addEventListener('DOMContentLoaded', () => {
     const sidebar = document.querySelector('.sidebar');
     const toggleButton = document.getElementById('toggleSidebarButton');
 
-    // === NEW LOGIC FOR MOBILE ===
-    // If mobile width => always show sidebar, hide toggle button, skip toggling logic
     if (window.innerWidth <= 768) {
         if (sidebar) {
-            sidebar.classList.remove('collapsed'); // ensure it's shown
+            sidebar.classList.remove('collapsed');
         }
         if (toggleButton) {
             toggleButton.style.display = 'none';
         }
-        return; // skip the rest of the toggle logic
+        return;
     }
 
-    // Otherwise (desktop) => do the normal toggle
     if (sidebar && toggleButton) {
-        // Show or hide the button depending on sidebar's initial state
         if (sidebar.classList.contains('collapsed')) {
             toggleButton.style.display = 'block';
         } else {
             toggleButton.style.display = 'none';
         }
 
-        // Clicking the floating button => expand sidebar
         toggleButton.addEventListener('click', () => {
             sidebar.classList.remove('collapsed');
             toggleButton.style.display = 'none';
         });
 
-        // If user clicks anywhere outside the sidebar (and not the toggle button) => collapse
         document.addEventListener('click', (e) => {
-            // Only if sidebar is open
             if (!sidebar.classList.contains('collapsed')) {
-                // If the click is outside sidebar AND outside toggle button => collapse
                 if (!sidebar.contains(e.target) && !toggleButton.contains(e.target)) {
                     sidebar.classList.add('collapsed');
                     toggleButton.style.display = 'block';
@@ -1382,10 +1370,8 @@ window.addEventListener('DOMContentLoaded', () => {
             }
         });
 
-        // After the sidebar finishes transitioning, reflow the EventMap canvas if needed
         sidebar.addEventListener('transitionend', (e) => {
             if (e.propertyName === 'width') {
-                // If the "EventMap" tab is open, re-draw
                 if (document.getElementById('EventMap')?.style.display === 'block') {
                     if (typeof reflowEventMapCanvas === 'function') {
                         reflowEventMapCanvas();
