@@ -93,6 +93,7 @@ a:hover {
     top: 60px;
     right: 100px;
     z-index: 999;
+    box-shadow: 0 0 15px #00FFC8;
 }
 
 .menu-button button {
