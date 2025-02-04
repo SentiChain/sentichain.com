@@ -982,3 +982,108 @@ select:focus {
     background-color: #00FFC8;
     color: #121212;
 }
+
+.contact-section {
+    background: #000;
+    color: #fff;
+    padding: 60px 20px;
+    text-align: center;
+    position: relative;
+}
+
+.contact-wrapper {
+    width: 60%;
+    /* Set to 60% of the total width */
+    margin: 0 auto;
+    /* This centers the section horizontally */
+    padding: 20px;
+    /* Optional: Add some padding inside */
+    text-align: center;
+    /* Center text inside the wrapper */
+}
+
+.contact-wrapper h2 {
+    font-size: 2.5rem;
+    color: #00FFC8;
+    margin-bottom: 20px;
+    text-transform: uppercase;
+    text-shadow: 0 0 10px #00FFC8;
+    animation: blink 2s infinite;
+}
+
+.contact-wrapper p {
+    font-size: 1.2rem;
+    color: #ccc;
+    margin-bottom: 40px;
+}
+
+.contact-form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+}
+
+.contact-form input,
+.contact-form textarea {
+    width: 100%;
+    padding: 12px 15px;
+    background-color: #2C2C2C;
+    color: #E0E0E0;
+    border-radius: 8px;
+    font-size: 16px;
+    border: none;
+    outline: none;
+    transition: box-shadow 0.3s;
+}
+
+.contact-form input:focus,
+.contact-form textarea:focus {
+    box-shadow: 0 0 10px #00FFC8;
+}
+
+.contact-form textarea {
+    resize: vertical;
+    min-height: 100px;
+}
+
+.contact-form button {
+    background: linear-gradient(45deg, #00FFC8, #007BFF);
+    border: none;
+    color: #121212;
+    padding: 12px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background 0.3s, transform 0.2s;
+    width: 100%;
+}
+
+.contact-form button:hover {
+    background: linear-gradient(45deg, #007BFF, #00FFC8);
+    transform: translateY(-2px);
+}
+
+.contact-form input::placeholder,
+.contact-form textarea::placeholder {
+    color: #888;
+}
+
+@media (max-width: 768px) {
+    .contact-wrapper {
+        width: 90%;
+        /* Adjust width on smaller screens */
+    }
+
+    .contact-wrapper h2 {
+        font-size: 2rem;
+    }
+
+    .contact-wrapper p {
+        font-size: 1rem;
+    }
+
+    .contact-form {
+        width: 100%;
+    }
+}
