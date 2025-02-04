@@ -1399,3 +1399,14 @@ window.addEventListener('DOMContentLoaded', () => {
         });
     }
 });
+
+// ----------------------------------------------------------------------
+// CONTACT US
+// ----------------------------------------------------------------------
+document.getElementById('contactForm').addEventListener('submit', function (event) {
+    var subject = "CONTACT-US@SENTICHAIN.COM: " + document.getElementById('subject').value;
+    var emailField = document.querySelector('[name="email"]').value;
+    var messageField = document.querySelector('[name="message"]').value;
+    var mailtoLink = 'mailto:info@sentichain.com?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent('REPLY-TO: ' + emailField + '\n\nMESSAGE: ' + messageField);
+    this.action = mailtoLink;
+});
