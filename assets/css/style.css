@@ -993,13 +993,9 @@ select:focus {
 
 .contact-wrapper {
     width: 60%;
-    /* Set to 60% of the total width */
     margin: 0 auto;
-    /* This centers the section horizontally */
     padding: 20px;
-    /* Optional: Add some padding inside */
     text-align: center;
-    /* Center text inside the wrapper */
 }
 
 .contact-wrapper h2 {
@@ -1044,7 +1040,7 @@ select:focus {
 
 .contact-form textarea {
     resize: vertical;
-    min-height: 100px;
+    min-height: 200px;
 }
 
 .contact-form button {
@@ -1071,8 +1067,7 @@ select:focus {
 
 @media (max-width: 768px) {
     .contact-wrapper {
-        width: 90%;
-        /* Adjust width on smaller screens */
+        width: 100%;
     }
 
     .contact-wrapper h2 {
