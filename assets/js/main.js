@@ -1399,27 +1399,3 @@ window.addEventListener('DOMContentLoaded', () => {
         });
     }
 });
-
-document.getElementById('contactForm').addEventListener('submit', function (event) {
-    event.preventDefault();
-    var formData = new FormData(this);
-    var xhr = new XMLHttpRequest();
-    xhr.open('POST', 'contact/send-email.php', true);
-    xhr.onload = function () {
-        if (xhr.status === 200) {
-            var response = JSON.parse(xhr.responseText);
-            if (response.status === 'success') {
-                document.getElementById('responseMessage').style.display = 'block';
-                document.getElementById('responseMessage').textContent = response.message;
-                document.getElementById('contactForm').reset();
-            } else {
-                document.getElementById('responseMessage').style.display = 'block';
-                document.getElementById('responseMessage').textContent = 'Something went wrong. Please try again.';
-            }
-        } else {
-            document.getElementById('responseMessage').style.display = 'block';
-            document.getElementById('responseMessage').textContent = 'Failed to send the message. Please try again.';
-        }
-    };
-    xhr.send(formData);
-});
