@@ -12,9 +12,9 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
     // Attempt to send the email
     if (mail($to, $subject, $body, $headers)) {
-        echo "Message sent successfully!";
+        echo json_encode(['status' => 'success', 'message' => 'Message sent successfully!']);
     } else {
-        echo "Failed to send the message.";
+        echo json_encode(['status' => 'error', 'message' => 'Failed to send the message.']);
     }
 }
 ?>
