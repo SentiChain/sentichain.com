@@ -113,12 +113,19 @@
   <section class="contact-section">
     <div class="contact-wrapper">
       <h2>Contact Us</h2>
-      <p>Have any questions or suggestions? Reach out to us!</p>
+      <p>Got questions or ideas? We'd love to hear from you!</p>
       <form action="mailto:info@sentichain.com" method="POST">
         <div class="contact-form">
+          <select id="subject" name="subject" required>
+            <option value="validator" selected>Become a Validator</option>
+            <option value="contributor">Contribute Sentiment Data</option>
+            <option value="investor">Invest in SentiChain</option>
+            <option value="api">Request API Access</option>
+            <option value="others">Other Inquiries</option>
+          </select>
           <input type="email" name="email" placeholder="Your Email" required />
           <textarea name="message" placeholder="Your Message" required></textarea>
-          <button type="submit" class="submit-btn">Send Message</button>
+          <button type="submit" class="submit-btn">Email Us (Your Mail Client Will Open)</button>
         </div>
         <div id="responseMessage" style="display: none;"></div>
       </form>
