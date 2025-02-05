@@ -1122,7 +1122,7 @@ if (eventMapCanvas) {
 
             const startBlock = parseInt(startBlockInput.value.trim(), 10);
             const endBlock = parseInt(endBlockInput.value.trim(), 10);
-
+            const mapApiKey = document.getElementById('mapApiKey').value.trim();
             if (
                 isNaN(startBlock) ||
                 isNaN(endBlock) ||
@@ -1141,7 +1141,11 @@ if (eventMapCanvas) {
                 return;
             }
 
-            const url = `https://api.sentichain.com/mapper/get_points_by_block_range_no_embedding?start_block=${startBlock}&end_block=${endBlock}`;
+            let url = `https://api.sentichain.com/mapper/get_points_by_block_range_no_embedding?start_block=${startBlock}&end_block=${endBlock}`;
+            if (mapApiKey) {
+                url += `&api_key=${encodeURIComponent(mapApiKey)}`;
+            }
+
             try {
                 const response = await fetch(url);
                 if (!response.ok) {
