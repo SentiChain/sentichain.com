@@ -90,8 +90,8 @@ a:hover {
 
 .menu-button {
     position: absolute;
-    top: 60px;
-    right: 100px;
+    top: 80px;
+    right: 120px;
     z-index: 999;
     border-radius: 6px;
     box-shadow: 0 0 15px #00FFC8;
@@ -727,8 +727,8 @@ select:focus {
 
     .menu-button {
         position: absolute;
-        top: 40px;
-        right: 20px;
+        top: 50px;
+        right: 30px;
         z-index: 999;
     }
 
