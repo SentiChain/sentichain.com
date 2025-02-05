@@ -1018,6 +1018,7 @@ select:focus {
     font-size: 1.2rem;
     color: #ccc;
     margin-bottom: 60px;
+    line-height: 1.6;
 }
 
 .contact-form {
