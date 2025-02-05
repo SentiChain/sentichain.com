@@ -1008,7 +1008,7 @@ select:focus {
 .contact-wrapper h2 {
     font-size: 2.5rem;
     color: #00FFC8;
-    margin-bottom: 20px;
+    margin-bottom: 40px;
     text-transform: uppercase;
     text-shadow: 0 0 10px #00FFC8;
     animation: blink 2s infinite;
@@ -1017,7 +1017,7 @@ select:focus {
 .contact-wrapper p {
     font-size: 1.2rem;
     color: #ccc;
-    margin-bottom: 40px;
+    margin-bottom: 60px;
 }
 
 .contact-form {
