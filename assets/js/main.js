@@ -345,7 +345,7 @@ function formatTimestamp(timestamp) {
     return date.toLocaleString();
 }
 
-function doBlockExplorerFetch(network, blockNumber) {
+function doBlockExplorerFetch(network, blockNumber, apiKey) {
     const resultDiv = document.getElementById('blockExplorerResult');
     const processingMessage = document.getElementById('blockProcessingMessage');
     const blockInfoDiv = document.getElementById('blockInfo');
@@ -388,10 +388,13 @@ function doBlockExplorerFetch(network, blockNumber) {
     processingMessage.style.display = 'block';
     resultDiv.style.display = 'block';
 
-    const GET_BLOCK_BY_NUMBER_URL = `https://api.sentichain.com/blockchain/get_block_by_number?network=${encodeURIComponent(
+    let GET_BLOCK_BY_NUMBER_URL = `https://api.sentichain.com/blockchain/get_block_by_number?network=${encodeURIComponent(
         network
     )}&block_number=${encodeURIComponent(parseInt(blockNumber))}`;
 
+    if (apiKey) {
+        GET_BLOCK_BY_NUMBER_URL += `&api_key=${encodeURIComponent(apiKey)}`;
+    }
     fetch(GET_BLOCK_BY_NUMBER_URL, {
         method: 'GET',
         headers: { 'Content-Type': 'application/json' },
@@ -416,7 +419,6 @@ function doBlockExplorerFetch(network, blockNumber) {
                 'hash',
                 'previous_hash',
                 'timestamp',
-                'transactions',
                 'validator',
             ];
             for (let field of requiredFields) {
@@ -432,160 +434,166 @@ function doBlockExplorerFetch(network, blockNumber) {
             blockTimestampSpan.innerText = formatTimestamp(block.timestamp);
             blockValidatorSpan.innerText = block.validator;
 
-            const transactions = block.transactions;
-            for (let txHash in transactions) {
-                if (transactions.hasOwnProperty(txHash)) {
-                    const tx = transactions[txHash];
-                    const row = document.createElement('tr');
+            if ('transactions' in block) {
+                const transactions = block.transactions;
+                for (let txHash in transactions) {
+                    if (transactions.hasOwnProperty(txHash)) {
+                        const tx = transactions[txHash];
+                        const row = document.createElement('tr');
 
-                    const txHashCell = document.createElement('td');
-                    txHashCell.innerText = txHash;
-                    row.appendChild(txHashCell);
+                        const txHashCell = document.createElement('td');
+                        txHashCell.innerText = txHash;
+                        row.appendChild(txHashCell);
 
-                    const timestampCell = document.createElement('td');
-                    timestampCell.innerText = formatTimestamp(tx.post_timestamp);
-                    row.appendChild(timestampCell);
+                        const timestampCell = document.createElement('td');
+                        timestampCell.innerText = formatTimestamp(tx.post_timestamp);
+                        row.appendChild(timestampCell);
 
-                    const actionsCell = document.createElement('td');
-                    const toggleDetailsBtn = document.createElement('button');
-                    toggleDetailsBtn.innerText = 'View Details';
-                    toggleDetailsBtn.classList.add('submit-btn');
+                        const actionsCell = document.createElement('td');
+                        const toggleDetailsBtn = document.createElement('button');
+                        toggleDetailsBtn.innerText = 'View Details';
+                        toggleDetailsBtn.classList.add('submit-btn');
 
-                    const detailsRow = document.createElement('tr');
-                    detailsRow.style.display = 'none';
-                    detailsRow.classList.add('details-row');
-                    const detailsCell = document.createElement('td');
-                    detailsCell.colSpan = 3;
+                        const detailsRow = document.createElement('tr');
+                        detailsRow.style.display = 'none';
+                        detailsRow.classList.add('details-row');
+                        const detailsCell = document.createElement('td');
+                        detailsCell.colSpan = 3;
 
-                    function serializeVector(vec) {
-                        return `[${vec
-                            .map((n) => (Number.isInteger(n) ? n.toFixed(1) : n))
-                            .join(', ')}]`;
-                    }
-                    const serializedVector = serializeVector(tx.vector);
-
-                    const sanitizedTxHash = txHash.replace(/[^a-zA-Z0-9]/g, '_');
-                    const vectorId = `transactionVector_${sanitizedTxHash}`;
-                    const signatureId = `transactionSignature_${sanitizedTxHash}`;
-                    const postContentId = `transactionPostContent_${sanitizedTxHash}`;
-                    const publicKeyId = `transactionPublicKey_${sanitizedTxHash}`;
-                    const vectorSignatureId = `transactionVectorSignature_${sanitizedTxHash}`;
-
-                    const copyFeedbackVectorId = `copyFeedbackVector_${sanitizedTxHash}`;
-                    const copyFeedbackSignatureId = `copyFeedbackSignature_${sanitizedTxHash}`;
-                    const copyFeedbackPostContentId = `copyFeedbackPostContent_${sanitizedTxHash}`;
-                    const copyFeedbackPublicKeyId = `copyFeedbackPublicKey_${sanitizedTxHash}`;
-                    const copyFeedbackVectorSignatureId = `copyFeedbackVectorSignature_${sanitizedTxHash}`;
-
-                    detailsCell.innerHTML = `
-            <table class="details-table">
-              <tr>
-                <td><strong>Nonce:</strong> ${tx.nonce}</td>
-              </tr>
-              <tr>
-                <td><strong>Post Content:</strong>
-                  <div
-                    class="copyable-output"
-                    id="${postContentId}"
-                    onclick="copyToClipboard('${postContentId}')"
-                    title="Click to copy"
-                  >
-                    ${tx.post_content}
-                  </div>
-                </td>
-              </tr>
-              <tr>
-                <td><strong>Post Link:</strong>
-                  <a href="https://x.com/${tx.post_link}" target="_blank">
-                    View Post
-                  </a>
-                </td>
-              </tr>
-              <tr>
-                <td><strong>Sender:</strong> ${tx.sender}</td>
-              </tr>
-              <tr>
-                <td><strong>Signature:</strong>
-                  <div
-                    class="signature-output"
-                    id="${signatureId}"
-                    onclick="copyToClipboard('${signatureId}')"
-                    title="Click to copy"
-                  >
-                    ${tx.signature}
-                  </div>
-                </td>
-              </tr>
-              <tr>
-                <td><strong>Vector:</strong>
-                  <div
-                    class="copyable-output"
-                    id="${vectorId}"
-                    onclick="copyToClipboard('${vectorId}')"
-                    title="Click to copy"
-                  >
-                    ${serializedVector}
-                  </div>
-                </td>
-              </tr>
-              <tr>
-                <td><strong>Public Key:</strong>
-                  <div
-                    class="copyable-output"
-                    id="${publicKeyId}"
-                    onclick="copyToClipboard('${publicKeyId}')"
-                    title="Click to copy"
-                  >
-                    ${tx.public_key}
-                  </div>
-                </td>
-              </tr>
-              <tr>
-                <td><strong>Vector Signature:</strong>
-                  <div
-                    class="copyable-output"
-                    id="${vectorSignatureId}"
-                    onclick="copyToClipboard('${vectorSignatureId}')"
-                    title="Click to copy"
-                  >
-                    ${tx.vector_signature}
-                  </div>
-                </td>
-              </tr>
-            </table>
-            <div class="copy-feedback" id="${copyFeedbackVectorId}">Copied!</div>
-            <div class="copy-feedback" id="${copyFeedbackSignatureId}">Copied!</div>
-            <div class="copy-feedback" id="${copyFeedbackPostContentId}">Copied!</div>
-            <div class="copy-feedback" id="${copyFeedbackPublicKeyId}">Copied!</div>
-            <div class="copy-feedback" id="${copyFeedbackVectorSignatureId}">Copied!</div>
-          `;
-                    detailsRow.appendChild(detailsCell);
-
-                    toggleDetailsBtn.onclick = () => {
-                        if (detailsRow.style.display === 'none') {
-                            detailsRow.style.display = 'table-row';
-                            toggleDetailsBtn.innerText = 'Hide Details';
-                        } else {
-                            detailsRow.style.display = 'none';
-                            toggleDetailsBtn.innerText = 'View Details';
+                        function serializeVector(vec) {
+                            return `[${vec
+                                .map((n) => (Number.isInteger(n) ? n.toFixed(1) : n))
+                                .join(', ')}]`;
                         }
-                    };
+                        const serializedVector = serializeVector(tx.vector);
 
-                    actionsCell.appendChild(toggleDetailsBtn);
-                    row.appendChild(actionsCell);
-                    transactionsTableBody.appendChild(row);
-                    transactionsTableBody.appendChild(detailsRow);
+                        const sanitizedTxHash = txHash.replace(/[^a-zA-Z0-9]/g, '_');
+                        const vectorId = `transactionVector_${sanitizedTxHash}`;
+                        const signatureId = `transactionSignature_${sanitizedTxHash}`;
+                        const postContentId = `transactionPostContent_${sanitizedTxHash}`;
+                        const publicKeyId = `transactionPublicKey_${sanitizedTxHash}`;
+                        const vectorSignatureId = `transactionVectorSignature_${sanitizedTxHash}`;
+
+                        const copyFeedbackVectorId = `copyFeedbackVector_${sanitizedTxHash}`;
+                        const copyFeedbackSignatureId = `copyFeedbackSignature_${sanitizedTxHash}`;
+                        const copyFeedbackPostContentId = `copyFeedbackPostContent_${sanitizedTxHash}`;
+                        const copyFeedbackPublicKeyId = `copyFeedbackPublicKey_${sanitizedTxHash}`;
+                        const copyFeedbackVectorSignatureId = `copyFeedbackVectorSignature_${sanitizedTxHash}`;
+
+                        detailsCell.innerHTML = `
+                            <table class="details-table">
+                                <tr>
+                                    <td><strong>Nonce:</strong> ${tx.nonce}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Post Content:</strong>
+                                        <div
+                                            class="copyable-output"
+                                            id="${postContentId}"
+                                            onclick="copyToClipboard('${postContentId}')"
+                                            title="Click to copy"
+                                        >
+                                            ${tx.post_content}
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Post Link:</strong>
+                                        <a href="https://x.com/${tx.post_link}" target="_blank">
+                                            View Post
+                                        </a>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Sender:</strong> ${tx.sender}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Signature:</strong>
+                                        <div
+                                            class="signature-output"
+                                            id="${signatureId}"
+                                            onclick="copyToClipboard('${signatureId}')"
+                                            title="Click to copy"
+                                        >
+                                            ${tx.signature}
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Vector:</strong>
+                                        <div
+                                            class="copyable-output"
+                                            id="${vectorId}"
+                                            onclick="copyToClipboard('${vectorId}')"
+                                            title="Click to copy"
+                                        >
+                                            ${serializedVector}
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Public Key:</strong>
+                                        <div
+                                            class="copyable-output"
+                                            id="${publicKeyId}"
+                                            onclick="copyToClipboard('${publicKeyId}')"
+                                            title="Click to copy"
+                                        >
+                                            ${tx.public_key}
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Vector Signature:</strong>
+                                        <div
+                                            class="copyable-output"
+                                            id="${vectorSignatureId}"
+                                            onclick="copyToClipboard('${vectorSignatureId}')"
+                                            title="Click to copy"
+                                        >
+                                            ${tx.vector_signature}
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+                            <div class="copy-feedback" id="${copyFeedbackVectorId}">Copied!</div>
+                            <div class="copy-feedback" id="${copyFeedbackSignatureId}">Copied!</div>
+                            <div class="copy-feedback" id="${copyFeedbackPostContentId}">Copied!</div>
+                            <div class="copy-feedback" id="${copyFeedbackPublicKeyId}">Copied!</div>
+                            <div class="copy-feedback" id="${copyFeedbackVectorSignatureId}">Copied!</div>
+                        `;
+                        detailsRow.appendChild(detailsCell);
+
+                        toggleDetailsBtn.onclick = () => {
+                            if (detailsRow.style.display === 'none') {
+                                detailsRow.style.display = 'table-row';
+                                toggleDetailsBtn.innerText = 'Hide Details';
+                            } else {
+                                detailsRow.style.display = 'none';
+                                toggleDetailsBtn.innerText = 'View Details';
+                            }
+                        };
+
+                        actionsCell.appendChild(toggleDetailsBtn);
+                        row.appendChild(actionsCell);
+                        transactionsTableBody.appendChild(row);
+                        transactionsTableBody.appendChild(detailsRow);
+                    }
                 }
+                if (Object.keys(transactions).length > 0) {
+                    blockTransactionsDiv.style.display = 'block';
+                }
+            } else {
+                console.info(
+                    'No "transactions" field returned. Possibly invalid or no API key used.'
+                );
             }
-            if (Object.keys(transactions).length > 0) {
-                blockTransactionsDiv.style.display = 'block';
-            }
+
             processingMessage.style.display = 'none';
             blockInfoDiv.style.display = 'block';
         })
         .catch((error) => {
             console.error('Block Explorer Error:', error);
-            const resultDiv = document.getElementById('blockExplorerResult');
             resultDiv.classList.add('error');
             blockErrorMessageDiv.innerText = `Error: ${error.message}`;
             blockErrorMessageDiv.style.display = 'block';
@@ -600,10 +608,11 @@ if (blockExplorerForm) {
         event.preventDefault();
         const networkSelect = document.getElementById('network');
         const blockNumberInput = document.getElementById('blockNumber');
+        const apiKeyInput = document.getElementById('apiKey');
         const network = networkSelect.value;
         const blockNumber = blockNumberInput.value.trim();
-
-        doBlockExplorerFetch(network, blockNumber);
+        const apiKey = apiKeyInput.value.trim();
+        doBlockExplorerFetch(network, blockNumber, apiKey);
     });
 }
 
