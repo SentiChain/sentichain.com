@@ -98,7 +98,7 @@ a:hover {
 }
 
 .menu-button button {
-    background: transparent;
+    background: #000;
     border: 2px solid #00FFC8;
     color: #00FFC8;
     font-family: 'Roboto', sans-serif;
@@ -110,8 +110,6 @@ a:hover {
 }
 
 .menu-button button:hover {
-    background-color: transparent;
-    color: #00FFC8;
     box-shadow: 0 0 20px #00FFC8;
 }
 
@@ -802,6 +800,11 @@ select:focus {
         margin-bottom: 30px;
     }
 
+    .metrics-section p {
+        font-size: 1rem;
+        margin-bottom: 50px;
+    }
+
     .metrics-container {
         flex-direction: column;
         align-items: center;
@@ -809,7 +812,7 @@ select:focus {
     }
 
     .metric-box {
-        width: 80%;
+        width: 60%;
         margin: 0 auto;
     }
 
@@ -1076,10 +1079,12 @@ select:focus {
 
     .contact-wrapper h2 {
         font-size: 2rem;
+        margin-bottom: 30px;
     }
 
     .contact-wrapper p {
         font-size: 1rem;
+        margin-bottom: 50px;
     }
 
     .contact-form {
