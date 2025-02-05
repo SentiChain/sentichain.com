@@ -91,7 +91,7 @@ a:hover {
 .menu-button {
     position: absolute;
     top: 80px;
-    right: 120px;
+    right: 140px;
     z-index: 999;
     border-radius: 6px;
     box-shadow: 0 0 15px #00FFC8;
@@ -103,7 +103,7 @@ a:hover {
     color: #00FFC8;
     font-family: 'Roboto', sans-serif;
     font-size: 1rem;
-    padding: 8px 16px;
+    padding: 12px 24px;
     border-radius: 6px;
     cursor: pointer;
     transition: background-color 0.3s, color 0.3s;
@@ -730,6 +730,10 @@ select:focus {
         top: 50px;
         right: 30px;
         z-index: 999;
+    }
+
+    .menu-button button {
+        padding: 8px 16px;
     }
 
     .toggle-sidebar-button {
