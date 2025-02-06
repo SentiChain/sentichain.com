@@ -12,18 +12,27 @@ if (canvas) {
     let centerX = canvas.width / 2;
     let centerY = isDesktop() ? canvas.height / 2 : canvas.height * 2 / 5;
 
+    window.addEventListener('resize', () => {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        centerX = canvas.width / 2;
+        centerY = canvas.height / 2;
+    });
+
     const numStars = isDesktop() ? 300 : 200;
     const stars = [];
 
-    let activeConstellation = null;
     const CONSTELLATION_DURATION = 4000;
     const CONSTELLATION_FADE_TIME = 2000;
     const MIN_STARS_IN_CONSTELLATION = 3;
     const MAX_STARS_IN_CONSTELLATION = 5;
+
     const NEARBY_DISTANCE = isDesktop() ? 0.025 : 0.05;
 
     const MIN_ORBIT_FACTOR = isDesktop() ? 0.1 : 0.4;
     const MAX_ORBIT_FACTOR = isDesktop() ? 0.5 : 0.7;
+
+    const MARGIN = 50;
 
     const possibleSentiments = [
         "Bullish momentum amid\ncautious optimism",
@@ -48,15 +57,17 @@ if (canvas) {
         "Strategic shifts reflect\nchanging market dynamics"
     ];
 
-    window.addEventListener('resize', () => {
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-        centerX = canvas.width / 2;
-        centerY = canvas.height / 2;
-    });
-
     function random(min, max) {
         return Math.random() * (max - min) + min;
+    }
+    function randomInt(min, max) {
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+    function shuffleArray(arr) {
+        for (let i = arr.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [arr[i], arr[j]] = [arr[j], arr[i]];
+        }
     }
 
     class Star {
@@ -67,6 +78,8 @@ if (canvas) {
             );
             this.angle = random(0, Math.PI * 2);
             this.speed = random(0.00005, 0.0001);
+
+            // Individual blinking for each star
             this.blinkOffset = random(0, 2 * Math.PI);
             this.blinkSpeed = random(1, 3);
 
@@ -97,85 +110,101 @@ if (canvas) {
         stars.push(new Star());
     }
 
+    let activeConstellation = null;
+
     function createNewConstellation() {
-        const rightSideStars = [];
         const thresholdX = canvas.width / 2;
 
+        let validStars = stars
+            .map((star, idx) => ({ star, idx }))
+            .filter(({ star }) =>
+                star.x > MARGIN &&
+                star.x < canvas.width - MARGIN &&
+                star.y > MARGIN &&
+                star.y < canvas.height - MARGIN
+            );
+
         if (isDesktop()) {
+            validStars = validStars.filter(({ star }) => star.x > thresholdX);
+        }
+
+        if (validStars.length === 0) {
+            validStars = stars.map((star, idx) => ({ star, idx }));
+        }
+
+        const MAX_TRIES = 10;
+        for (let attempt = 0; attempt < MAX_TRIES; attempt++) {
+            const { star: centerStar, idx: centerIndex } =
+                validStars[Math.floor(Math.random() * validStars.length)];
+
+            const maxDist = canvas.width * NEARBY_DISTANCE;
+            const closeStars = [];
             for (let i = 0; i < stars.length; i++) {
-                if (stars[i].x > thresholdX) {
-                    rightSideStars.push(i);
+                if (i === centerIndex) continue;
+                const dx = stars[i].x - centerStar.x;
+                const dy = stars[i].y - centerStar.y;
+                const dist = Math.sqrt(dx * dx + dy * dy);
+                if (dist <= maxDist) {
+                    closeStars.push(stars[i]);
                 }
             }
-        } else {
-            rightSideStars.push(...Array.from(stars.keys()));
-        }
 
-        if (!rightSideStars.length) {
-            rightSideStars.push(...Array.from(stars.keys()));
-        }
+            shuffleArray(closeStars);
 
-        const centerIndex = rightSideStars[Math.floor(Math.random() * rightSideStars.length)];
-        const centerStar = stars[centerIndex];
-        const maxDist = canvas.width * NEARBY_DISTANCE;
-        const closeStars = [];
-        for (let i = 0; i < stars.length; i++) {
-            if (i === centerIndex) continue;
-            const dx = stars[i].x - centerStar.x;
-            const dy = stars[i].y - centerStar.y;
-            const dist = Math.sqrt(dx * dx + dy * dy);
-            if (dist <= maxDist) {
-                closeStars.push(stars[i]);
+            const needed = MIN_STARS_IN_CONSTELLATION - 1;
+            if (closeStars.length < needed) {
+                continue;
+            }
+
+            const maxPick = Math.min(closeStars.length, MAX_STARS_IN_CONSTELLATION - 1);
+            const numberToPick = randomInt(needed, maxPick);
+            const chosenStars = closeStars.slice(0, numberToPick);
+
+            const constellationStars = [centerStar, ...chosenStars];
+
+            const lines = [];
+            for (let i = 0; i < constellationStars.length; i++) {
+                const j = (i + 1) % constellationStars.length;
+                lines.push({
+                    s1: constellationStars[i],
+                    s2: constellationStars[j],
+                    blinkOffset: random(0, 2 * Math.PI),
+                });
+            }
+
+            const sentimentText = possibleSentiments[
+                randomInt(0, possibleSentiments.length - 1)
+            ];
+
+            const sentimentBlinkOffset = random(0, 2 * Math.PI);
+            const sentimentBlinkSpeed = random(1, 3);
+
+            if (isConstellationOnScreen(constellationStars)) {
+                return {
+                    lines,
+                    createdAt: performance.now(),
+                    sentimentText,
+                    sentimentBlinkOffset,
+                    sentimentBlinkSpeed,
+                    stars: constellationStars
+                };
             }
         }
-
-        shuffleArray(closeStars);
-
-        const needed = MIN_STARS_IN_CONSTELLATION - 1;
-        if (closeStars.length < needed) {
-            return null;
-        }
-
-        const maxPick = Math.min(closeStars.length, MAX_STARS_IN_CONSTELLATION - 1);
-        const numberToPick = randomInt(needed, maxPick);
-
-        const chosenStars = closeStars.slice(0, numberToPick);
-        const constellationStars = [centerStar, ...chosenStars];
-
-        const lines = [];
-        for (let i = 0; i < constellationStars.length; i++) {
-            const j = (i + 1) % constellationStars.length;
-            lines.push({
-                s1: constellationStars[i],
-                s2: constellationStars[j],
-                blinkOffset: random(0, 2 * Math.PI),
-            });
-        }
-
-        const sentimentText = possibleSentiments[randomInt(0, possibleSentiments.length - 1)];
-        // Assign blink properties for the sentiment text.
-        const sentimentBlinkOffset = random(0, 2 * Math.PI);
-        const sentimentBlinkSpeed = random(1, 3);
-
-        return {
-            lines,
-            createdAt: performance.now(),
-            sentimentText,
-            sentimentBlinkOffset,
-            sentimentBlinkSpeed,
-            stars: constellationStars
-        };
+        return null;
     }
 
-    function randomInt(min, max) {
-        return Math.floor(Math.random() * (max - min + 1)) + min;
-    }
-
-    function shuffleArray(arr) {
-        for (let i = arr.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [arr[i], arr[j]] = [arr[j], arr[i]];
+    function isConstellationOnScreen(starArray) {
+        for (let s of starArray) {
+            if (
+                s.x < 0 + MARGIN ||
+                s.x > canvas.width - MARGIN ||
+                s.y < 0 + MARGIN ||
+                s.y > canvas.height - MARGIN
+            ) {
+                return false;
+            }
         }
+        return true;
     }
 
     function animateGalaxy() {
@@ -193,7 +222,7 @@ if (canvas) {
             if (alpha > 0) {
                 drawConstellation(activeConstellation, alpha);
             } else {
-                activeConstellation = null;
+                activeConstellation = createNewConstellation();
             }
         } else {
             activeConstellation = createNewConstellation();
@@ -217,7 +246,6 @@ if (canvas) {
     function drawConstellation(constellation, alpha) {
         const currentTime = performance.now() / 1000;
 
-        // Draw constellation lines with a blinking effect.
         for (let lineObj of constellation.lines) {
             const flicker = 0.5 + 0.5 * Math.sin(currentTime * 2.0 + lineObj.blinkOffset);
             const dynamicAlpha = alpha * (0.2 + 0.7 * flicker);
@@ -232,7 +260,6 @@ if (canvas) {
             ctx.restore();
         }
 
-        // Compute the centroid of the constellation stars for placing the text.
         let xSum = 0, ySum = 0;
         for (let star of constellation.stars) {
             xSum += star.x;
@@ -242,11 +269,12 @@ if (canvas) {
         const centroidX = xSum / nStars;
         const centroidY = ySum / nStars;
 
-        // Compute a blinking factor for the sentiment text.
-        const textBlink = 0.75 + 0.25 * Math.sin(currentTime * constellation.sentimentBlinkSpeed + constellation.sentimentBlinkOffset);
+        const textBlink = 0.75 + 0.25 * Math.sin(
+            currentTime * constellation.sentimentBlinkSpeed +
+            constellation.sentimentBlinkOffset
+        );
 
         ctx.save();
-        // Multiply the overall alpha with the textBlink factor.
         ctx.globalAlpha = alpha * textBlink * 0.9;
 
         function drawMultilineText(ctx, text, x, y, lineHeight) {
@@ -263,6 +291,7 @@ if (canvas) {
         ctx.shadowOffsetX = 0;
         ctx.shadowOffsetY = 0;
         drawMultilineText(ctx, constellation.sentimentText, centroidX, centroidY - 50, 18);
+
         ctx.shadowBlur = 20;
         drawMultilineText(ctx, constellation.sentimentText, centroidX, centroidY - 50, 18);
         ctx.shadowBlur = 0;
