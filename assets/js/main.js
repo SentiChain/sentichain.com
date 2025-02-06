@@ -5,7 +5,7 @@ if (canvas) {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
 
-    let explosionInterval = 5000;
+    let explosionInterval = 1000000;
 
     window.addEventListener('resize', () => {
         canvas.width = window.innerWidth;
@@ -157,7 +157,7 @@ if (canvas) {
 
     const blackHole = new BlackHole();
     const stars = [];
-    const numStars = 200;
+    const numStars = 20;
     for (let i = 0; i < numStars; i++) {
         stars.push(new Star());
     }
