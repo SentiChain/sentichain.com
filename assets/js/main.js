@@ -5,13 +5,54 @@ if (canvas) {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
 
-    let explosionInterval = 1000000;
+    function isDesktop() {
+        return window.innerWidth > 768;
+    }
+
+    let centerX = canvas.width / 2;
+    let centerY = isDesktop() ? canvas.height / 2 : canvas.height * 2 / 5;
+
+    const numStars = isDesktop() ? 300 : 200;
+    const stars = [];
+
+    let activeConstellation = null;
+    const CONSTELLATION_DURATION = 4000;
+    const CONSTELLATION_FADE_TIME = 2000;
+    const MIN_STARS_IN_CONSTELLATION = 3;
+    const MAX_STARS_IN_CONSTELLATION = 5;
+    const NEARBY_DISTANCE = isDesktop() ? 0.025 : 0.05;
+
+    const MIN_ORBIT_FACTOR = isDesktop() ? 0.1 : 0.4;
+    const MAX_ORBIT_FACTOR = isDesktop() ? 0.5 : 0.7;
+
+    const possibleSentiments = [
+        "Bullish momentum amid\ncautious optimism",
+        "Volatility sparks strategic\ntrading decisions",
+        "Market recovery fuels\noptimistic investor sentiment",
+        "Steady trends encourage\ntactical investment moves",
+        "Mixed signals challenge\ntrading strategies",
+        "Positive indicators boost\nmarket confidence",
+        "Balanced risk management\ndrives market activity",
+        "Resilient sentiment in\nfluctuating markets",
+        "Cautious buying amid\neconomic recovery hints",
+        "Steady growth inspires\nstrategic positioning",
+        "Dynamic markets demand\nagile decision-making",
+        "Investor optimism clashes\nwith market uncertainty",
+        "Evolving trends influence\ninvestment approaches",
+        "Tactical adjustments reflect\nmarket sentiment",
+        "Technical analysis guides\nmarket movements",
+        "Quiet confidence shapes\ntrading behavior",
+        "Risk and reward balance\nmarket activity",
+        "Positive outlook amid\nongoing market fluctuations",
+        "Intraday trends spark\ntactical responses",
+        "Strategic shifts reflect\nchanging market dynamics"
+    ];
 
     window.addEventListener('resize', () => {
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
-        blackHole.x = canvas.width / 2;
-        blackHole.y = canvas.height / 2;
+        centerX = canvas.width / 2;
+        centerY = canvas.height / 2;
     });
 
     function random(min, max) {
@@ -20,172 +61,217 @@ if (canvas) {
 
     class Star {
         constructor() {
-            this.reset();
+            this.orbitRadius = random(
+                canvas.width * MIN_ORBIT_FACTOR,
+                canvas.width * MAX_ORBIT_FACTOR
+            );
+            this.angle = random(0, Math.PI * 2);
+            this.speed = random(0.00005, 0.0001);
+            this.blinkOffset = random(0, 2 * Math.PI);
+            this.blinkSpeed = random(1, 3);
+
+            this.x = 0;
+            this.y = 0;
+            this.updatePosition();
         }
-        reset() {
-            const angle = random(0, Math.PI * 2);
-            const distance = random(canvas.width * 2, canvas.width * 0.5);
-            this.x = blackHole.x + Math.cos(angle) * distance;
-            this.y = blackHole.y + Math.sin(angle) * distance;
-            const dx = blackHole.x - this.x;
-            const dy = blackHole.y - this.y;
-            this.vx = dx * 0.001;
-            this.vy = dy * 0.001;
-            this.size = random(1, 3);
-            this.brightness = random(0.7, 1);
-            this.exploding = false;
-            this.explodeTimer = 0;
+        updatePosition() {
+            this.x = centerX + this.orbitRadius * Math.cos(this.angle);
+            this.y = centerY + this.orbitRadius * Math.sin(this.angle);
         }
         update() {
-            const dx = blackHole.x - this.x;
-            const dy = blackHole.y - this.y;
-            const distance = Math.sqrt(dx * dx + dy * dy);
-            const force = 1000 / (distance * distance + 100);
-            this.vx += (dx / distance) * force;
-            this.vy += (dy / distance) * force;
-            this.x += this.vx;
-            this.y += this.vy;
-            if (distance < blackHole.currentRadius) {
-                blackHole.growth += 0.5;
-                this.reset();
-            }
-            if (this.exploding) {
-                this.vx += this.explodeVx;
-                this.vy += this.explodeVy;
-                this.explodeTimer--;
-                if (this.explodeTimer <= 0) {
-                    this.exploding = false;
-                }
-            }
+            this.angle += this.speed;
+            this.updatePosition();
         }
         draw() {
+            const currentTime = performance.now() / 1000;
+            const flicker = 0.5 + 0.5 * Math.sin(currentTime * this.blinkSpeed + this.blinkOffset);
+            const alpha = 0.3 + 0.7 * flicker;
             ctx.beginPath();
-            ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-            ctx.fillStyle = `rgba(255, 255, 255, ${this.brightness})`;
+            ctx.arc(this.x, this.y, 2, 0, 2 * Math.PI);
+            ctx.fillStyle = `hsla(${random(0, 360)}, 100%, 80%, ${alpha})`;
             ctx.fill();
-        }
-        shockwave() {
-            const dx = this.x - blackHole.x;
-            const dy = this.y - blackHole.y;
-            const angle = Math.atan2(dy, dx);
-            const speed = 0.01 * random(2, 5);
-            this.explodeVx = Math.cos(angle) * speed;
-            this.explodeVy = Math.sin(angle) * speed;
-            this.exploding = true;
-            this.explodeTimer = 60;
         }
     }
 
-    class BlackHole {
-        constructor() {
-            this.x = (2 * canvas.width) / 3;
-            this.y = canvas.height / 2;
-            this.baseRadius = 100;
-            this.growth = 0;
-            this._currentRadius = this.baseRadius;
-            this.color = '#000000';
-            this.shrinking = false;
-            this.hasShrunk = false;
-            this.targetRadius = this.baseRadius;
-            this.ringHue = 180;
-            this.ringRotation = 0;
-        }
-        get currentRadius() {
-            return this._currentRadius;
-        }
-        set currentRadius(value) {
-            this._currentRadius = value;
-        }
-        updateRadius() {
-            if (!this.shrinking && !this.hasShrunk) {
-                this.targetRadius = this.baseRadius + this.growth;
-            }
-            const lerpSpeed = 0.05;
-            this._currentRadius += (this.targetRadius - this._currentRadius) * lerpSpeed;
-            if (this.shrinking) {
-                if (Math.abs(this._currentRadius - this.targetRadius) < 0.5) {
-                    this.hasShrunk = true;
-                    this.shrinking = false;
-                }
-            } else if (this.hasShrunk) {
-                if (Math.abs(this._currentRadius - this.targetRadius) < 0.5) {
-                    this.hasShrunk = false;
-                }
-            }
-        }
-        triggerExplosionShrink() {
-            const maxAdditionalShrink = 0.4;
-            const shrinkReduction = Math.min(this.growth / 200, maxAdditionalShrink);
-            const shrinkRatio = 0.5 + shrinkReduction;
-            this.targetRadius = (this.baseRadius + this.growth) * shrinkRatio;
-            this.shrinking = true;
-        }
-        draw() {
-            this.updateRadius();
-            const r = this._currentRadius;
-            const brightnessFactor = Math.min(0.2 + r / 1000, 0.8);
-            const outerRingRadius = r * 1.3;
-            ctx.save();
-            ctx.translate(this.x, this.y);
-            this.ringRotation += 0.002;
-            ctx.rotate(this.ringRotation);
-            ctx.scale(1.1, 1);
-            const diskGradient = ctx.createRadialGradient(0, 0, r, 0, 0, outerRingRadius);
-            diskGradient.addColorStop(
-                0,
-                `hsla(${this.ringHue}, 100%, 50%, ${brightnessFactor})`
-            );
-            diskGradient.addColorStop(1, 'rgba(0, 0, 0, 0)');
-            ctx.beginPath();
-            ctx.arc(0, 0, outerRingRadius, 0, Math.PI * 2);
-            ctx.fillStyle = diskGradient;
-            ctx.fill();
-            ctx.restore();
-
-            ctx.beginPath();
-            ctx.arc(this.x, this.y, r, 0, Math.PI * 2);
-            ctx.fillStyle = this.color;
-            ctx.fill();
-
-            ctx.beginPath();
-            ctx.arc(this.x, this.y, r * 1.1, 0, Math.PI * 2);
-            ctx.strokeStyle = `hsla(${this.ringHue}, 100%, 50%, 0.01)`;
-            ctx.lineWidth = 2;
-            ctx.stroke();
-        }
-    }
-
-    const blackHole = new BlackHole();
-    const stars = [];
-    const numStars = 20;
     for (let i = 0; i < numStars; i++) {
         stars.push(new Star());
     }
 
-    let lastExplosion = Date.now();
-    let animationRunning = true;
+    function createNewConstellation() {
+        const rightSideStars = [];
+        const thresholdX = canvas.width / 2;
 
-    function animate() {
-        if (!animationRunning) return;
+        if (isDesktop()) {
+            for (let i = 0; i < stars.length; i++) {
+                if (stars[i].x > thresholdX) {
+                    rightSideStars.push(i);
+                }
+            }
+        } else {
+            rightSideStars.push(...Array.from(stars.keys()));
+        }
+
+        if (!rightSideStars.length) {
+            rightSideStars.push(...Array.from(stars.keys()));
+        }
+
+        const centerIndex = rightSideStars[Math.floor(Math.random() * rightSideStars.length)];
+        const centerStar = stars[centerIndex];
+        const maxDist = canvas.width * NEARBY_DISTANCE;
+        const closeStars = [];
+        for (let i = 0; i < stars.length; i++) {
+            if (i === centerIndex) continue;
+            const dx = stars[i].x - centerStar.x;
+            const dy = stars[i].y - centerStar.y;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+            if (dist <= maxDist) {
+                closeStars.push(stars[i]);
+            }
+        }
+
+        shuffleArray(closeStars);
+
+        const needed = MIN_STARS_IN_CONSTELLATION - 1;
+        if (closeStars.length < needed) {
+            return null;
+        }
+
+        const maxPick = Math.min(closeStars.length, MAX_STARS_IN_CONSTELLATION - 1);
+        const numberToPick = randomInt(needed, maxPick);
+
+        const chosenStars = closeStars.slice(0, numberToPick);
+        const constellationStars = [centerStar, ...chosenStars];
+
+        const lines = [];
+        for (let i = 0; i < constellationStars.length; i++) {
+            const j = (i + 1) % constellationStars.length;
+            lines.push({
+                s1: constellationStars[i],
+                s2: constellationStars[j],
+                blinkOffset: random(0, 2 * Math.PI),
+            });
+        }
+
+        const sentimentText = possibleSentiments[randomInt(0, possibleSentiments.length - 1)];
+        // Assign blink properties for the sentiment text.
+        const sentimentBlinkOffset = random(0, 2 * Math.PI);
+        const sentimentBlinkSpeed = random(1, 3);
+
+        return {
+            lines,
+            createdAt: performance.now(),
+            sentimentText,
+            sentimentBlinkOffset,
+            sentimentBlinkSpeed,
+            stars: constellationStars
+        };
+    }
+
+    function randomInt(min, max) {
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+    function shuffleArray(arr) {
+        for (let i = arr.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [arr[i], arr[j]] = [arr[j], arr[i]];
+        }
+    }
+
+    function animateGalaxy() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-        blackHole.draw();
-        stars.forEach((star) => {
+
+        for (let star of stars) {
             star.update();
             star.draw();
-        });
-        const now = Date.now();
-        if (now - lastExplosion > explosionInterval) {
-            stars.forEach((star) => star.shockwave());
-            blackHole.triggerExplosionShrink();
-            lastExplosion = now;
         }
-        if (blackHole.currentRadius > 500) {
-            animationRunning = false;
-            return;
+
+        const now = performance.now();
+        if (activeConstellation) {
+            const t = now - activeConstellation.createdAt;
+            const alpha = getConstellationAlpha(t);
+            if (alpha > 0) {
+                drawConstellation(activeConstellation, alpha);
+            } else {
+                activeConstellation = null;
+            }
+        } else {
+            activeConstellation = createNewConstellation();
         }
-        requestAnimationFrame(animate);
+
+        requestAnimationFrame(animateGalaxy);
     }
-    animate();
+
+    function getConstellationAlpha(t) {
+        if (t >= CONSTELLATION_DURATION) {
+            return 0;
+        }
+        const fadeStart = CONSTELLATION_DURATION - CONSTELLATION_FADE_TIME;
+        if (t <= fadeStart) {
+            return 1;
+        }
+        const fadeProgress = (t - fadeStart) / CONSTELLATION_FADE_TIME;
+        return 1 - fadeProgress;
+    }
+
+    function drawConstellation(constellation, alpha) {
+        const currentTime = performance.now() / 1000;
+
+        // Draw constellation lines with a blinking effect.
+        for (let lineObj of constellation.lines) {
+            const flicker = 0.5 + 0.5 * Math.sin(currentTime * 2.0 + lineObj.blinkOffset);
+            const dynamicAlpha = alpha * (0.2 + 0.7 * flicker);
+
+            ctx.save();
+            ctx.strokeStyle = `hsla(180, 100%, 80%, ${dynamicAlpha})`;
+            ctx.lineWidth = 1.5;
+            ctx.beginPath();
+            ctx.moveTo(lineObj.s1.x, lineObj.s1.y);
+            ctx.lineTo(lineObj.s2.x, lineObj.s2.y);
+            ctx.stroke();
+            ctx.restore();
+        }
+
+        // Compute the centroid of the constellation stars for placing the text.
+        let xSum = 0, ySum = 0;
+        for (let star of constellation.stars) {
+            xSum += star.x;
+            ySum += star.y;
+        }
+        const nStars = constellation.stars.length;
+        const centroidX = xSum / nStars;
+        const centroidY = ySum / nStars;
+
+        // Compute a blinking factor for the sentiment text.
+        const textBlink = 0.75 + 0.25 * Math.sin(currentTime * constellation.sentimentBlinkSpeed + constellation.sentimentBlinkOffset);
+
+        ctx.save();
+        // Multiply the overall alpha with the textBlink factor.
+        ctx.globalAlpha = alpha * textBlink * 0.9;
+
+        function drawMultilineText(ctx, text, x, y, lineHeight) {
+            const lines = text.split('\n');
+            lines.forEach((line, index) => {
+                ctx.fillText(line, x, y + index * lineHeight);
+            });
+        }
+
+        ctx.font = isDesktop() ? "14px 'Roboto', sans-serif" : "10px 'Roboto', sans-serif";
+        ctx.fillStyle = "#00FFC8";
+        ctx.shadowColor = '#00FFC8';
+        ctx.shadowBlur = 10;
+        ctx.shadowOffsetX = 0;
+        ctx.shadowOffsetY = 0;
+        drawMultilineText(ctx, constellation.sentimentText, centroidX, centroidY - 50, 18);
+        ctx.shadowBlur = 20;
+        drawMultilineText(ctx, constellation.sentimentText, centroidX, centroidY - 50, 18);
+        ctx.shadowBlur = 0;
+        drawMultilineText(ctx, constellation.sentimentText, centroidX, centroidY - 50, 18);
+
+        ctx.restore();
+    }
+
+    animateGalaxy();
 
     const blockHeightElement = document.getElementById('blockHeight');
     if (blockHeightElement) {
@@ -1413,13 +1499,11 @@ window.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-// ----------------------------------------------------------------------
-// CONTACT US
-// ----------------------------------------------------------------------
 document.getElementById('contactForm').addEventListener('submit', function (event) {
     var subject = "CONTACT-US@SENTICHAIN.COM: " + document.getElementById('subject').value;
     var emailField = document.querySelector('[name="email"]').value;
     var messageField = document.querySelector('[name="message"]').value;
-    var mailtoLink = 'mailto:info@sentichain.com?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent('REPLY-TO: ' + emailField + '\n\nMESSAGE: ' + messageField);
+    var mailtoLink = 'mailto:info@sentichain.com?subject=' + encodeURIComponent(subject) + '&body=' +
+        encodeURIComponent('REPLY-TO: ' + emailField + '\n\nMESSAGE: ' + messageField);
     this.action = mailtoLink;
 });
