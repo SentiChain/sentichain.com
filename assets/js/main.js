@@ -19,7 +19,7 @@ if (canvas) {
         centerY = canvas.height / 2;
     });
 
-    const numStars = isDesktop() ? 300 : 200;
+    const numStars = isDesktop() ? 200 : 100;
     const stars = [];
 
     const CONSTELLATION_DURATION = 4000;
@@ -30,7 +30,7 @@ if (canvas) {
     const NEARBY_DISTANCE = isDesktop() ? 0.025 : 0.05;
 
     const MIN_ORBIT_FACTOR = isDesktop() ? 0.1 : 0.4;
-    const MAX_ORBIT_FACTOR = isDesktop() ? 0.5 : 0.7;
+    const MAX_ORBIT_FACTOR = isDesktop() ? 0.5 : 0.8;
 
     const MARGIN = 50;
 
@@ -77,7 +77,7 @@ if (canvas) {
                 canvas.width * MAX_ORBIT_FACTOR
             );
             this.angle = random(0, Math.PI * 2);
-            this.speed = random(0.00005, 0.0001);
+            this.speed = random(0.0001, 0.0002);
 
             // Individual blinking for each star
             this.blinkOffset = random(0, 2 * Math.PI);
