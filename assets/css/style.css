@@ -1100,3 +1100,8 @@ select:focus {
         width: 100%;
     }
 }
+
+.copyable-output {
+    max-height: 200px;
+    overflow-y: auto;
+}
