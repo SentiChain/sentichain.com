@@ -88,16 +88,25 @@ a:hover {
     font-weight: 700;
 }
 
-.menu-button {
+.menu-button-doc {
     position: absolute;
     top: 80px;
-    right: 140px;
+    right: 200px;
     z-index: 999;
     border-radius: 6px;
     box-shadow: 0 0 15px #00FFC8;
 }
 
-.menu-button button {
+.menu-button-app {
+    position: absolute;
+    top: 80px;
+    right: 100px;
+    z-index: 999;
+    border-radius: 6px;
+    box-shadow: 0 0 15px #00FFC8;
+}
+
+.menu-button-doc button {
     background: #000;
     border: 2px solid #00FFC8;
     color: #00FFC8;
@@ -109,7 +118,23 @@ a:hover {
     transition: background-color 0.3s, color 0.3s;
 }
 
-.menu-button button:hover {
+.menu-button-app button {
+    background: #000;
+    border: 2px solid #00FFC8;
+    color: #00FFC8;
+    font-family: 'Roboto', sans-serif;
+    font-size: 1rem;
+    padding: 12px 24px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.menu-button-doc button:hover {
+    box-shadow: 0 0 20px #00FFC8;
+}
+
+.menu-button-app button:hover {
     box-shadow: 0 0 20px #00FFC8;
 }
 
@@ -725,15 +750,26 @@ select:focus {
 
 @media (max-width: 768px) {
 
-    .menu-button {
+    .menu-button-doc {
+        position: absolute;
+        top: 50px;
+        right: 100px;
+        z-index: 999;
+    }
+
+    .menu-button-app {
         position: absolute;
         top: 50px;
         right: 30px;
         z-index: 999;
     }
 
-    .menu-button button {
-        padding: 8px 16px;
+    .menu-button-doc button {
+        padding: 6px 12px;
+    }
+
+    .menu-button-app button {
+        padding: 6px 12px;
     }
 
     .toggle-sidebar-button {

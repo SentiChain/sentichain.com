@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SentiChain</title>
+    <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="assets/css/style.css" />
+</head>
+
+<body>
+
+    <!-- FLOATING DOUBLE-ARROW BUTTON (hidden on mobile via CSS) -->
+    <div id="toggleSidebarButton" class="toggle-sidebar-button" style="display: none;">
+        »»
+    </div>
+
+    <!-- SIDEBAR: collapsed by default (desktop), forcibly open on mobile -->
+    <div class="sidebar collapsed">
+        <h2><a href="/" class="senti-link">SentiChain</a></h2>
+
+        <a href="#" class="tablinks active" onclick="openTab(event, 'blockExplorerAPI')">
+            <i>🔎</i><span>Block Explorer API</span>
+        </a>
+        <a href="#" class="tablinks" onclick="openTab(event, 'eventMapAPI')">
+            <i>🗺️</i><span>Event Map API</span>
+        </a>
+    </div>
+
+    <div class="main-content">
+        <div class="container">
+            <div id="blockExplorerAPI" class="tabcontent" style="display: block;">
+                <div id="get_chain_length" class="result block-explorer-result">
+                    <h2>GET /get_chain_length</h2>
+
+                    <h3>Description</h3>
+                    <p>Retrieve the current length (block count) of the specified network.</p>
+
+                    <h3>Query params</h3>
+                    <p>
+                        <li>network</li>
+                    </p>
+
+                    <h3>Response</h3>
+                    <p>
+                        <li>chain_length</li>
+                        <li>network</li>
+                    </p>
+
+                    <h3>Example</h3>
+                    <p>
+                        <a href="https://api.sentichain.com/blockchain/get_chain_length?network=mainnet"
+                            target="_blank">https://api.sentichain.com/blockchain/get_chain_length?network=mainnet</a>
+                    </p>
+
+                </div>
+
+                <div id="get_last_block_time" class="result block-explorer-result">
+                    <h2>GET /get_last_block_time</h2>
+
+                    <h3>Description</h3>
+                    <p>Retrieve the UTC timestamp of the last block for a specified network.</p>
+
+                    <h3>Query params</h3>
+                    <p>
+                        <li>network</li>
+                    </p>
+
+                    <h3>Response</h3>
+                    <p>
+                        <li>last_block_time</li>
+                        <li>network</li>
+                    </p>
+
+                    <h3>Example</h3>
+                    <a href="https://api.sentichain.com/blockchain/get_last_block_time?network=mainnet"
+                        target="_blank">https://api.sentichain.com/blockchain/get_last_block_time?network=mainnet</a>
+                </div>
+
+                <div id="get_total_number_of_transactions" class="result block-explorer-result">
+                    <h2>GET /get_total_number_of_transactions</h2>
+
+                    <h3>Description</h3>
+                    <p>Retrieve the total count of confirmed (on-chain) transactions for a specified network.</p>
+
+                    <h3>Query params</h3>
+                    <p>
+                        <li>network</li>
+                    </p>
+
+                    <h3>Response</h3>
+                    <p>
+                        <li>total_tx_count</li>
+                        <li>network</li>
+                    </p>
+
+                    <h3>Example</h3>
+                    <a href="https://api.sentichain.com/blockchain/get_total_number_of_transactions?network=mainnet"
+                        target="_blank">https://api.sentichain.com/blockchain/get_total_number_of_transactions?network=mainnet</a>
+                </div>
+
+                <div id="get_block_by_number" class="result block-explorer-result">
+                    <h2>GET /get_block_by_number</h2>
+
+                    <h3>Description</h3>
+                    <p>Retrieve a specific block by its number. If a valid query-param <strong>api_key</strong> is
+                        provided, <strong>transactions</strong> are included. Otherwise, they are omitted.</p>
+
+                    <h3>Query params</h3>
+                    <p>
+                        <li>network</li>
+                        <li>block_number</li>
+                        <li>api_key (optional)</li>
+                    </p>
+
+                    <h3>Response</h3>
+                    <ul>
+                        <li>block
+                            <ul>
+                                <li>block_number</li>
+                                <li>consensus_root</li>
+                                <li>hash</li>
+                                <li>previous_hash</li>
+                                <li>timestamp</li>
+                                <li>transactions</li>
+                                <li>validator</li>
+                            </ul>
+                        </li>
+                        <li>network</li>
+                    </ul>
+
+
+                    <h3>Example</h3>
+                    <a href="https://api.sentichain.com/blockchain/get_block_by_number?network=mainnet&block_number=1"
+                        target="_blank">https://api.sentichain.com/blockchain/get_block_by_number?network=mainnet&block_number=1</a>
+                </div>
+            </div>
+
+            <div id="eventMapAPI" class="tabcontent" style="display: none;">
+                <div id="get_max_block_number" class="result block-explorer-result">
+                    <h2>GET /get_max_block_number</h2>
+
+                    <h3>Description</h3>
+                    <p>Returns the maximum Mainnet block number currently in the Event Map, or null if no rows exist.
+                    </p>
+
+                    <h3>Response</h3>
+                    <p>
+                        <li>max_block_number</li>
+                    </p>
+
+                    <h3>Example</h3>
+                    <a href="https://api.sentichain.com/mapper/get_max_block_number"
+                        target="_blank">https://api.sentichain.com/mapper/get_max_block_number</a>
+                </div>
+                <div id="get_points_by_block_range_no_embedding" class="result block-explorer-result">
+                    <h2>GET /get_points_by_block_range_no_embedding</h2>
+
+                    <h3>Description</h3>
+                    <p>Return snapshots of Event Map for blocks in [start_block, end_block]. If a valid query-param
+                        <strong>api_key</strong> is provided, <strong>contents</strong> are included. Otherwise, they
+                        are hidden.
+                    </p>
+
+                    <h3>Query params</h3>
+                    <p>
+                        <li>start_block</li>
+                        <li>end_block</li>
+                        <li>api_key (optional)</li>
+                    </p>
+
+                    <h3>Response</h3>
+                    <p>
+                        <li>points</li>
+                    </p>
+
+                    <h3>Example</h3>
+                    <a href="https://api.sentichain.com/mapper/get_points_by_block_range_no_embedding?start_block=1&end_block=10"
+                        target="_blank">https://api.sentichain.com/mapper/get_points_by_block_range_no_embedding?start_block=1&end_block=10</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="assets/js/main.js"></script>
+</body>
+
+</html>
