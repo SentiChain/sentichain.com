@@ -322,7 +322,7 @@ if (canvas) {
                 increment();
             })
             .catch((err) => {
-                blockHeightElement.textContent = 'N/A';
+                blockHeightElement.textContent = '...';
                 console.error(err);
             });
     }
@@ -356,13 +356,13 @@ if (canvas) {
                         timeElapsedElement.textContent = `${elapsed}s`;
                     }, 1000);
                 } else {
-                    blockTimeElement.textContent = 'N/A';
-                    timeElapsedElement.textContent = 'N/A';
+                    blockTimeElement.textContent = '...';
+                    timeElapsedElement.textContent = '...';
                 }
             })
             .catch((err) => {
-                blockTimeElement.textContent = 'N/A';
-                timeElapsedElement.textContent = 'N/A';
+                blockTimeElement.textContent = '...';
+                timeElapsedElement.textContent = '...';
                 console.error(err);
             });
     }
@@ -389,7 +389,7 @@ if (canvas) {
                 increment();
             })
             .catch((err) => {
-                txnCountElement.textContent = 'N/A';
+                txnCountElement.textContent = '...';
                 console.error(err);
             });
     }
