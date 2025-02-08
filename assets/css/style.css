@@ -57,9 +57,9 @@ a:hover {
     transform: translate(-50%, -50%);
     font-size: 6rem;
     color: #00FFC8;
-    text-shadow: 0 0 10px #00FFC8, 0 0 20px #00FFC8;
     cursor: default;
     font-weight: 700;
+    animation: neonFlicker 2.5s infinite alternate;
 }
 
 .subtitle {
@@ -70,9 +70,21 @@ a:hover {
     transform: translate(-50%, -50%);
     font-size: 3rem;
     color: #00FFC8;
-    text-shadow: 0 0 10px #00FFC8, 0 0 20px #00FFC8;
     cursor: default;
     font-weight: 700;
+    animation: neonFlicker 2s infinite alternate;
+}
+
+@keyframes neonFlicker {
+
+    0%,
+    100% {
+        text-shadow: 0 0 8px #00FFC8, 0 0 18px #00FFC8;
+    }
+
+    50% {
+        text-shadow: 0 0 5px #00FFC8, 0 0 15px #00FFC8;
+    }
 }
 
 .subtitle-link {
@@ -152,6 +164,7 @@ a:hover {
     color: #00FFC8;
     margin-bottom: 40px;
     text-transform: uppercase;
+    cursor: default;
     text-shadow: 0 0 10px #00FFC8;
     animation: blink 2s infinite;
 }
@@ -176,6 +189,7 @@ a:hover {
     color: #ccc;
     max-width: 800px;
     margin: 0 auto 60px auto;
+    cursor: default;
 }
 
 .rocket-wrapper {
@@ -289,6 +303,7 @@ a:hover {
     color: #00FFC8;
     margin-bottom: 40px;
     text-transform: uppercase;
+    cursor: default;
     text-shadow: 0 0 10px #00FFC8;
     animation: blink 2s infinite;
 }
@@ -299,6 +314,7 @@ a:hover {
     color: #ccc;
     max-width: 800px;
     margin: 0 auto 60px auto;
+    cursor: default;
 }
 
 .metrics-container {
@@ -1050,6 +1066,7 @@ select:focus {
     color: #00FFC8;
     margin-bottom: 40px;
     text-transform: uppercase;
+    cursor: default;
     text-shadow: 0 0 10px #00FFC8;
     animation: blink 2s infinite;
 }
@@ -1059,6 +1076,7 @@ select:focus {
     color: #ccc;
     margin-bottom: 60px;
     line-height: 1.6;
+    cursor: default;
 }
 
 .contact-form {
