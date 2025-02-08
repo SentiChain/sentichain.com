@@ -47,17 +47,17 @@
                     <h2>GET /get_chain_length</h2>
 
                     <h3>Description</h3>
-                    <p>Retrieve the current length (block count) of the specified network.</p>
+                    <p>Retrieve the current length (block count) of a specified network.</p>
 
                     <h3>Query params</h3>
                     <p>
-                        <li>network</li>
+                        <li>network: <i>str</i></li>
                     </p>
 
                     <h3>Response</h3>
                     <p>
-                        <li>chain_length</li>
-                        <li>network</li>
+                        <li>chain_length: <i>int</i></li>
+                        <li>network: <i>str</i></li>
                     </p>
 
                     <h3>Example</h3>
@@ -76,13 +76,13 @@
 
                     <h3>Query params</h3>
                     <p>
-                        <li>network</li>
+                        <li>network: <i>str</i></li>
                     </p>
 
                     <h3>Response</h3>
                     <p>
-                        <li>last_block_time</li>
-                        <li>network</li>
+                        <li>last_block_time: <i>float</i></li>
+                        <li>network: <i>str</i></li>
                     </p>
 
                     <h3>Example</h3>
@@ -98,13 +98,13 @@
 
                     <h3>Query params</h3>
                     <p>
-                        <li>network</li>
+                        <li>network: <i>str</i></li>
                     </p>
 
                     <h3>Response</h3>
                     <p>
-                        <li>total_tx_count</li>
-                        <li>network</li>
+                        <li>total_tx_count: <i>int</i></li>
+                        <li>network: <i>str</i></li>
                     </p>
 
                     <h3>Example</h3>
@@ -121,25 +121,37 @@
 
                     <h3>Query params</h3>
                     <p>
-                        <li>network</li>
-                        <li>block_number</li>
-                        <li>api_key (optional)</li>
+                        <li>network: <i>str</i></li>
+                        <li>block_number: <i>int</i></li>
+                        <li>api_key: <i>str</i> (optional)</li>
                     </p>
 
                     <h3>Response</h3>
                     <ul>
-                        <li>block
+                        <li>block: <i>dict</i>
                             <ul>
-                                <li>block_number</li>
-                                <li>consensus_root</li>
-                                <li>hash</li>
-                                <li>previous_hash</li>
-                                <li>timestamp</li>
-                                <li>transactions</li>
-                                <li>validator</li>
+                                <li>block_number: <i>int</i></li>
+                                <li>consensus_root: <i>str</i></li>
+                                <li>hash: <i>str</i></li>
+                                <li>previous_hash: <i>str</i></li>
+                                <li>timestamp: <i>float</i></li>
+                                <li>transactions: <i>dict</i> (optional)
+                                    <ul>
+                                        <li>hash: <i>str</i></li>
+                                        <li>nonce: <i>str</i></li>
+                                        <li>post_timestamp: <i>str</i></li>
+                                        <li>public_key: <i>str</i></li>
+                                        <li>sender: <i>str</i></li>
+                                        <li>signature: <i>str</i></li>
+                                        <li>timestamp: <i>str</i></li>
+                                        <li>vector: <i>list</i></li>
+                                        <li>vector_signature: <i>str</i></li>
+                                    </ul>
+                                </li>
+                                <li>validator: <i>str</i></li>
                             </ul>
                         </li>
-                        <li>network</li>
+                        <li>network: <i>str</i></li>
                     </ul>
 
 
@@ -155,12 +167,13 @@
                     <h2>GET /get_max_block_number</h2>
 
                     <h3>Description</h3>
-                    <p>Returns the maximum Mainnet block number currently in the Event Map, or null if no rows exist.
+                    <p>Returns the maximum block number of the Miannet blocks processed in the Event Map, or null if no
+                        blocks exist.
                     </p>
 
                     <h3>Response</h3>
                     <p>
-                        <li>max_block_number</li>
+                        <li>max_block_number: <i>int</i></li>
                     </p>
 
                     <h3>Example</h3>
@@ -178,15 +191,28 @@
 
                     <h3>Query params</h3>
                     <p>
-                        <li>start_block</li>
-                        <li>end_block</li>
-                        <li>api_key (optional)</li>
+                        <li>start_block: <i>int</i></li>
+                        <li>end_block: <i>int</i></li>
+                        <li>api_key: <i>str</i> (optional)</li>
                     </p>
 
                     <h3>Response</h3>
-                    <p>
-                        <li>points</li>
-                    </p>
+                    <ul>
+                        <li>points: <i>list</i>
+                            <ul>
+                                <li>block_number: <i>int</i></li>
+                                <li>post_link: <i>str</i></li>
+                                <li>post_content: <i>str</i></li>
+                                <li>point_x: <i>float</i></li>
+                                <li>point_y: <i>float</i></li>
+                                <li>cluster_number: <i>int</i></li>
+                                <li>cluster_x: <i>float</i></li>
+                                <li>cluster_y: <i>float</i></li>
+                                <li>cluster_summary_short: <i>str</i></li>
+                                <li>cluster_summary_long: <i>str</i></li>
+                            </ul>
+                        </li>
+                    </ul>
 
                     <h3>Example</h3>
                     <a href="https://api.sentichain.com/mapper/get_points_by_block_range_no_embedding?start_block=1&end_block=10"
