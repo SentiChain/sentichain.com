@@ -460,6 +460,17 @@ function formatTimestamp(timestamp) {
     return date.toLocaleString();
 }
 
+function safeValue(val) {
+    return val === "hidden" ? "Hidden" : val;
+}
+
+function serializeVector(vec) {
+    if (!Array.isArray(vec)) {
+        return "Hidden";
+    }
+    return `[${vec.map((n) => (Number.isInteger(n) ? n.toFixed(1) : n)).join(', ')}]`;
+}
+
 function doBlockExplorerFetch(network, blockNumber, apiKey) {
     const resultDiv = document.getElementById('blockExplorerResult');
     const processingMessage = document.getElementById('blockProcessingMessage');
@@ -561,7 +572,9 @@ function doBlockExplorerFetch(network, blockNumber, apiKey) {
                         row.appendChild(txHashCell);
 
                         const timestampCell = document.createElement('td');
-                        timestampCell.innerText = formatTimestamp(tx.post_timestamp);
+                        timestampCell.innerText = (tx.post_timestamp === "hidden")
+                            ? "Hidden"
+                            : formatTimestamp(tx.post_timestamp);
                         row.appendChild(timestampCell);
 
                         const actionsCell = document.createElement('td');
@@ -575,11 +588,6 @@ function doBlockExplorerFetch(network, blockNumber, apiKey) {
                         const detailsCell = document.createElement('td');
                         detailsCell.colSpan = 3;
 
-                        function serializeVector(vec) {
-                            return `[${vec
-                                .map((n) => (Number.isInteger(n) ? n.toFixed(1) : n))
-                                .join(', ')}]`;
-                        }
                         const serializedVector = serializeVector(tx.vector);
 
                         const sanitizedTxHash = txHash.replace(/[^a-zA-Z0-9]/g, '_');
@@ -594,6 +602,13 @@ function doBlockExplorerFetch(network, blockNumber, apiKey) {
                         const copyFeedbackPostContentId = `copyFeedbackPostContent_${sanitizedTxHash}`;
                         const copyFeedbackPublicKeyId = `copyFeedbackPublicKey_${sanitizedTxHash}`;
                         const copyFeedbackVectorSignatureId = `copyFeedbackVectorSignature_${sanitizedTxHash}`;
+
+                        let postLinkHtml = '';
+                        if (tx.post_link === 'hidden') {
+                            postLinkHtml = '<span>Hidden</span>';
+                        } else {
+                            postLinkHtml = `<a href="https://x.com/${tx.post_link}" target="_blank">View Post</a>`;
+                        }
 
                         detailsCell.innerHTML = `
                             <table class="details-table">
@@ -613,11 +628,7 @@ function doBlockExplorerFetch(network, blockNumber, apiKey) {
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td><strong>Post Link:</strong>
-                                        <a href="https://x.com/${tx.post_link}" target="_blank">
-                                            View Post
-                                        </a>
-                                    </td>
+                                    <td><strong>Post Link:</strong> ${postLinkHtml}</td>
                                 </tr>
                                 <tr>
                                     <td><strong>Sender:</strong> ${tx.sender}</td>
