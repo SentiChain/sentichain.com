@@ -111,13 +111,69 @@
                     <a href="https://api.sentichain.com/blockchain/get_total_number_of_transactions?network=mainnet"
                         target="_blank">https://api.sentichain.com/blockchain/get_total_number_of_transactions?network=mainnet</a>
                 </div>
+                <div id="get_last_block" class="result block-explorer-result">
+                    <h2>GET /get_last_block</h2>
 
+                    <h3>Description</h3>
+                    <p>Retrieve the latest block. If a valid query-param <strong>api_key</strong> is
+                        provided, <strong>full transactions</strong> are included. Otherwise, they are hidden.</p>
+
+                    <h3>Cost</h3>
+                    <p>Each request will cost <strong>1 point</strong> from the balance of the API key.</p>
+
+                    <h3>Query params</h3>
+                    <p>
+                        <li>network: <i>str</i></li>
+                        <li>api_key: <i>str</i> (optional)</li>
+                    </p>
+
+                    <h3>Response</h3>
+                    <ul>
+                        <li>block: <i>dict</i>
+                            <ul>
+                                <li>block_number: <i>int</i></li>
+                                <li>consensus_root: <i>str</i></li>
+                                <li>hash: <i>str</i></li>
+                                <li>previous_hash: <i>str</i></li>
+                                <li>timestamp: <i>float</i></li>
+                                <li>transactions: <i>dict</i>
+                                    <ul>
+                                        <li>hash: <i>str</i></li>
+                                        <li>nonce: <i>str</i></li>
+                                        <li>post_timestamp: <i>str</i></li>
+                                        <li>post_content: <i>str</i> ("hidden" if no valid API key)</li>
+                                        <li>post_link: <i>str</i> ("hidden" if no valid API key)</li>
+                                        <li>public_key: <i>str</i></li>
+                                        <li>sender: <i>str</i></li>
+                                        <li>signature: <i>str</i></li>
+                                        <li>timestamp: <i>str</i></li>
+                                        <li>vector: <i>list</i> ("hidden" if no valid API key)</li>
+                                        <li>vector_signature: <i>str</i></li>
+                                    </ul>
+                                </li>
+                                <li>validator: <i>str</i></li>
+                            </ul>
+                        </li>
+                        <li>network: <i>str</i></li>
+                    </ul>
+
+
+                    <h3>Example</h3>
+                    <a href="https://api.sentichain.com/blockchain/get_last_block?network=mainnet"
+                        target="_blank">https://api.sentichain.com/blockchain/get_last_block?network=mainnet</a>
+                    <br>
+                    <a href="https://api.sentichain.com/blockchain/get_last_block?network=mainnet&api_key=abc123"
+                        target="_blank">https://api.sentichain.com/blockchain/get_last_block?network=mainnet&api_key=abc123</a>
+                </div>
                 <div id="get_block_by_number" class="result block-explorer-result">
                     <h2>GET /get_block_by_number</h2>
 
                     <h3>Description</h3>
                     <p>Retrieve a specific block by its number. If a valid query-param <strong>api_key</strong> is
-                        provided, <strong>transactions</strong> are included. Otherwise, they are omitted.</p>
+                        provided, <strong>full transactions</strong> are included. Otherwise, they are hidden.</p>
+
+                    <h3>Cost</h3>
+                    <p>Each request will cost <strong>1 point</strong> from the balance of the API key.</p>
 
                     <h3>Query params</h3>
                     <p>
@@ -135,16 +191,18 @@
                                 <li>hash: <i>str</i></li>
                                 <li>previous_hash: <i>str</i></li>
                                 <li>timestamp: <i>float</i></li>
-                                <li>transactions: <i>dict</i> (optional)
+                                <li>transactions: <i>dict</i>
                                     <ul>
                                         <li>hash: <i>str</i></li>
                                         <li>nonce: <i>str</i></li>
                                         <li>post_timestamp: <i>str</i></li>
+                                        <li>post_content: <i>str</i> ("hidden" if no valid API key)</li>
+                                        <li>post_link: <i>str</i> ("hidden" if no valid API key)</li>
                                         <li>public_key: <i>str</i></li>
                                         <li>sender: <i>str</i></li>
                                         <li>signature: <i>str</i></li>
                                         <li>timestamp: <i>str</i></li>
-                                        <li>vector: <i>list</i></li>
+                                        <li>vector: <i>list</i> ("hidden" if no valid API key)</li>
                                         <li>vector_signature: <i>str</i></li>
                                     </ul>
                                 </li>
@@ -183,14 +241,62 @@
                     <a href="https://api.sentichain.com/mapper/get_max_block_number"
                         target="_blank">https://api.sentichain.com/mapper/get_max_block_number</a>
                 </div>
+                <div id="get_points_by_block_no_embedding" class="result block-explorer-result">
+                    <h2>GET /get_points_by_block_no_embedding</h2>
+
+                    <h3>Description</h3>
+                    <p>Return snapshots of Event Map for a blocks at a specified block_number. If a valid query-param
+                        <strong>api_key</strong> is provided, <strong>full content</strong> is included. Otherwise, it
+                        is hidden.
+                    </p>
+
+                    <h3>Cost</h3>
+                    <p>Each request will cost <strong>1 point</strong> from the balance of the API key.</p>
+
+                    <h3>Query params</h3>
+                    <p>
+                        <li>block_number: <i>int</i></li>
+                        <li>api_key: <i>str</i> (optional)</li>
+                    </p>
+
+                    <h3>Response</h3>
+                    <ul>
+                        <li>points: <i>list</i>
+                            <ul>
+                                <li>block_number: <i>int</i></li>
+                                <li>post_link: <i>str</i> ("hidden" if no valid API key)</li>
+                                <li>post_content: <i>str</i> ("hidden" if no valid API key)</li>
+                                <li>point_x: <i>float</i></li>
+                                <li>point_y: <i>float</i></li>
+                                <li>cluster_number: <i>int</i></li>
+                                <li>cluster_x: <i>float</i></li>
+                                <li>cluster_y: <i>float</i></li>
+                                <li>cluster_summary_short: <i>str</i></li>
+                                <li>cluster_summary_long: <i>str</i></li>
+                            </ul>
+                        </li>
+                    </ul>
+
+                    <h3>Example</h3>
+                    <a href="https://api.sentichain.com/mapper/get_points_by_block_no_embedding?block_number=20"
+                        target="_blank">https://api.sentichain.com/mapper/get_points_by_block_no_embedding?block_number=20</a>
+                    <br>
+                    <a href="https://api.sentichain.com/mapper/get_points_by_block_range_no_embedding?block_number=20&api_key=abc123"
+                        target="_blank">https://api.sentichain.com/mapper/get_points_by_block_range_no_embedding?block_number=20&api_key=abc123</a>
+                    </p>
+                </div>
                 <div id="get_points_by_block_range_no_embedding" class="result block-explorer-result">
                     <h2>GET /get_points_by_block_range_no_embedding</h2>
 
                     <h3>Description</h3>
                     <p>Return snapshots of Event Map for blocks in [start_block, end_block]. If a valid query-param
-                        <strong>api_key</strong> is provided, <strong>contents</strong> are included. Otherwise, they
+                        <strong>api_key</strong> is provided, <strong>full contents</strong> are included. Otherwise,
+                        they
                         are hidden.
                     </p>
+
+                    <h3>Cost</h3>
+                    <p>Each request will cost <strong>1 point</strong> from the balance of the API key.</p>
 
                     <h3>Query params</h3>
                     <p>
@@ -204,8 +310,8 @@
                         <li>points: <i>list</i>
                             <ul>
                                 <li>block_number: <i>int</i></li>
-                                <li>post_link: <i>str</i></li>
-                                <li>post_content: <i>str</i></li>
+                                <li>post_link: <i>str</i> ("hidden" if no valid API key)</li>
+                                <li>post_content: <i>str</i> ("hidden" if no valid API key)</li>
                                 <li>point_x: <i>float</i></li>
                                 <li>point_y: <i>float</i></li>
                                 <li>cluster_number: <i>int</i></li>
