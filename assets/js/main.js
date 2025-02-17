@@ -1451,6 +1451,81 @@ if (eventMapCanvas) {
     window.addEventListener('resize', reflowEventMapCanvas);
 }
 
+/**********************************************************************
+ *  API BALANCE CHECK FUNCTION
+ **********************************************************************/
+function doApiBalanceCheck(userId, apiKey) {
+    const resultDiv = document.getElementById('apiBalanceResult');
+    const errorDiv = document.getElementById('apiBalanceErrorMessage');
+    const infoDiv = document.getElementById('apiBalanceInfo');
+
+    resultDiv.classList.remove('error');
+    errorDiv.style.display = 'none';
+    infoDiv.style.display = 'none';
+    errorDiv.innerText = '';
+
+    if (!userId || !apiKey) {
+        resultDiv.style.display = 'block';
+        errorDiv.innerText = 'Please enter both User ID and API Key.';
+        errorDiv.style.display = 'block';
+        return;
+    }
+
+    resultDiv.style.display = 'block';
+
+    const url = `https://api.sentichain.com/api/get_user_info?user_id=${encodeURIComponent(userId)}&api_key=${encodeURIComponent(apiKey)}`;
+
+    fetch(url)
+        .then(response => {
+            if (!response.ok) {
+                if (response.status === 404) {
+                    throw new Error('User not found (404).');
+                }
+                throw new Error(`Server error: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (!data.user || typeof data.user !== 'object') {
+                throw new Error('Invalid response format: missing "user" object.');
+            }
+
+            const userObj = data.user;
+
+            document.getElementById('apiBalanceUserName').innerText = userObj.name || '[No Name]';
+            document.getElementById('apiBalanceUserEmail').innerText = userObj.email || '[No Email]';
+            document.getElementById('apiBalanceUserId').innerText = userObj.user_id || '[No ID]';
+            document.getElementById('apiBalanceUserPoints').innerText = userObj.points !== undefined
+                ? userObj.points
+                : '[No Points]';
+
+            infoDiv.style.display = 'block';
+        })
+        .catch(error => {
+            console.error('API Balance Error:', error);
+            resultDiv.classList.add('error');
+            errorDiv.innerText = `Error: ${error.message}`;
+            errorDiv.style.display = 'block';
+        });
+}
+
+const apiBalanceForm = document.getElementById('apiBalanceForm');
+if (apiBalanceForm) {
+    apiBalanceForm.addEventListener('submit', function (event) {
+        event.preventDefault();
+
+        // Read user inputs
+        const userIdInput = document.getElementById('userId');
+        const userId = userIdInput.value.trim();
+
+        const apiKeyInput = document.getElementById('balanceApiKey');
+        const apiKey = apiKeyInput.value.trim();
+
+        // Call the function
+        doApiBalanceCheck(userId, apiKey);
+    });
+}
+
 // ----------------------------------------------------------------------
 // TAB PARAMS LOADER
 // ----------------------------------------------------------------------

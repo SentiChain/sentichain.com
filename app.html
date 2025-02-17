@@ -37,6 +37,9 @@
         <a href="#" class="tablinks" onclick="openTab(event, 'EventMap')">
             <i>🗺️</i><span>Event Map</span>
         </a>
+        <a href="#" class="tablinks" onclick="openTab(event, 'APIBalance')">
+            <i>💳</i><span>API Balance</span>
+        </a>
     </div>
 
     <div class="main-content">
@@ -141,6 +144,26 @@
 
                 <canvas id="pointsCanvas"></canvas>
                 <div id="tooltip"></div>
+            </div>
+
+            <div id="APIBalance" class="tabcontent" style="display: none;">
+                <form id="apiBalanceForm" class="block-explorer-form">
+                    <input type="text" id="userId" name="userId" placeholder="User ID: e.g. user-name" required />
+                    <input type="text" id="balanceApiKey" name="balanceApiKey" placeholder="API Key: e.g. api-key"
+                        required />
+                    <button type="submit" class="submit-btn">Check Balance</button>
+                </form>
+
+                <div id="apiBalanceResult" class="result" style="display: none;">
+                    <div id="apiBalanceErrorMessage" class="error" style="display: none;"></div>
+                    <div id="apiBalanceInfo" style="display: none;">
+                        <h3>Your API Balance</h3>
+                        <p>User: <span id="apiBalanceUserName"></span></p>
+                        <p>Email: <span id="apiBalanceUserEmail"></span></p>
+                        <p>User ID: <span id="apiBalanceUserId"></span></p>
+                        <p>Points (Balance): <span id="apiBalanceUserPoints"></span></p>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
