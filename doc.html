@@ -37,6 +37,9 @@
         <a href="#" class="tablinks" onclick="openTab(event, 'eventMapAPI')">
             <i>🗺️</i><span>Event Map API</span>
         </a>
+        <a href="#" class="tablinks" onclick="openTab(event, 'apiBalanceAPI')">
+            <i>💳</i><span>API Balance</span>
+        </a>
     </div>
 
     <div class="main-content">
@@ -330,6 +333,31 @@
                     <a href="https://api.sentichain.com/mapper/get_points_by_block_range_no_embedding?start_block=1&end_block=10&api_key=abc123"
                         target="_blank">https://api.sentichain.com/mapper/get_points_by_block_range_no_embedding?start_block=1&end_block=10&api_key=abc123</a>
                     </p>
+                </div>
+            </div>
+
+            <div id="apiBalanceAPI" class="tabcontent" style="display: none;">
+                <a href="/#contactForm" target="_blank">Request API Access ↗</a>
+                <div id="get_user_info" class="result block-explorer-result">
+                    <h2>GET /get_user_info</h2>
+
+                    <h3>Description</h3>
+                    <p>Retrieve user information including <strong>points</strong> remaining.</p>
+
+                    <h3>Response</h3>
+                    <ul>
+                        <li>user: <i>dict</i>
+                            <ul>
+                                <li>email: <i>str</i></li>
+                                <li>name: <i>str</i></li>
+                                <li>points: <i>int</i></li>
+                                <li>user_id: <i>str</i></li>
+                            </ul>
+                    </ul>
+
+                    <h3>Example</h3>
+                    <a href="https://api.sentichain.com/api/get_user_info?user_id=abc123&api_key=def456"
+                        target="_blank">https://api.sentichain.com/api/get_user_info?user_id=abc123&api_key=def456</a>
                 </div>
             </div>
         </div>
