@@ -881,12 +881,15 @@ select:focus {
         width: 100% !important;
         height: auto;
         display: flex;
-        flex-direction: row;
+        flex-wrap: nowrap;
+        overflow-x: auto;
         align-items: center;
-        justify-content: center;
+        justify-content: flex-start;
         border-bottom: 1px solid #2C2C2C;
         padding: 10px 0;
         transition: none;
+        -ms-overflow-style: none;
+        scrollbar-width: none;
     }
 
     .sidebar.collapsed {
@@ -896,15 +899,20 @@ select:focus {
     }
 
     .sidebar h2 {
-        display: none;
+        flex: 0 0 auto;
+        white-space: nowrap;
+        min-width: 120px;
+        margin: 0 5px;
+        padding: 8px 12px;
+        font-size: 1.2rem;
     }
 
     .sidebar a {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
+        flex: 0 0 auto;
+        white-space: nowrap;
+        min-width: 120px;
         margin: 0 5px;
-        padding: 8px 12px;
+        text-align: center;
         font-size: 0.9rem;
     }
 
