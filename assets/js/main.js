@@ -1535,9 +1535,7 @@ window.addEventListener('DOMContentLoaded', () => {
     const blockParam = params.get('block');
 
     if (tab === 'BlockExplorer') {
-        const blockExplorerLink = document.querySelector(
-            "a.tablinks[onclick*='BlockExplorer']"
-        );
+        const blockExplorerLink = document.querySelector("a.tablinks[onclick*='BlockExplorer']");
         if (blockExplorerLink) {
             blockExplorerLink.click();
         }
@@ -1545,6 +1543,11 @@ window.addEventListener('DOMContentLoaded', () => {
         const eventMapLink = document.querySelector("a.tablinks[onclick*='EventMap']");
         if (eventMapLink) {
             eventMapLink.click();
+        }
+    } else if (tab === 'APIBalance') {
+        const apiBalanceLink = document.querySelector("a.tablinks[onclick*='APIBalance']");
+        if (apiBalanceLink) {
+            apiBalanceLink.click();
         }
     }
 
