@@ -1452,6 +1452,79 @@ if (eventMapCanvas) {
 }
 
 /**********************************************************************
+ *  OBSERVATION FETCH FUNCTION
+ **********************************************************************/
+function doObservationFetch(ticker, blockNumber, apiKey) {
+    const resultDiv = document.getElementById('observationResult');
+    const processingMessage = document.getElementById('observationProcessingMessage');
+    const errorMessageDiv = document.getElementById('observationErrorMessage');
+    const infoDiv = document.getElementById('observationInfo');
+    const observationContentSpan = document.getElementById('observationContent');
+
+    // Hide/reset things before we begin
+    resultDiv.style.display = 'none';
+    processingMessage.style.display = 'none';
+    errorMessageDiv.style.display = 'none';
+    infoDiv.style.display = 'none';
+    observationContentSpan.innerText = '';
+
+    // Basic validation
+    if (!ticker) {
+        errorMessageDiv.innerText = 'Please enter a valid Ticker.';
+        errorMessageDiv.style.display = 'block';
+        resultDiv.style.display = 'block';
+        return;
+    }
+    if (!blockNumber || isNaN(blockNumber) || parseInt(blockNumber) < 0) {
+        errorMessageDiv.innerText = 'Please enter a valid block number.';
+        errorMessageDiv.style.display = 'block';
+        resultDiv.style.display = 'block';
+        return;
+    }
+
+    resultDiv.style.display = 'block';
+    processingMessage.style.display = 'block';
+
+    // Build the endpoint
+    let OBSERVATION_URL = `https://api.sentichain.com/agent/get_reasoning_match_chunk_end?` +
+        `ticker=${encodeURIComponent(ticker)}` +
+        `&summary_type=observation_public` +
+        `&user_chunk_end=${encodeURIComponent(blockNumber)}`;
+
+    if (apiKey) {
+        OBSERVATION_URL += `&api_key=${encodeURIComponent(apiKey)}`;
+    }
+
+    fetch(OBSERVATION_URL)
+        .then((response) => {
+            if (!response.ok) {
+                throw new Error(`Server error: ${response.status} ${response.statusText}`);
+            }
+            return response.json();
+        })
+        .then((data) => {
+            // The API returns { "reasoning": "<some text>" }
+            if (!data.reasoning) {
+                throw new Error('No "reasoning" field in the response.');
+            }
+
+            // Display the result
+            // Replace "reasoning" with "Observation"
+            observationContentSpan.innerText = data.reasoning;
+
+            processingMessage.style.display = 'none';
+            infoDiv.style.display = 'block';
+        })
+        .catch((error) => {
+            console.error('Observation Error:', error);
+            errorMessageDiv.innerText = `Error: ${error.message}`;
+            errorMessageDiv.style.display = 'block';
+            processingMessage.style.display = 'none';
+            infoDiv.style.display = 'none';
+        });
+}
+
+/**********************************************************************
  *  API BALANCE CHECK FUNCTION
  **********************************************************************/
 function doApiBalanceCheck(userId, apiKey) {
@@ -1616,6 +1689,18 @@ window.addEventListener('DOMContentLoaded', () => {
         });
     }
 });
+
+// Observation form
+const observationForm = document.getElementById('observationForm');
+if (observationForm) {
+    observationForm.addEventListener('submit', function (event) {
+        event.preventDefault();
+        const ticker = document.getElementById('observationTicker').value.trim();
+        const blockNumber = document.getElementById('observationBlockNumber').value.trim();
+        const apiKey = document.getElementById('observationApiKey').value.trim();
+        doObservationFetch(ticker, blockNumber, apiKey);
+    });
+}
 
 document.getElementById('contactForm').addEventListener('submit', function (event) {
     var subject = "CONTACT-US@SENTICHAIN.COM: " + document.getElementById('subject').value;

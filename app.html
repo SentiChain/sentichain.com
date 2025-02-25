@@ -37,6 +37,9 @@
         <a href="#" class="tablinks" onclick="openTab(event, 'EventMap')">
             <i>🗺️</i><span>Event Map</span>
         </a>
+        <a href="#" class="tablinks" onclick="openTab(event, 'Observation')">
+            <i>🔭</i><span>Observation</span>
+        </a>
         <a href="#" class="tablinks" onclick="openTab(event, 'APIBalance')">
             <i>💳</i><span>API Balance</span>
         </a>
@@ -144,6 +147,39 @@
 
                 <canvas id="pointsCanvas"></canvas>
                 <div id="tooltip"></div>
+            </div>
+
+            <div id="Observation" class="tabcontent" style="display: none;">
+                <form id="observationForm" class="block-explorer-form">
+                    <input type="text" id="observationTicker" name="observationTicker" placeholder="Ticker: e.g. DOGE"
+                        required />
+                    <input type="text" id="observationBlockNumber" name="observationBlockNumber"
+                        placeholder="Block Number: e.g. 100" required />
+                    <input type="text" id="observationApiKey" name="observationApiKey"
+                        placeholder="(Optional) API Key: e.g. abc123" />
+                    <button type="submit" class="submit-btn">Get Observation</button>
+                </form>
+
+                <div id="observationResult" class="result observation-result" style="display: none;">
+                    <!-- Feedback for the clipboard copy -->
+                    <div class="copy-feedback" id="copyFeedbackObservation">Copied!</div>
+
+                    <!-- Processing and error messages -->
+                    <div id="observationProcessingMessage" style="display: none;">Fetching observation data...</div>
+                    <div id="observationErrorMessage" class="error" style="display: none;"></div>
+
+                    <!-- Info container -->
+                    <div id="observationInfo" style="display: none;">
+                        <h2>Observation</h2>
+                        <div class="block-info-grid">
+                            <div class="block-info-item">
+                                <strong>Reasoning:</strong>
+                                <span id="observationContent" class="clickable"
+                                    onclick="copyToClipboard('observationContent')" title="Click to copy"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <div id="APIBalance" class="tabcontent" style="display: none;">
