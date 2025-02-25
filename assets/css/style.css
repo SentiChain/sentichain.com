@@ -1219,3 +1219,13 @@ select:focus {
     max-height: 200px;
     overflow-y: auto;
 }
+
+.consideration-bullet-list {
+    list-style-type: disc;
+    margin-left: 0em;
+    padding-left: 0;
+}
+
+.consideration-bullet-list li::marker {
+    color: #00FFC8;
+}

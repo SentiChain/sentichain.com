@@ -1660,13 +1660,16 @@ function doObservationFetch(ticker, blockNumber, apiKey) {
             let finalHTML = '';
             finalHTML += `
                 <div style="margin-bottom:20px;">
-                     <div style="white-space:pre-wrap;">${publicObservation}</div>
+                     <div style="white-space:pre-wrap; line-height: 1.5;">${publicObservation}</div>
                 </div>
             `;
+            const considerationHTML = formatBulletPoints(publicConsideration);
             finalHTML += `
                 <div style="margin-bottom:20px;">
-                     <p style="color:#00FFC8;"><strong>Consideration</strong></p>
-                     <div style="white-space:pre-wrap;">${publicConsideration}</div>
+                     <p style="color:#00FFC8;"><strong>Consideration:</strong></p>
+                     <div style="margin-bottom:20px;">
+                         ${considerationHTML}
+                     </div>
                 </div>
             `;
             finalHTML += `
@@ -2020,3 +2023,38 @@ document.getElementById('contactForm').addEventListener('submit', function (even
         encodeURIComponent('REPLY-TO: ' + emailField + '\n\nMESSAGE: ' + messageField);
     this.action = mailtoLink;
 });
+
+function formatBulletPoints(originalText) {
+    const lines = originalText.split('\n');
+    let bulletLines = [];
+    let nonBulletLines = [];
+    lines.forEach((line) => {
+        const trimmed = line.trim();
+        if (trimmed.startsWith('- ') || trimmed.startsWith('• ')) {
+            const content = trimmed.replace(/^[-•]\s*/, '');
+            bulletLines.push(content);
+        } else if (trimmed.length > 0) {
+            nonBulletLines.push(trimmed);
+        }
+    });
+    let html = '';
+    if (bulletLines.length > 0) {
+        html += '<ul class="consideration-bullet-list">\n';
+        bulletLines.forEach((item) => {
+            html += `  <li style="margin-bottom: 5px;">${item}</li>\n`;
+        });
+        html += '</ul>\n';
+    }
+    if (nonBulletLines.length > 0) {
+        if (bulletLines.length > 0) {
+            html += '<div style="height: 10px;"></div>';
+        }
+        nonBulletLines.forEach((line) => {
+            html += `<p>${line}</p>\n`;
+        });
+    }
+    if (bulletLines.length === 0 && nonBulletLines.length === 0) {
+        return `<p>${originalText}</p>`;
+    }
+    return html;
+}
