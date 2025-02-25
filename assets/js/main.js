@@ -1378,6 +1378,15 @@ if (eventMapCanvas) {
                     if (!startBlockInput.value.trim()) {
                         startBlockInput.value = defaultStart;
                     }
+                    const blockNumberInput = document.getElementById('blockNumber');
+                    if (blockNumberInput && !blockNumberInput.value.trim()) {
+                        blockNumberInput.value = chainLength - 1;
+                    }
+
+                    const obsBlockNumInput = document.getElementById('observationBlockNumber');
+                    if (obsBlockNumInput && !obsBlockNumInput.value.trim()) {
+                        obsBlockNumInput.value = chainLength - 1;
+                    }
                 })
                 .catch((err) => {
                     console.error('Error fetching chain length:', err);
