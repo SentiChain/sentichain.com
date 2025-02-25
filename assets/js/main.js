@@ -1461,7 +1461,7 @@ if (eventMapCanvas) {
 }
 
 /**********************************************************************
- *  OBSERVATION FETCH FUNCTION
+ *  OBSERVATION FETCH FUNCTION (with timestamp sorting + deduplicate)
  **********************************************************************/
 function doObservationFetch(ticker, blockNumber, apiKey) {
     const resultDiv = document.getElementById('observationResult');
@@ -1470,12 +1470,12 @@ function doObservationFetch(ticker, blockNumber, apiKey) {
     const infoDiv = document.getElementById('observationInfo');
     const observationContentSpan = document.getElementById('observationContent');
 
-    // Hide/reset things before we begin
+    // Hide/reset UI
     resultDiv.style.display = 'none';
     processingMessage.style.display = 'none';
     errorMessageDiv.style.display = 'none';
     infoDiv.style.display = 'none';
-    observationContentSpan.innerText = '';
+    observationContentSpan.innerHTML = '';
 
     // Basic validation
     if (!ticker) {
@@ -1484,53 +1484,261 @@ function doObservationFetch(ticker, blockNumber, apiKey) {
         resultDiv.style.display = 'block';
         return;
     }
-    if (!blockNumber || isNaN(blockNumber) || parseInt(blockNumber) < 0) {
-        errorMessageDiv.innerText = 'Please enter a valid block number.';
+    const bn = parseInt(blockNumber, 10);
+    if (!bn || bn < 0) {
+        errorMessageDiv.innerText = 'Please enter a valid block number (e.g. 300).';
         errorMessageDiv.style.display = 'block';
         resultDiv.style.display = 'block';
         return;
     }
 
+    // Show "loading" UI
     resultDiv.style.display = 'block';
     processingMessage.style.display = 'block';
 
-    // Build the endpoint
-    let OBSERVATION_URL = `https://api.sentichain.com/agent/get_reasoning_match_chunk_end?` +
+    // ----------------------------------------------------------------
+    // 1) FETCH "observation_public" FOR THE EXACT BLOCK NUMBER
+    // ----------------------------------------------------------------
+    let publicObservationUrl =
+        `https://api.sentichain.com/agent/get_reasoning_match_chunk_end?` +
         `ticker=${encodeURIComponent(ticker)}` +
         `&summary_type=observation_public` +
-        `&user_chunk_end=${encodeURIComponent(blockNumber)}`;
-
+        `&user_chunk_end=${encodeURIComponent(bn)}`;
     if (apiKey) {
-        OBSERVATION_URL += `&api_key=${encodeURIComponent(apiKey)}`;
+        publicObservationUrl += `&api_key=${encodeURIComponent(apiKey)}`;
     }
 
-    fetch(OBSERVATION_URL)
-        .then((response) => {
-            if (!response.ok) {
-                throw new Error(`Server error: ${response.status} ${response.statusText}`);
+    const publicObservationPromise = fetch(publicObservationUrl)
+        .then((res) => {
+            if (!res.ok) {
+                throw new Error(
+                    `observation_public fetch failed (${res.status}): ${res.statusText}`
+                );
             }
-            return response.json();
+            return res.json();
         })
         .then((data) => {
-            // The API returns { "reasoning": "<some text>" }
             if (!data.reasoning) {
-                throw new Error('No "reasoning" field in the response.');
+                throw new Error(`"observation_public" missing 'reasoning' field.`);
+            }
+            return data.reasoning; // We'll display as "Reasoning:"
+        });
+
+    // ----------------------------------------------------------------
+    // 2) FETCH 8 REASONINGS (4 Market, 4 Sentiment)
+    //    chunk ends: bn, bn-50, bn-100, bn-150
+    // ----------------------------------------------------------------
+    const chunkOffsets = [0, 50, 100, 150];
+    const chunkEnds = chunkOffsets.map((off) => bn - off).filter((x) => x >= 0);
+
+    const summaryTypes = ['initial_market_analysis', 'initial_sentiment_analysis'];
+    const fetchPromises = [];
+
+    summaryTypes.forEach((summaryType) => {
+        chunkEnds.forEach((endVal) => {
+            let url =
+                `https://api.sentichain.com/agent/get_reasoning_match_chunk_end?` +
+                `ticker=${encodeURIComponent(ticker)}` +
+                `&summary_type=${encodeURIComponent(summaryType)}` +
+                `&user_chunk_end=${encodeURIComponent(endVal)}`;
+            if (apiKey) {
+                url += `&api_key=${encodeURIComponent(apiKey)}`;
             }
 
-            // Display the result
-            // Replace "reasoning" with "Observation"
-            observationContentSpan.innerText = data.reasoning;
+            fetchPromises.push(
+                fetch(url)
+                    .then((response) => {
+                        if (!response.ok) {
+                            throw new Error(
+                                `Error (${response.status}): ${response.statusText}`
+                            );
+                        }
+                        return response.json();
+                    })
+                    .then((data) => {
+                        if (!data.reasoning) {
+                            throw new Error(
+                                `No "reasoning" field for ${summaryType} & block ${endVal}.`
+                            );
+                        }
+                        return {
+                            summaryType,
+                            endVal,
+                            // parse the triple-backtick JSON
+                            reasoning: parseTripleBacktickJSON(data.reasoning),
+                        };
+                    })
+            );
+        });
+    });
 
+    // ----------------------------------------------------------------
+    // 3) WAIT FOR EVERYTHING (publicObservation + 8 calls)
+    // ----------------------------------------------------------------
+    Promise.all([publicObservationPromise, ...fetchPromises])
+        .then((responses) => {
+            // responses[0] = top-level "observation_public"
+            // responses[1..N] = market/sentiment arrays
+            const publicObservation = responses[0];
+            const details = responses.slice(1);
+
+            // We'll gather market data in one array, sentiment in another
+            let marketRows = [];
+            let sentimentRows = [];
+
+            // Merge all chunk data into each category
+            for (let obj of details) {
+                if (obj.summaryType === 'initial_market_analysis') {
+                    obj.reasoning.forEach((item) => {
+                        marketRows.push({
+                            timestamp: item.timestamp,
+                            reasoning: item.summary,
+                        });
+                    });
+                } else {
+                    obj.reasoning.forEach((item) => {
+                        sentimentRows.push({
+                            timestamp: item.timestamp,
+                            reasoning: item.summary,
+                        });
+                    });
+                }
+            }
+
+            // 4) SORT ROWS BY TIMESTAMP (ascending)
+            marketRows.sort((a, b) => {
+                const tA = parseDateSafe(a.timestamp);
+                const tB = parseDateSafe(b.timestamp);
+                if (tA === null && tB === null) return 0;
+                if (tA === null) return 1; // push invalid to bottom
+                if (tB === null) return -1;
+                return tA - tB; // ascending
+            });
+
+            sentimentRows.sort((a, b) => {
+                const tA = parseDateSafe(a.timestamp);
+                const tB = parseDateSafe(b.timestamp);
+                if (tA === null && tB === null) return 0;
+                if (tA === null) return 1;
+                if (tB === null) return -1;
+                return tA - tB;
+            });
+
+            // 5) REMOVE DUPLICATES (by timestamp) in each table
+            //    We'll keep the *first* one we encounter after sorting.
+            marketRows = deduplicateByTimestamp(marketRows);
+            sentimentRows = deduplicateByTimestamp(sentimentRows);
+
+            // ----------------------------------------------------------------
+            // 6) BUILD FINAL HTML
+            // ----------------------------------------------------------------
+            let finalHTML = '';
+
+            // (A) "Reasoning:" top-level
+            finalHTML += `
+                <div style="margin-bottom:20px;">
+                    <strong style="color:#00FFC8">Reasoning:</strong><br/>
+                    <div style="white-space:pre-wrap;">${publicObservation}</div>
+                </div>
+            `;
+
+            // (B) Market Analysis Table
+            finalHTML += `
+                <h3 style="color:#00FFC8;">Market Analysis</h3>
+                <table id="marketAnalysisTable" style="width:100%; border-collapse:collapse; margin-bottom:20px;">
+                    <thead>
+                        <tr style="background:#00FFC8; color:#121212;">
+                            <th style="padding:10px; text-align:left; width:180px;">Timestamp</th>
+                            <th style="padding:10px; text-align:left;">Reasoning</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+
+            if (marketRows.length === 0) {
+                finalHTML += `
+                    <tr>
+                        <td colspan="2" style="padding:10px;">No market analysis data found.</td>
+                    </tr>
+                `;
+            } else {
+                marketRows.forEach((item) => {
+                    finalHTML += `
+                        <tr style="border-bottom:1px solid #333;">
+                            <td style="padding:10px;">${item.timestamp}</td>
+                            <td style="padding:10px;">${item.reasoning}</td>
+                        </tr>
+                    `;
+                });
+            }
+
+            finalHTML += `</tbody></table>`;
+
+            // (C) Sentiment Analysis Table
+            finalHTML += `
+                <h3 style="color:#00FFC8;">Sentiment Analysis</h3>
+                <table id="sentimentAnalysisTable" style="width:100%; border-collapse:collapse;">
+                    <thead>
+                        <tr style="background:#00FFC8; color:#121212;">
+                            <th style="padding:10px; text-align:left; width:180px;">Timestamp</th>
+                            <th style="padding:10px; text-align:left;">Reasoning</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+
+            if (sentimentRows.length === 0) {
+                finalHTML += `
+                    <tr>
+                        <td colspan="2" style="padding:10px;">No sentiment analysis data found.</td>
+                    </tr>
+                `;
+            } else {
+                sentimentRows.forEach((item) => {
+                    finalHTML += `
+                        <tr style="border-bottom:1px solid #333;">
+                            <td style="padding:10px;">${item.timestamp}</td>
+                            <td style="padding:10px;">${item.reasoning}</td>
+                        </tr>
+                    `;
+                });
+            }
+
+            finalHTML += `</tbody></table>`;
+
+            // 7) Place into #observationContent
+            observationContentSpan.innerHTML = finalHTML;
+
+            // Done - hide loading, show results
             processingMessage.style.display = 'none';
             infoDiv.style.display = 'block';
         })
-        .catch((error) => {
-            console.error('Observation Error:', error);
-            errorMessageDiv.innerText = `Error: ${error.message}`;
+        .catch((err) => {
+            console.error('Detailed Observation Error:', err);
+            errorMessageDiv.innerText = `Error: ${err.message}`;
             errorMessageDiv.style.display = 'block';
             processingMessage.style.display = 'none';
             infoDiv.style.display = 'none';
         });
+}
+
+// Helper: parse date safely
+function parseDateSafe(tsString) {
+    const parsed = Date.parse(tsString);
+    return isNaN(parsed) ? null : parsed;
+}
+
+// Helper: remove duplicate timestamps after sort
+function deduplicateByTimestamp(rows) {
+    const unique = [];
+    const seen = new Set();
+    for (const r of rows) {
+        if (!seen.has(r.timestamp)) {
+            seen.add(r.timestamp);
+            unique.push(r);
+        }
+    }
+    return unique;
 }
 
 /**********************************************************************
@@ -1724,3 +1932,16 @@ document.getElementById('contactForm').addEventListener('submit', function (even
         encodeURIComponent('REPLY-TO: ' + emailField + '\n\nMESSAGE: ' + messageField);
     this.action = mailtoLink;
 });
+
+function parseTripleBacktickJSON(str) {
+    let cleaned = str;
+    cleaned = cleaned.replace(/^```json\s*/i, '');
+    cleaned = cleaned.replace(/^```\s*/i, '');
+    cleaned = cleaned.replace(/```$/, '').trim();
+    try {
+        return JSON.parse(cleaned);
+    } catch (err) {
+        console.error('Error parsing triple-backtick JSON:', err, 'Original string:', str);
+        return [];
+    }
+}
