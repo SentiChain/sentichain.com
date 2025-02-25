@@ -37,6 +37,9 @@
         <a href="#" class="tablinks" onclick="openTab(event, 'eventMapAPI')">
             <i>🗺️</i><span>Event Map</span>
         </a>
+        <a href="#" class="tablinks" onclick="openTab(event, 'observationAPI')">
+            <i>🔭</i><span>Observation</span>
+        </a>
         <a href="#" class="tablinks" onclick="openTab(event, 'apiBalanceAPI')">
             <i>💳</i><span>API Balance</span>
         </a>
@@ -334,6 +337,46 @@
                     <br>
                     <a href="https://api.sentichain.com/mapper/get_points_by_block_range_no_embedding?start_block=1&end_block=10&api_key=abc123"
                         target="_blank">https://api.sentichain.com/mapper/get_points_by_block_range_no_embedding?start_block=1&end_block=10&api_key=abc123</a>
+                    </p>
+                </div>
+            </div>
+
+            <div id="observationAPI" class="tabcontent" style="display: none;">
+                <a href="/#contactForm" target="_blank">Request API Access ↗</a>
+                <a href="https://github.com/SentiChain/client_lightweight" target="_blank">Python Client ↗</a>
+                <div id="get_reasoning_match_chunk_end" class="result block-explorer-result">
+                    <h2>GET /get_reasoning_match_chunk_end</h2>
+
+                    <h3>Description</h3>
+                    <p>Return the reasoning for the last available chunk whose <strong>chunk_end</strong> is less and
+                        equal to <strong>user_chunk_end</strong>, for the given <strong>ticker</strong> and
+                        <strong>summary_type</strong>. If a valid query-param <strong>api_key</strong> is provided,
+                        <strong>reasoning</strong> is included. Otherwise, it is hidden. Please note,
+                        <strong>api_key</strong> is not required for <strong>summary_type</strong> ending with
+                        <strong>_public</strong>.
+                    </p>
+
+                    <h3>Cost</h3>
+                    <p>Each request will cost <strong>1 point</strong> from the balance of the API key.</p>
+
+                    <h3>Query params</h3>
+                    <p>
+                        <li>ticker: <i>str</i></li>
+                        <li>summary_type: <i>str</i></li>
+                        <li>user_chunk_end: <i>int</i></li>
+                        <li>api_key: <i>str</i> (optional)</li>
+                    </p>
+
+                    <h3>Response</h3>
+                    <li>reasoning: <i>str</i></li>
+                    </ul>
+
+                    <h3>Example</h3>
+                    <a href="https://api.sentichain.com/agent/get_reasoning_match_chunk_end?ticker=DOGE&summary_type=observation_public&user_chunk_end=200"
+                        target="_blank">https://api.sentichain.com/agent/get_reasoning_match_chunk_end?ticker=DOGE&summary_type=observation_public&user_chunk_end=200</a>
+                    <br>
+                    <a href="https://api.sentichain.com/agent/get_reasoning_match_chunk_end?ticker=DOGE&summary_type=observation_public&user_chunk_end=200&api_key=abc123"
+                        target="_blank">https://api.sentichain.com/agent/get_reasoning_match_chunk_end?ticker=DOGE&summary_type=observation_public&user_chunk_end=200&api_key=abc123</a>
                     </p>
                 </div>
             </div>
