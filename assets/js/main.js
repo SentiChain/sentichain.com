@@ -1512,6 +1512,31 @@ function doObservationFetch(ticker, blockNumber, apiKey) {
             }
             return data.reasoning;
         });
+    let publicConsiderationUrl =
+        `https://api.sentichain.com/agent/get_reasoning_match_chunk_end?` +
+        `ticker=${encodeURIComponent(ticker)}` +
+        `&summary_type=consideration_public` +
+        `&user_chunk_end=${encodeURIComponent(bn)}`;
+
+    if (apiKey) {
+        publicConsiderationUrl += `&api_key=${encodeURIComponent(apiKey)}`;
+    }
+
+    const publicConsiderationPromise = fetch(publicConsiderationUrl)
+        .then((res) => {
+            if (!res.ok) {
+                throw new Error(
+                    `consideration_public fetch failed (${res.status}): ${res.statusText}`
+                );
+            }
+            return res.json();
+        })
+        .then((data) => {
+            if (!data.reasoning) {
+                throw new Error(`"consideration_public" missing 'reasoning' field.`);
+            }
+            return data.reasoning; // This is your consideration text
+        });
     const chunkOffsets = [0, 50, 100, 150];
     const chunkEnds = chunkOffsets.map((off) => bn - off).filter((x) => x >= 0);
     const summaryTypes = ['initial_market_analysis', 'initial_sentiment_analysis', 'initial_event_analysis', 'initial_quant_analysis'];
@@ -1551,10 +1576,11 @@ function doObservationFetch(ticker, blockNumber, apiKey) {
             );
         });
     });
-    Promise.all([publicObservationPromise, ...fetchPromises])
+    Promise.all([publicObservationPromise, publicConsiderationPromise, ...fetchPromises])
         .then((responses) => {
             const publicObservation = responses[0];
-            const details = responses.slice(1);
+            const publicConsideration = responses[1];
+            const details = responses.slice(2);
             let marketRows = [];
             let sentimentRows = [];
             let eventRows = [];
@@ -1635,6 +1661,12 @@ function doObservationFetch(ticker, blockNumber, apiKey) {
             finalHTML += `
                 <div style="margin-bottom:20px;">
                      <div style="white-space:pre-wrap;">${publicObservation}</div>
+                </div>
+            `;
+            finalHTML += `
+                <div style="margin-bottom:20px;">
+                     <p style="color:#00FFC8;"><strong>Consideration</strong></p>
+                     <div style="white-space:pre-wrap;">${publicConsideration}</div>
                 </div>
             `;
             finalHTML += `
