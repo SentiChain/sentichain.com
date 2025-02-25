@@ -971,6 +971,32 @@ select:focus {
     #transactionsTable thead {
         display: none;
     }
+
+    #marketAnalysisTable,
+    #sentimentAnalysisTable {
+        table-layout: fixed !important;
+        width: 100%;
+    }
+
+    #marketAnalysisTable th:nth-child(1),
+    #marketAnalysisTable td:nth-child(1),
+    #sentimentAnalysisTable th:nth-child(1),
+    #sentimentAnalysisTable td:nth-child(1) {
+        width: 80px !important;
+        min-width: 80px;
+        white-space: normal;
+        overflow-wrap: break-word;
+        word-break: break-word;
+    }
+
+    #marketAnalysisTable th:nth-child(2),
+    #marketAnalysisTable td:nth-child(2),
+    #sentimentAnalysisTable th:nth-child(2),
+    #sentimentAnalysisTable td:nth-child(2) {
+        width: auto;
+        white-space: normal;
+        overflow-wrap: break-word;
+    }
 }
 
 .container h1,
