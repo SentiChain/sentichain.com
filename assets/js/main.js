@@ -1514,7 +1514,7 @@ function doObservationFetch(ticker, blockNumber, apiKey) {
         });
     const chunkOffsets = [0, 50, 100, 150];
     const chunkEnds = chunkOffsets.map((off) => bn - off).filter((x) => x >= 0);
-    const summaryTypes = ['initial_market_analysis', 'initial_sentiment_analysis'];
+    const summaryTypes = ['initial_market_analysis', 'initial_sentiment_analysis', 'initial_event_analysis', 'initial_quant_analysis'];
     const fetchPromises = [];
     summaryTypes.forEach((summaryType) => {
         chunkEnds.forEach((endVal) => {
@@ -1557,6 +1557,8 @@ function doObservationFetch(ticker, blockNumber, apiKey) {
             const details = responses.slice(1);
             let marketRows = [];
             let sentimentRows = [];
+            let eventRows = [];
+            let quantRows = [];
             for (let obj of details) {
                 if (obj.summaryType === 'initial_market_analysis') {
                     obj.reasoning.forEach((item) => {
@@ -1566,12 +1568,31 @@ function doObservationFetch(ticker, blockNumber, apiKey) {
                         });
                     });
                 } else {
-                    obj.reasoning.forEach((item) => {
-                        sentimentRows.push({
-                            timestamp: item.timestamp,
-                            reasoning: item.summary,
+                    if (obj.summaryType === 'initial_sentiment_analysis') {
+                        obj.reasoning.forEach((item) => {
+                            sentimentRows.push({
+                                timestamp: item.timestamp,
+                                reasoning: item.summary,
+                            });
                         });
-                    });
+                    } else {
+                        if (obj.summaryType === 'initial_event_analysis') {
+                            obj.reasoning.forEach((item) => {
+                                eventRows.push({
+                                    timestamp: item.timestamp,
+                                    reasoning: item.summary,
+                                });
+                            });
+                        } else {
+                            obj.reasoning.forEach((item) => {
+                                quantRows.push({
+                                    timestamp: item.timestamp,
+                                    reasoning: item.summary,
+                                });
+                            });
+                        }
+                    }
+
                 }
             }
             marketRows.sort((a, b) => {
@@ -1590,8 +1611,26 @@ function doObservationFetch(ticker, blockNumber, apiKey) {
                 if (tB === null) return -1;
                 return tA - tB;
             });
+            eventRows.sort((a, b) => {
+                const tA = parseDateSafe(a.timestamp);
+                const tB = parseDateSafe(b.timestamp);
+                if (tA === null && tB === null) return 0;
+                if (tA === null) return 1;
+                if (tB === null) return -1;
+                return tA - tB;
+            });
+            quantRows.sort((a, b) => {
+                const tA = parseDateSafe(a.timestamp);
+                const tB = parseDateSafe(b.timestamp);
+                if (tA === null && tB === null) return 0;
+                if (tA === null) return 1;
+                if (tB === null) return -1;
+                return tA - tB;
+            });
             marketRows = deduplicateByTimestamp(marketRows);
             sentimentRows = deduplicateByTimestamp(sentimentRows);
+            eventRows = deduplicateByTimestamp(eventRows);
+            quantRows = deduplicateByTimestamp(quantRows);
             let finalHTML = '';
             finalHTML += `
                 <div style="margin-bottom:20px;">
@@ -1629,7 +1668,7 @@ function doObservationFetch(ticker, blockNumber, apiKey) {
             finalHTML += `</tbody></table>`;
             finalHTML += `
                 <h3 style="color:#00FFC8;">Sentiment Observations</h3>
-                <table id="sentimentAnalysisTable" style="width:100%; border-collapse:collapse;">
+                <table id="sentimentAnalysisTable" style="width:100%; border-collapse:collapse; margin-bottom:20px;">
                     <thead>
                         <tr style="background:#00FFC8; color:#121212;">
                             <th style="padding:10px; text-align:left; width:180px;">Timestamp</th>
@@ -1656,6 +1695,65 @@ function doObservationFetch(ticker, blockNumber, apiKey) {
                 });
             }
             finalHTML += `</tbody></table>`;
+            finalHTML += `
+                <h3 style="color:#00FFC8;">Event Observations</h3>
+                <table id="eventAnalysisTable" style="width:100%; border-collapse:collapse; margin-bottom:20px;">
+                    <thead>
+                        <tr style="background:#00FFC8; color:#121212;">
+                            <th style="padding:10px; text-align:left; width:180px;">Timestamp</th>
+                            <th style="padding:10px; text-align:left;">Reasoning</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+
+            if (eventRows.length === 0) {
+                finalHTML += `
+                    <tr>
+                        <td colspan="2" style="padding:10px;">No event analysis data found.</td>
+                    </tr>
+                `;
+            } else {
+                eventRows.forEach((item) => {
+                    finalHTML += `
+                        <tr style="border-bottom:1px solid #333;">
+                            <td style="padding:10px;">${item.timestamp}</td>
+                            <td style="padding:10px;">${item.reasoning}</td>
+                        </tr>
+                    `;
+                });
+            }
+            finalHTML += `</tbody></table>`;
+            finalHTML += `
+                <h3 style="color:#00FFC8;">Quant Observations</h3>
+                <table id="quantAnalysisTable" style="width:100%; border-collapse:collapse;">
+                    <thead>
+                        <tr style="background:#00FFC8; color:#121212;">
+                            <th style="padding:10px; text-align:left; width:180px;">Timestamp</th>
+                            <th style="padding:10px; text-align:left;">Reasoning</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+
+            if (quantRows.length === 0) {
+                finalHTML += `
+                    <tr>
+                        <td colspan="2" style="padding:10px;">No quant analysis data found.</td>
+                    </tr>
+                `;
+            } else {
+                quantRows.forEach((item) => {
+                    finalHTML += `
+                        <tr style="border-bottom:1px solid #333;">
+                            <td style="padding:10px;">${item.timestamp}</td>
+                            <td style="padding:10px;">${item.reasoning}</td>
+                        </tr>
+                    `;
+                });
+            }
+            finalHTML += `</tbody></table>`;
+
             observationContentSpan.innerHTML = finalHTML;
             processingMessage.style.display = 'none';
             infoDiv.style.display = 'block';
