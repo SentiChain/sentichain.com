@@ -151,8 +151,14 @@
 
             <div id="Observation" class="tabcontent" style="display: none;">
                 <form id="observationForm" class="block-explorer-form">
-                    <input type="text" id="observationTicker" name="observationTicker" placeholder="Ticker: e.g. DOGE"
-                        required />
+                    <select id="observationTicker" name="observationTicker" required>
+                        <option value="BTC" selected>BTC</option>
+                        <option value="ETH">ETH</option>
+                        <option value="SOL">SOL</option>
+                        <option value="XRP">XRP</option>
+                        <option value="ADA">ADA</option>
+                        <option value="DOGE">DOGE</option>
+                    </select>
                     <input type="text" id="observationBlockNumber" name="observationBlockNumber"
                         placeholder="Block Number: e.g. 100" required />
                     <input type="text" id="observationApiKey" name="observationApiKey"
@@ -161,14 +167,11 @@
                 </form>
 
                 <div id="observationResult" class="result observation-result" style="display: none;">
-                    <!-- Feedback for the clipboard copy -->
                     <div class="copy-feedback" id="copyFeedbackObservation">Copied!</div>
 
-                    <!-- Processing and error messages -->
                     <div id="observationProcessingMessage" style="display: none;">Fetching observation data...</div>
                     <div id="observationErrorMessage" class="error" style="display: none;"></div>
 
-                    <!-- Info container -->
                     <div id="observationInfo" style="display: none;">
                         <h2>Observation</h2>
                         <div class="block-info-grid">
