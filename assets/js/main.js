@@ -1617,6 +1617,11 @@ window.addEventListener('DOMContentLoaded', () => {
         if (eventMapLink) {
             eventMapLink.click();
         }
+    } else if (tab === 'Observation') {
+        const observationLink = document.querySelector("a.tablinks[onclick*='Observation']");
+        if (observationLink) {
+            observationLink.click();
+        }
     } else if (tab === 'APIBalance') {
         const apiBalanceLink = document.querySelector("a.tablinks[onclick*='APIBalance']");
         if (apiBalanceLink) {
