@@ -2081,10 +2081,10 @@ window.addEventListener('DOMContentLoaded', () => {
         if (observationLink) {
             observationLink.click();
         }
-    } else if (tab === 'APIBalance') {
-        const apiBalanceLink = document.querySelector("a.tablinks[onclick*='APIBalance']");
-        if (apiBalanceLink) {
-            apiBalanceLink.click();
+    } else if (tab === 'APIManagement') {
+        const apiManagementLink = document.querySelector("a.tablinks[onclick*='APIManagement']");
+        if (apiManagementLink) {
+            apiManagementLink.click();
         }
     }
 
