@@ -302,15 +302,20 @@ if (canvas) {
 
     animateGalaxy();
 
-    const blockHeightElement = document.getElementById('blockHeight');
-    if (blockHeightElement) {
+    let timeElapsedInterval = null;
+
+    function fetchBlockHeight() {
+        const blockHeightElement = document.getElementById('blockHeight');
+        if (!blockHeightElement) return;
+
         fetch('https://api.sentichain.com/blockchain/get_chain_length?network=mainnet')
             .then((res) => res.json())
             .then((data) => {
                 const targetCount = data.chain_length;
                 let currentCount = Math.max(targetCount - 20, 0);
+
                 blockHeightElement.textContent = currentCount;
-                const increment = () => {
+                function increment() {
                     if (currentCount < targetCount) {
                         currentCount++;
                         blockHeightElement.textContent = currentCount;
@@ -318,18 +323,20 @@ if (canvas) {
                     } else {
                         blockHeightElement.textContent = targetCount;
                     }
-                };
+                }
                 increment();
             })
             .catch((err) => {
-                blockHeightElement.textContent = '...';
                 console.error(err);
+                blockHeightElement.textContent = '...';
             });
     }
 
-    const blockTimeElement = document.getElementById('blockTime');
-    const timeElapsedElement = document.getElementById('timeElapsed');
-    if (blockTimeElement && timeElapsedElement) {
+    function fetchBlockTime() {
+        const blockTimeElement = document.getElementById('blockTime');
+        const timeElapsedElement = document.getElementById('timeElapsed');
+        if (!blockTimeElement || !timeElapsedElement) return;
+
         fetch('https://api.sentichain.com/blockchain/get_last_block_time?network=mainnet')
             .then((res) => res.json())
             .then((data) => {
@@ -351,7 +358,10 @@ if (canvas) {
 
                     timeElapsedElement.textContent = `${elapsed}s`;
 
-                    setInterval(() => {
+                    if (timeElapsedInterval) {
+                        clearInterval(timeElapsedInterval);
+                    }
+                    timeElapsedInterval = setInterval(() => {
                         elapsed++;
                         timeElapsedElement.textContent = `${elapsed}s`;
                     }, 1000);
@@ -361,23 +371,24 @@ if (canvas) {
                 }
             })
             .catch((err) => {
+                console.error(err);
                 blockTimeElement.textContent = '...';
                 timeElapsedElement.textContent = '...';
-                console.error(err);
             });
     }
 
-    const txnCountElement = document.getElementById('txnCount');
-    if (txnCountElement) {
-        fetch(
-            'https://api.sentichain.com/blockchain/get_total_number_of_transactions?network=mainnet'
-        )
+    function fetchTxnCount() {
+        const txnCountElement = document.getElementById('txnCount');
+        if (!txnCountElement) return;
+
+        fetch('https://api.sentichain.com/blockchain/get_total_number_of_transactions?network=mainnet')
             .then((res) => res.json())
             .then((data) => {
                 const targetCount = data.total_tx_count;
                 let currentCount = Math.max(targetCount - 20, 0);
+
                 txnCountElement.textContent = currentCount;
-                const increment = () => {
+                function increment() {
                     if (currentCount < targetCount) {
                         currentCount++;
                         txnCountElement.textContent = currentCount;
@@ -385,14 +396,26 @@ if (canvas) {
                     } else {
                         txnCountElement.textContent = targetCount;
                     }
-                };
+                }
                 increment();
             })
             .catch((err) => {
-                txnCountElement.textContent = '...';
                 console.error(err);
+                txnCountElement.textContent = '...';
             });
     }
+
+    function refreshNetworkStats() {
+        fetchBlockHeight();
+        fetchBlockTime();
+        fetchTxnCount();
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        refreshNetworkStats();
+        setInterval(refreshNetworkStats, 10000);
+    });
+
 }
 
 function openTab(evt, tabName) {
