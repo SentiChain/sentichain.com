@@ -1930,6 +1930,88 @@ if (apiBalanceForm) {
     });
 }
 
+/***************************************************************
+ *  USER REGISTRATION FORM
+ ***************************************************************/
+const registerForm = document.getElementById('registerForm');
+if (registerForm) {
+    registerForm.addEventListener('submit', function (event) {
+        event.preventDefault();
+
+        // Get input values
+        const userId = document.getElementById('registerUserId').value.trim();
+        const email = document.getElementById('registerEmail').value.trim();
+        const name = document.getElementById('registerName').value.trim();
+
+        // References to output/error divs
+        const registerResultDiv = document.getElementById('registerResult');
+        const registerErrorDiv = document.getElementById('registerErrorMessage');
+        const registerOutputDiv = document.getElementById('registerOutput');
+        const registerMessageSpan = document.getElementById('registerMessageOutput');
+        const registerUserIdSpan = document.getElementById('registerUserIdOutput');
+        const registerApiKeySpan = document.getElementById('registerApiKeyOutput');
+
+        // Reset display
+        registerResultDiv.style.display = 'block';
+        registerErrorDiv.style.display = 'none';
+        registerOutputDiv.style.display = 'none';
+        registerErrorDiv.innerText = '';
+        registerMessageSpan.innerText = '';
+        registerUserIdSpan.innerText = '';
+        registerApiKeySpan.innerText = '';
+
+        // Make sure user typed something
+        if (!userId || !email || !name) {
+            registerErrorDiv.style.display = 'block';
+            registerErrorDiv.innerText = 'Please fill in user_id, email, and name.';
+            return;
+        }
+
+        // Perform the registration POST request
+        fetch('https://api.sentichain.com/api/register', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                user_id: userId,
+                email: email,
+                name: name
+            })
+        })
+            .then(response => {
+                if (!response.ok) {
+                    // For 4xx or 5xx errors, throw an error to be caught below
+                    return response.json().then(errData => {
+                        throw new Error(errData.description || `Server error: ${response.status}`);
+                    });
+                }
+                return response.json();
+            })
+            .then(data => {
+                // Expected structure: {
+                //   "api_key": "<string>",
+                //   "message": "User registered successfully.",
+                //   "user_id": "<the user id>"
+                // }
+
+                if (!data.api_key || !data.message || !data.user_id) {
+                    throw new Error('Invalid response. Missing api_key, message, or user_id.');
+                }
+
+                registerOutputDiv.style.display = 'block';
+                registerMessageSpan.innerText = data.message;
+                registerUserIdSpan.innerText = data.user_id;
+                registerApiKeySpan.innerText = data.api_key;
+            })
+            .catch(error => {
+                registerErrorDiv.style.display = 'block';
+                registerErrorDiv.innerText = `Registration failed: ${error.message}`;
+            });
+    });
+}
+
+
 // ----------------------------------------------------------------------
 // TAB PARAMS LOADER
 // ----------------------------------------------------------------------

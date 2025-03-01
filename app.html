@@ -190,6 +190,36 @@
             </div>
 
             <div id="APIBalance" class="tabcontent" style="display: none;">
+                <!-- NEW: Registration Form -->
+                <div style="margin-bottom: 30px;">
+                    <form id="registerForm" class="block-explorer-form">
+                        <input type="text" id="registerUserId" name="registerUserId"
+                            placeholder="User ID: e.g. new-user" required />
+                        <input type="text" id="registerEmail" name="registerEmail"
+                            placeholder="Email: e.g. new-user@example.com" required />
+                        <input type="text" id="registerName" name="registerName" placeholder="Name: e.g. John Doe"
+                            required />
+                        <button type="submit" class="submit-btn">Register</button>
+                    </form>
+
+                    <!-- Container to display registration results -->
+                    <div id="registerResult" class="result" style="display: none; margin-top: 20px;">
+                        <div id="registerErrorMessage" class="error" style="display: none;"></div>
+                        <div id="registerOutput" style="display: none;">
+                            <p><strong>Message:</strong> <span id="registerMessageOutput"></span></p>
+                            <p><strong>User ID:</strong> <span id="registerUserIdOutput"></span></p>
+                            <p><strong>API Key:</strong> <span id="registerApiKeyOutput"></span></p>
+                            <p style="color: #e0e0e0; margin-top: 10px;">
+                                <em>Please note: the above API key is only displayed once. You’ll need to save it
+                                    somewhere safe. You will
+                                    need the combination of <strong>User ID</strong> and <strong>API Key</strong> to
+                                    check your balance.</em>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- EXISTING: Balance Check Form -->
                 <form id="apiBalanceForm" class="block-explorer-form">
                     <input type="text" id="userId" name="userId" placeholder="User ID: e.g. user-name" required />
                     <input type="text" id="balanceApiKey" name="balanceApiKey" placeholder="API Key: e.g. api-key"
@@ -208,6 +238,7 @@
                     </div>
                 </div>
             </div>
+
         </div>
     </div>
 
