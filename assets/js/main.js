@@ -484,12 +484,12 @@ function formatTimestamp(timestamp) {
 }
 
 function safeValue(val) {
-    return val === "hidden" ? "Hidden" : val;
+    return val === "A valid API Key is required" ? "A valid API Key is required" : val;
 }
 
 function serializeVector(vec) {
     if (!Array.isArray(vec)) {
-        return "Hidden";
+        return "A valid API Key is required";
     }
     return `[${vec.map((n) => (Number.isInteger(n) ? n.toFixed(1) : n)).join(', ')}]`;
 }
@@ -595,8 +595,8 @@ function doBlockExplorerFetch(network, blockNumber, apiKey) {
                         row.appendChild(txHashCell);
 
                         const timestampCell = document.createElement('td');
-                        timestampCell.innerText = (tx.post_timestamp === "hidden")
-                            ? "Hidden"
+                        timestampCell.innerText = (tx.post_timestamp === "A valid API Key is required")
+                            ? "A valid API Key is required"
                             : formatTimestamp(tx.post_timestamp);
                         row.appendChild(timestampCell);
 
@@ -627,8 +627,8 @@ function doBlockExplorerFetch(network, blockNumber, apiKey) {
                         const copyFeedbackVectorSignatureId = `copyFeedbackVectorSignature_${sanitizedTxHash}`;
 
                         let postLinkHtml = '';
-                        if (tx.post_link === 'hidden') {
-                            postLinkHtml = '<span>Hidden</span>';
+                        if (tx.post_link === 'A valid privileged API Key is required') {
+                            postLinkHtml = '<span>A valid privileged API Key is required</span>';
                         } else {
                             postLinkHtml = `<a href="https://x.com/${tx.post_link}" target="_blank">View Post</a>`;
                         }
