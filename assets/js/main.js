@@ -1710,7 +1710,7 @@ function doObservationFetch(ticker, blockNumber, apiKey) {
             if (marketRows.length === 0) {
                 finalHTML += `
                     <tr>
-                        <td colspan="2" style="padding:10px;">No market analysis data found.</td>
+                        <td colspan="2" style="padding:10px;">No market analysis data found. A valid API Key is required.</td>
                     </tr>
                 `;
             } else {
@@ -1739,7 +1739,7 @@ function doObservationFetch(ticker, blockNumber, apiKey) {
             if (sentimentRows.length === 0) {
                 finalHTML += `
                     <tr>
-                        <td colspan="2" style="padding:10px;">No sentiment analysis data found.</td>
+                        <td colspan="2" style="padding:10px;">No sentiment analysis data found. A valid API Key is required.</td>
                     </tr>
                 `;
             } else {
@@ -1768,7 +1768,7 @@ function doObservationFetch(ticker, blockNumber, apiKey) {
             if (eventRows.length === 0) {
                 finalHTML += `
                     <tr>
-                        <td colspan="2" style="padding:10px;">No event analysis data found.</td>
+                        <td colspan="2" style="padding:10px;">No event analysis data found. A valid API Key is required.</td>
                     </tr>
                 `;
             } else {
@@ -1797,7 +1797,7 @@ function doObservationFetch(ticker, blockNumber, apiKey) {
             if (quantRows.length === 0) {
                 finalHTML += `
                     <tr>
-                        <td colspan="2" style="padding:10px;">No quant analysis data found.</td>
+                        <td colspan="2" style="padding:10px;">No quant analysis data found. A valid API Key is required.</td>
                     </tr>
                 `;
             } else {
