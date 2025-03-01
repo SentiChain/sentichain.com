@@ -40,8 +40,8 @@
         <a href="#" class="tablinks" onclick="openTab(event, 'Observation')">
             <i>🔭</i><span>Observation</span>
         </a>
-        <a href="#" class="tablinks" onclick="openTab(event, 'APIBalance')">
-            <i>💳</i><span>API Balance</span>
+        <a href="#" class="tablinks" onclick="openTab(event, 'APIManagement')">
+            <i>💳</i><span>API Management</span>
         </a>
     </div>
 
@@ -189,9 +189,9 @@
                 </div>
             </div>
 
-            <div id="APIBalance" class="tabcontent" style="display: none;">
-                <!-- NEW: Registration Form -->
-                <div style="margin-bottom: 30px;">
+            <div id="APIManagement" class="tabcontent" style="display: none;">
+                <div style="border: 1px solid #333; padding: 20px; margin-bottom: 20px;">
+                    <h3>Register</h3>
                     <form id="registerForm" class="block-explorer-form">
                         <input type="text" id="registerUserId" name="registerUserId"
                             placeholder="User ID: e.g. new-user" required />
@@ -202,7 +202,6 @@
                         <button type="submit" class="submit-btn">Register</button>
                     </form>
 
-                    <!-- Container to display registration results -->
                     <div id="registerResult" class="result" style="display: none; margin-top: 20px;">
                         <div id="registerErrorMessage" class="error" style="display: none;"></div>
                         <div id="registerOutput" style="display: none;">
@@ -210,33 +209,36 @@
                             <p><strong>User ID:</strong> <span id="registerUserIdOutput"></span></p>
                             <p><strong>API Key:</strong> <span id="registerApiKeyOutput"></span></p>
                             <p style="color: #e0e0e0; margin-top: 10px;">
-                                <em>Please note: the above API key is only displayed once. You’ll need to save it
-                                    somewhere safe. You will
-                                    need the combination of <strong>User ID</strong> and <strong>API Key</strong> to
-                                    check your balance.</em>
+                                <em>
+                                    Please note: the above <strong>API key</strong> is displayed only once.
+                                    You'll need this API Key <u>plus</u> your User ID to check your balance later.
+                                </em>
                             </p>
                         </div>
                     </div>
                 </div>
 
-                <!-- EXISTING: Balance Check Form -->
-                <form id="apiBalanceForm" class="block-explorer-form">
-                    <input type="text" id="userId" name="userId" placeholder="User ID: e.g. user-name" required />
-                    <input type="text" id="balanceApiKey" name="balanceApiKey" placeholder="API Key: e.g. api-key"
-                        required />
-                    <button type="submit" class="submit-btn">Check Balance</button>
-                </form>
+                <div style="border: 1px solid #333; padding: 20px;">
+                    <h3>Check Balance</h3>
+                    <form id="apiBalanceForm" class="block-explorer-form">
+                        <input type="text" id="userId" name="userId" placeholder="User ID: e.g. user-name" required />
+                        <input type="text" id="balanceApiKey" name="balanceApiKey" placeholder="API Key: e.g. api-key"
+                            required />
+                        <button type="submit" class="submit-btn">Check Balance</button>
+                    </form>
 
-                <div id="apiBalanceResult" class="result" style="display: none;">
-                    <div id="apiBalanceErrorMessage" class="error" style="display: none;"></div>
-                    <div id="apiBalanceInfo" style="display: none;">
-                        <h3>Your API Balance</h3>
-                        <p>User: <span id="apiBalanceUserName"></span></p>
-                        <p>Email: <span id="apiBalanceUserEmail"></span></p>
-                        <p>User ID: <span id="apiBalanceUserId"></span></p>
-                        <p>Points (Balance): <span id="apiBalanceUserPoints"></span></p>
+                    <div id="apiBalanceResult" class="result" style="display: none; margin-top: 20px;">
+                        <div id="apiBalanceErrorMessage" class="error" style="display: none;"></div>
+                        <div id="apiBalanceInfo" style="display: none;">
+                            <h3>Your API Balance</h3>
+                            <p>User: <span id="apiBalanceUserName"></span></p>
+                            <p>Email: <span id="apiBalanceUserEmail"></span></p>
+                            <p>User ID: <span id="apiBalanceUserId"></span></p>
+                            <p>Points (Balance): <span id="apiBalanceUserPoints"></span></p>
+                        </div>
                     </div>
                 </div>
+
             </div>
 
         </div>

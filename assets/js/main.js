@@ -1913,37 +1913,20 @@ function doApiBalanceCheck(userId, apiKey) {
         });
 }
 
-const apiBalanceForm = document.getElementById('apiBalanceForm');
-if (apiBalanceForm) {
-    apiBalanceForm.addEventListener('submit', function (event) {
-        event.preventDefault();
-
-        // Read user inputs
-        const userIdInput = document.getElementById('userId');
-        const userId = userIdInput.value.trim();
-
-        const apiKeyInput = document.getElementById('balanceApiKey');
-        const apiKey = apiKeyInput.value.trim();
-
-        // Call the function
-        doApiBalanceCheck(userId, apiKey);
-    });
-}
-
 /***************************************************************
- *  USER REGISTRATION FORM
+ * 1) USER REGISTRATION FORM (Register)
  ***************************************************************/
 const registerForm = document.getElementById('registerForm');
 if (registerForm) {
     registerForm.addEventListener('submit', function (event) {
         event.preventDefault();
 
-        // Get input values
+        // Grab input values
         const userId = document.getElementById('registerUserId').value.trim();
         const email = document.getElementById('registerEmail').value.trim();
         const name = document.getElementById('registerName').value.trim();
 
-        // References to output/error divs
+        // References to result/error output
         const registerResultDiv = document.getElementById('registerResult');
         const registerErrorDiv = document.getElementById('registerErrorMessage');
         const registerOutputDiv = document.getElementById('registerOutput');
@@ -1960,57 +1943,120 @@ if (registerForm) {
         registerUserIdSpan.innerText = '';
         registerApiKeySpan.innerText = '';
 
-        // Make sure user typed something
         if (!userId || !email || !name) {
             registerErrorDiv.style.display = 'block';
             registerErrorDiv.innerText = 'Please fill in user_id, email, and name.';
             return;
         }
 
-        // Perform the registration POST request
+        if (!isValidEmail(email)) {
+            registerErrorDiv.style.display = 'block';
+            registerErrorDiv.innerText = 'Invalid email format. Please enter a valid email address.';
+            return;
+        }
+
+        // Perform the registration POST
         fetch('https://api.sentichain.com/api/register', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                user_id: userId,
-                email: email,
-                name: name
-            })
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ user_id: userId, email: email, name: name })
         })
             .then(response => {
                 if (!response.ok) {
-                    // For 4xx or 5xx errors, throw an error to be caught below
-                    return response.json().then(errData => {
-                        throw new Error(errData.description || `Server error: ${response.status}`);
-                    });
+                    // Non-200 => throw a specific error message
+                    throw new Error('Your User ID or Email may be taken or may have an invalid format. Please retry.');
                 }
                 return response.json();
             })
             .then(data => {
-                // Expected structure: {
-                //   "api_key": "<string>",
-                //   "message": "User registered successfully.",
-                //   "user_id": "<the user id>"
-                // }
-
+                // We expect { "api_key", "message", "user_id" }
                 if (!data.api_key || !data.message || !data.user_id) {
-                    throw new Error('Invalid response. Missing api_key, message, or user_id.');
+                    throw new Error('Invalid response from server. Missing api_key, message, or user_id.');
                 }
 
+                // Show success
                 registerOutputDiv.style.display = 'block';
                 registerMessageSpan.innerText = data.message;
                 registerUserIdSpan.innerText = data.user_id;
                 registerApiKeySpan.innerText = data.api_key;
             })
             .catch(error => {
+                // Show error
                 registerErrorDiv.style.display = 'block';
-                registerErrorDiv.innerText = `Registration failed: ${error.message}`;
+                registerErrorDiv.innerText = error.message;
             });
     });
 }
 
+function isValidEmail(email) {
+    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return re.test(email);
+}
+
+/***************************************************************
+ * 2) CHECK BALANCE FORM
+ ***************************************************************/
+const apiBalanceForm = document.getElementById('apiBalanceForm');
+if (apiBalanceForm) {
+    apiBalanceForm.addEventListener('submit', function (event) {
+        event.preventDefault();
+
+        const userIdInput = document.getElementById('userId');
+        const userId = userIdInput.value.trim();
+
+        const apiKeyInput = document.getElementById('balanceApiKey');
+        const apiKey = apiKeyInput.value.trim();
+
+        const resultDiv = document.getElementById('apiBalanceResult');
+        const errorDiv = document.getElementById('apiBalanceErrorMessage');
+        const infoDiv = document.getElementById('apiBalanceInfo');
+
+        // Reset UI
+        resultDiv.style.display = 'block';
+        errorDiv.style.display = 'none';
+        infoDiv.style.display = 'none';
+        errorDiv.innerText = '';
+
+        // Basic validation
+        if (!userId || !apiKey) {
+            errorDiv.style.display = 'block';
+            errorDiv.innerText = 'Please enter both User ID and API Key.';
+            return;
+        }
+
+        // Endpoint example:
+        // GET /api/get_user_info?user_id=xxx&api_key=yyy
+        const url = `https://api.sentichain.com/api/get_user_info?user_id=${encodeURIComponent(userId)}&api_key=${encodeURIComponent(apiKey)}`;
+
+        fetch(url)
+            .then(response => {
+                if (!response.ok) {
+                    // Non-200 => show a custom message
+                    throw new Error('Your User ID and API Key may be invalid. Please retry.');
+                }
+                return response.json();
+            })
+            .then(data => {
+                // Expecting { user: { name, email, user_id, points } }
+                if (!data.user) {
+                    throw new Error('Invalid response format: missing "user" object.');
+                }
+
+                const userObj = data.user;
+                document.getElementById('apiBalanceUserName').innerText = userObj.name || '[No Name]';
+                document.getElementById('apiBalanceUserEmail').innerText = userObj.email || '[No Email]';
+                document.getElementById('apiBalanceUserId').innerText = userObj.user_id || '[No ID]';
+                document.getElementById('apiBalanceUserPoints').innerText =
+                    userObj.points !== undefined ? userObj.points : '[No Points]';
+
+                infoDiv.style.display = 'block';
+            })
+            .catch(error => {
+                errorDiv.style.display = 'block';
+                errorDiv.innerText = error.message;
+            });
+    });
+}
 
 // ----------------------------------------------------------------------
 // TAB PARAMS LOADER
