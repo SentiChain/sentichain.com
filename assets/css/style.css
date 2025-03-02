@@ -1229,3 +1229,36 @@ select:focus {
 .consideration-bullet-list li::marker {
     color: #00FFC8;
 }
+
+.toggle-input-container {
+    display: flex;
+    flex-flow: row nowrap;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+}
+
+#observationInput {
+    flex: 1;
+    box-sizing: border-box;
+    padding-right: 12px;
+}
+
+.mode-toggle-btn {
+    width: 15px;
+    height: 15px;
+    border: none;
+    border-radius: 50%;
+    background-color: #666666;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s;
+}
+
+.mode-toggle-btn:hover {
+    background-color: #888888;
+    transform: scale(1.05);
+}
+
+.mode-toggle-btn.block-mode {
+    background-color: #00FFC8;
+}

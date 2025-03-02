@@ -163,8 +163,14 @@
                         <option value="LINK">LINK</option>
                         <option value="DOT">DOT</option>
                     </select>
-                    <input type="text" id="observationBlockNumber" name="observationBlockNumber"
-                        placeholder="Block Number: e.g. 100" required />
+
+                    <div class="toggle-input-container">
+                        <input type="text" id="observationInput" name="observationInput"
+                            placeholder="Block Number: e.g. 100" required />
+                        <button type="button" id="observationModeButton" class="mode-toggle-btn"
+                            title="Switch to Timestamp input"></button>
+                    </div>
+
                     <input type="text" id="observationApiKey" name="observationApiKey"
                         placeholder="(Optional) API Key: e.g. abc123" />
                     <button type="submit" class="submit-btn">Get Observation</button>

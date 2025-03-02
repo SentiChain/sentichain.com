@@ -2155,25 +2155,109 @@ window.addEventListener('DOMContentLoaded', () => {
 });
 
 // Observation form
-const observationForm = document.getElementById('observationForm');
-if (observationForm) {
-    observationForm.addEventListener('submit', function (event) {
-        event.preventDefault();
-        const ticker = document.getElementById('observationTicker').value.trim();
-        const blockNumber = document.getElementById('observationBlockNumber').value.trim();
-        const apiKey = document.getElementById('observationApiKey').value.trim();
-        doObservationFetch(ticker, blockNumber, apiKey);
-    });
-}
+document.addEventListener('DOMContentLoaded', () => {
+    const observationForm = document.getElementById('observationForm');
+    const observationInput = document.getElementById('observationInput');
+    const modeButton = document.getElementById('observationModeButton');
+    let isBlockMode = true;
+    modeButton.classList.add('block-mode');
+    observationInput.placeholder = 'Block Number: e.g. 100';
+    if (isBlockMode && !observationInput.value.trim()) {
+        fetch('https://api.sentichain.com/blockchain/get_chain_length?network=mainnet')
+            .then((res) => res.json())
+            .then((data) => {
+                const chainLength = data.chain_length;
+                if (!observationInput.value.trim()) {
+                    observationInput.value = chainLength - 1;
+                }
+            })
+            .catch((err) => {
+                console.error('Error fetching chain length for observation:', err);
+            });
+    }
 
-document.getElementById('contactForm').addEventListener('submit', function (event) {
-    var subject = "CONTACT-US@SENTICHAIN.COM: " + document.getElementById('subject').value;
-    var emailField = document.querySelector('[name="email"]').value;
-    var messageField = document.querySelector('[name="message"]').value;
-    var mailtoLink = 'mailto:info@sentichain.com?subject=' + encodeURIComponent(subject) + '&body=' +
-        encodeURIComponent('REPLY-TO: ' + emailField + '\n\nMESSAGE: ' + messageField);
-    this.action = mailtoLink;
+    modeButton.addEventListener('click', () => {
+        isBlockMode = !isBlockMode;
+
+        if (isBlockMode) {
+            // Switch to Block Number
+            modeButton.classList.add('block-mode');
+            observationInput.placeholder = 'Block Number: e.g. 100';
+            modeButton.title = 'Switch to Timestamp input';
+        } else {
+            // Switch to Timestamp
+            modeButton.classList.remove('block-mode');
+            observationInput.placeholder = 'UTC Timestamp: e.g. 2025-01-01 13:00:00';
+            modeButton.title = 'Switch to Block Number input';
+        }
+    });
+
+    observationForm.addEventListener('submit', async (event) => {
+        event.preventDefault();
+
+        const ticker = document.getElementById('observationTicker').value.trim();
+        const userInput = observationInput.value.trim();
+        const apiKey = document.getElementById('observationApiKey').value.trim();
+
+        if (!userInput) {
+            alert('Please enter a block number or timestamp.');
+            return;
+        }
+
+        if (isBlockMode) {
+            if (!/^\d+$/.test(userInput)) {
+                alert("Please enter a valid integer block number (e.g. 100).");
+                return;
+            }
+            const bn = parseInt(userInput, 10);
+            if (bn < 0) {
+                alert("Please enter a non-negative block number (e.g. 100).");
+                return;
+            }
+            doObservationFetch(ticker, bn, apiKey);
+
+        } else {
+            const isoString = parseUserTimestamp(userInput);
+            if (!isoString) {
+                alert('Please enter a valid UTC Timestamp: YYYY-MM-DD HH:MM:SS');
+                return;
+            }
+            try {
+                const resp = await fetch(
+                    `https://api.sentichain.com/blockchain/get_block_number_from_timestamp?network=mainnet&timestamp=${encodeURIComponent(isoString)}`
+                );
+                if (!resp.ok) {
+                    throw new Error(`Error from timestamp->block API: ${resp.status}`);
+                }
+                const data = await resp.json();
+                if (!data.block_number) {
+                    throw new Error('Response missing block_number.');
+                }
+                doObservationFetch(ticker, data.block_number, apiKey);
+            } catch (err) {
+                console.error('Timestamp => block fetch error:', err);
+                alert('Error retrieving block number from timestamp:\n' + err.message);
+            }
+        }
+    });
+
+    function parseUserTimestamp(input) {
+        // Ex: "2025-01-01 13:00:00"
+        const re = /^(\d{4})-(\d{2})-(\d{2})\s+(\d{2}):(\d{2}):(\d{2})$/;
+        const match = input.match(re);
+        if (!match) return null;
+        const [_, yyyy, mm, dd, hh, min, ss] = match;
+        return `${yyyy}-${mm}-${dd}T${hh}:${min}:${ss}`;
+    }
 });
+
+function parseUserTimestamp(input) {
+    const re = /^(\d{4})-(\d{2})-(\d{2})\s+(\d{2}):(\d{2}):(\d{2})$/;
+    const match = input.match(re);
+    if (!match) return null;
+    const [_, yyyy, mm, dd, hh, min, ss] = match;
+    return `${yyyy}-${mm}-${dd}T${hh}:${min}:${ss}`;
+}
 
 function formatBulletPoints(originalText) {
     const lines = originalText.split('\n');
