@@ -53,8 +53,14 @@
                         <option value="mainnet" selected>Mainnet</option>
                         <option value="testnet">Testnet</option>
                     </select>
-                    <input type="text" id="blockNumber" name="blockNumber" placeholder="Block Number: e.g. 100"
-                        required />
+
+                    <div class="toggle-input-container">
+                        <input type="text" id="blockExplorerInput" name="blockExplorerInput"
+                            placeholder="Block Number: e.g. 100" required />
+                        <button type="button" id="blockExplorerModeButton" class="mode-toggle-btn"
+                            title="Switch to Timestamp input"></button>
+                    </div>
+
                     <input type="text" id="apiKey" name="apiKey" placeholder="(Optional) API Key: e.g. abc123" />
                     <button type="submit" class="submit-btn">Get Block</button>
                 </form>

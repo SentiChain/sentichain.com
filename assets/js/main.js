@@ -751,6 +751,108 @@ function doBlockExplorerFetch(network, blockNumber, apiKey) {
         });
 }
 
+document.addEventListener('DOMContentLoaded', () => {
+    const blockExplorerForm = document.getElementById('blockExplorerForm');
+    const blockExplorerInput = document.getElementById('blockExplorerInput');
+    const blockExplorerModeButton = document.getElementById('blockExplorerModeButton');
+
+    let isBlockMode = true;
+    blockExplorerModeButton.classList.add('block-mode');
+    blockExplorerInput.placeholder = 'Block Number: e.g. 100';
+
+    if (blockExplorerInput && !blockExplorerInput.value.trim()) {
+        fetch('https://api.sentichain.com/blockchain/get_chain_length?network=mainnet')
+            .then((res) => res.json())
+            .then((data) => {
+                const chainLength = data.chain_length;
+                if (!blockExplorerInput.value.trim()) {
+                    blockExplorerInput.value = chainLength - 1;
+                }
+            })
+            .catch((err) => {
+                console.error('Error fetching chain length for Block Explorer:', err);
+            });
+    }
+
+    if (blockExplorerModeButton) {
+        blockExplorerModeButton.addEventListener('click', () => {
+            isBlockMode = !isBlockMode;
+            if (isBlockMode) {
+                blockExplorerModeButton.classList.add('block-mode');
+                blockExplorerInput.placeholder = 'Block Number: e.g. 100';
+                blockExplorerModeButton.title = 'Switch to Timestamp input';
+            } else {
+                blockExplorerModeButton.classList.remove('block-mode');
+                blockExplorerInput.placeholder = 'UTC Timestamp: e.g. 2025-01-01 13:00:00';
+                blockExplorerModeButton.title = 'Switch to Block Number input';
+            }
+        });
+    }
+
+    if (blockExplorerForm) {
+        blockExplorerForm.addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            const networkSelect = document.getElementById('network');
+            const apiKeyInput = document.getElementById('apiKey');
+
+            const network = networkSelect.value;
+            const userInput = blockExplorerInput.value.trim();
+            const apiKey = apiKeyInput.value.trim();
+
+            if (!userInput) {
+                alert('Please enter a block number or timestamp.');
+                return;
+            }
+
+            if (isBlockMode) {
+                if (!/^\d+$/.test(userInput)) {
+                    alert('Please enter a valid integer block number (e.g. 100).');
+                    return;
+                }
+                const bn = parseInt(userInput, 10);
+                if (bn < 0) {
+                    alert('Please enter a non-negative block number (e.g. 100).');
+                    return;
+                }
+                doBlockExplorerFetch(network, bn, apiKey);
+
+            } else {
+                const isoString = parseUserTimestamp(userInput);
+                if (!isoString) {
+                    alert('Please enter a valid UTC Timestamp: YYYY-MM-DD HH:MM:SS');
+                    return;
+                }
+                try {
+                    const resp = await fetch(
+                        `https://api.sentichain.com/blockchain/get_block_number_from_timestamp?network=mainnet&timestamp=${encodeURIComponent(isoString)}`
+                    );
+                    if (!resp.ok) {
+                        throw new Error(`Timestamp->block fetch failed: ${resp.status}`);
+                    }
+                    const data = await resp.json();
+                    if (!data.block_number) {
+                        throw new Error('Response missing block_number');
+                    }
+                    doBlockExplorerFetch(network, data.block_number, apiKey);
+                } catch (err) {
+                    console.error('Timestamp mode error in block explorer:', err);
+                    alert('Error retrieving block number from timestamp:\n' + err.message);
+                }
+            }
+        });
+    }
+
+    function parseUserTimestamp(input) {
+        const re = /^(\d{4})-(\d{2})-(\d{2})\s+(\d{2}):(\d{2}):(\d{2})$/;
+        const match = input.match(re);
+        if (!match) return null;
+        const [_, yyyy, mm, dd, hh, min, ss] = match;
+        return `${yyyy}-${mm}-${dd}T${hh}:${min}:${ss}`;
+    }
+});
+
+
 const blockExplorerForm = document.getElementById('blockExplorerForm');
 if (blockExplorerForm) {
     blockExplorerForm.addEventListener('submit', function (event) {
