@@ -755,11 +755,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const blockExplorerForm = document.getElementById('blockExplorerForm');
     const blockExplorerInput = document.getElementById('blockExplorerInput');
     const blockExplorerModeButton = document.getElementById('blockExplorerModeButton');
-
+    const blockExplorerSubmitBtn = document.getElementById('blockExplorerSubmitBtn');
     let isBlockMode = true;
     blockExplorerModeButton.classList.add('block-mode');
     blockExplorerInput.placeholder = 'Block Number: e.g. 100';
-
+    blockExplorerSubmitBtn.textContent = "Get Block";
     if (blockExplorerInput && !blockExplorerInput.value.trim()) {
         fetch('https://api.sentichain.com/blockchain/get_chain_length?network=mainnet')
             .then((res) => res.json())
@@ -781,10 +781,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 blockExplorerModeButton.classList.add('block-mode');
                 blockExplorerInput.placeholder = 'Block Number: e.g. 100';
                 blockExplorerModeButton.title = 'Switch to Timestamp input';
+                blockExplorerSubmitBtn.textContent = "Get Block";
             } else {
                 blockExplorerModeButton.classList.remove('block-mode');
                 blockExplorerInput.placeholder = 'UTC Timestamp: e.g. 2025-01-01 13:00:00';
                 blockExplorerModeButton.title = 'Switch to Block Number input';
+                blockExplorerSubmitBtn.textContent = "Get Block (≤ TImestamp)";
             }
         });
     }
@@ -851,7 +853,6 @@ document.addEventListener('DOMContentLoaded', () => {
         return `${yyyy}-${mm}-${dd}T${hh}:${min}:${ss}`;
     }
 });
-
 
 const blockExplorerForm = document.getElementById('blockExplorerForm');
 if (blockExplorerForm) {
@@ -2261,9 +2262,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const observationForm = document.getElementById('observationForm');
     const observationInput = document.getElementById('observationInput');
     const modeButton = document.getElementById('observationModeButton');
+    const observationSubmitBtn = document.getElementById('observationSubmitBtn');
     let isBlockMode = true;
     modeButton.classList.add('block-mode');
     observationInput.placeholder = 'Block Number: e.g. 100';
+    observationSubmitBtn.textContent = "Get Observation";
     if (isBlockMode && !observationInput.value.trim()) {
         fetch('https://api.sentichain.com/blockchain/get_chain_length?network=mainnet')
             .then((res) => res.json())
@@ -2280,17 +2283,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
     modeButton.addEventListener('click', () => {
         isBlockMode = !isBlockMode;
-
         if (isBlockMode) {
-            // Switch to Block Number
             modeButton.classList.add('block-mode');
             observationInput.placeholder = 'Block Number: e.g. 100';
             modeButton.title = 'Switch to Timestamp input';
+            observationSubmitBtn.textContent = "Get Observation";
         } else {
-            // Switch to Timestamp
             modeButton.classList.remove('block-mode');
             observationInput.placeholder = 'UTC Timestamp: e.g. 2025-01-01 13:00:00';
             modeButton.title = 'Switch to Block Number input';
+            observationSubmitBtn.textContent = "Get Observation (≤ Timestamp)";
         }
     });
 

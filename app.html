@@ -53,16 +53,16 @@
                         <option value="mainnet" selected>Mainnet</option>
                         <option value="testnet">Testnet</option>
                     </select>
-
                     <div class="toggle-input-container">
                         <input type="text" id="blockExplorerInput" name="blockExplorerInput"
                             placeholder="Block Number: e.g. 100" required />
                         <button type="button" id="blockExplorerModeButton" class="mode-toggle-btn"
                             title="Switch to Timestamp input"></button>
                     </div>
-
                     <input type="text" id="apiKey" name="apiKey" placeholder="(Optional) API Key: e.g. abc123" />
-                    <button type="submit" class="submit-btn">Get Block</button>
+                    <button type="submit" id="blockExplorerSubmitBtn" class="submit-btn">
+                        Get Block
+                    </button>
                 </form>
 
                 <div id="blockExplorerResult" class="result block-explorer-result" style="display: none;">
@@ -169,17 +169,17 @@
                         <option value="LINK">LINK</option>
                         <option value="DOT">DOT</option>
                     </select>
-
                     <div class="toggle-input-container">
                         <input type="text" id="observationInput" name="observationInput"
                             placeholder="Block Number: e.g. 100" required />
                         <button type="button" id="observationModeButton" class="mode-toggle-btn"
                             title="Switch to Timestamp input"></button>
                     </div>
-
                     <input type="text" id="observationApiKey" name="observationApiKey"
                         placeholder="(Optional) API Key: e.g. abc123" />
-                    <button type="submit" class="submit-btn">Get Observation</button>
+                    <button type="submit" id="observationSubmitBtn" class="submit-btn">
+                        Get Observation
+                    </button>
                 </form>
 
                 <div id="observationResult" class="result observation-result" style="display: none;">
