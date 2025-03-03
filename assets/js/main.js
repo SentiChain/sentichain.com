@@ -934,6 +934,96 @@ if (blockExplorerForm) {
 }
 
 const eventMapCanvas = document.getElementById('pointsCanvas');
+
+let isEventMapBlockMode = true;
+
+const startBlockInput = document.getElementById('startBlockInput');
+const startMapToggleButton = document.getElementById('startMapToggleButton');
+
+const endBlockInput = document.getElementById('endBlockInput');
+const endMapToggleButton = document.getElementById('endMapToggleButton');
+
+const fetchRangeButton = document.getElementById('fetchRangeButton');
+
+function updateEventMapToggleUI() {
+    if (isEventMapBlockMode) {
+        startMapToggleButton.classList.add('block-mode');
+        startMapToggleButton.title = 'Switch to Timestamp input';
+        startBlockInput.placeholder = 'Start Block: e.g. 150';
+
+        endMapToggleButton.classList.add('block-mode');
+        endMapToggleButton.title = 'Switch to Timestamp input';
+        endBlockInput.placeholder = 'End Block: e.g. 200';
+
+        fetchRangeButton.textContent = 'View Event Map';
+    } else {
+        startMapToggleButton.classList.remove('block-mode');
+        startMapToggleButton.title = 'Switch to Block Number input';
+        startBlockInput.placeholder = 'Start Timestamp: e.g. 2025-01-01 13:00:00';
+
+        endMapToggleButton.classList.remove('block-mode');
+        endMapToggleButton.title = 'Switch to Block Number input';
+        endBlockInput.placeholder = 'End Timestamp: e.g. 2025-01-01 14:00:00';
+
+        fetchRangeButton.textContent = 'View Event Map (≤ Timestamp)';
+    }
+}
+
+async function tryConvertBlockToTimestamp(inputElem) {
+    const blockStr = inputElem.value.trim();
+    if (!/^\d+$/.test(blockStr)) return;
+    const blockNum = parseInt(blockStr, 10);
+    if (blockNum < 0) return;
+    try {
+        const resp = await fetch(
+            `https://api.sentichain.com/blockchain/get_timestamp_from_block_number?network=mainnet&block_number=${encodeURIComponent(blockNum)}`
+        );
+        if (!resp.ok) throw new Error(`Block→Timestamp fetch error (${resp.status})`);
+        const data = await resp.json();
+        if (!data.timestamp) throw new Error('No timestamp in response.');
+        inputElem.value = formatApiUtcToLocal(data.timestamp);
+    } catch (err) {
+        console.error('Error auto-fetching timestamp:', err);
+    }
+}
+
+async function tryConvertTimestampToBlock(inputElem) {
+    const localTimeStr = inputElem.value.trim();
+    const isoString = parseUserLocalTimestamp(localTimeStr);
+    if (!isoString) return;
+    try {
+        const resp = await fetch(
+            `https://api.sentichain.com/blockchain/get_block_number_from_timestamp?network=mainnet&timestamp=${encodeURIComponent(isoString)}`
+        );
+        if (!resp.ok) throw new Error(`Timestamp→Block fetch error (${resp.status})`);
+        const data = await resp.json();
+        if (!data.block_number) throw new Error('No block_number in response.');
+        inputElem.value = data.block_number;
+    } catch (err) {
+        console.error('Error auto-fetching block number:', err);
+    }
+}
+
+function handleEventMapToggle() {
+    isEventMapBlockMode = !isEventMapBlockMode;
+    if (isEventMapBlockMode) {
+        tryConvertTimestampToBlock(startBlockInput);
+        tryConvertTimestampToBlock(endBlockInput);
+    }
+    else {
+        tryConvertBlockToTimestamp(startBlockInput);
+        tryConvertBlockToTimestamp(endBlockInput);
+    }
+    updateEventMapToggleUI();
+}
+
+if (startMapToggleButton && endMapToggleButton) {
+    startMapToggleButton.addEventListener('click', handleEventMapToggle);
+    endMapToggleButton.addEventListener('click', handleEventMapToggle);
+}
+
+updateEventMapToggleUI();
+
 let isEventMapAnimating = false;
 
 if (eventMapCanvas) {
@@ -1435,28 +1525,78 @@ if (eventMapCanvas) {
     if (fetchRangeButton) {
         fetchRangeButton.addEventListener('click', async () => {
             stopAutoSlide();
-            mapProcessingMessage.style.display = 'block';
 
-            const startBlock = parseInt(startBlockInput.value.trim(), 10);
-            const endBlock = parseInt(endBlockInput.value.trim(), 10);
+            const startValRaw = startBlockInput.value.trim();
+            const endValRaw = endBlockInput.value.trim();
             const mapApiKey = document.getElementById('mapApiKey').value.trim();
-            if (
-                isNaN(startBlock) ||
-                isNaN(endBlock) ||
-                startBlock < 0 ||
-                endBlock < 0 ||
-                startBlock > endBlock
-            ) {
-                alert('Please enter valid start/end block numbers.');
+
+            let startBlock, endBlock;
+
+            if (isEventMapBlockMode) {
+                // Must be integer block # ≥ 0
+                if (!/^\d+$/.test(startValRaw) || !/^\d+$/.test(endValRaw)) {
+                    alert('Please enter valid integers for Start/End block.');
+                    return;
+                }
+                startBlock = parseInt(startValRaw, 10);
+                endBlock = parseInt(endValRaw, 10);
+
+                if (isNaN(startBlock) || isNaN(endBlock) || startBlock < 0 || endBlock < 0) {
+                    alert('Please enter valid non-negative block numbers for Start/End.');
+                    mapProcessingMessage.style.display = 'none';
+                    return;
+                }
+            } else {
+                const isoStart = parseUserLocalTimestamp(startValRaw);
+                const isoEnd = parseUserLocalTimestamp(endValRaw);
+
+                if (!isoStart || !isoEnd) {
+                    alert('Please enter valid timestamps in "YYYY-MM-DD HH:MM:SS" format.');
+                    return;
+                }
+                try {
+                    const [startResp, endResp] = await Promise.all([
+                        fetch(
+                            `https://api.sentichain.com/blockchain/get_block_number_from_timestamp?network=mainnet&timestamp=${encodeURIComponent(isoStart)}`
+                        ),
+                        fetch(
+                            `https://api.sentichain.com/blockchain/get_block_number_from_timestamp?network=mainnet&timestamp=${encodeURIComponent(isoEnd)}`
+                        ),
+                    ]);
+
+                    if (!startResp.ok || !endResp.ok) {
+                        throw new Error('Failed to convert timestamps to block numbers.');
+                    }
+
+                    const startData = await startResp.json();
+                    const endData = await endResp.json();
+
+                    if (!startData.block_number || !endData.block_number) {
+                        throw new Error('No block_number found in one or both responses.');
+                    }
+
+                    startBlock = parseInt(startData.block_number, 10);
+                    endBlock = parseInt(endData.block_number, 10);
+                } catch (err) {
+                    console.error('Timestamp => block number error:', err);
+                    alert('Error converting timestamps to block numbers:\n' + err.message);
+                    mapProcessingMessage.style.display = 'none';
+                    return;
+                }
+            }
+
+            if (startBlock > endBlock) {
+                alert('Start block cannot be greater than End block.');
                 mapProcessingMessage.style.display = 'none';
                 return;
             }
-
             if (endBlock - startBlock > 100) {
                 alert('Please choose a range of 100 blocks or fewer.');
                 mapProcessingMessage.style.display = 'none';
                 return;
             }
+
+            mapProcessingMessage.style.display = 'block';
 
             let url = `https://api.sentichain.com/mapper/get_points_by_block_range_no_embedding?start_block=${startBlock}&end_block=${endBlock}`;
             if (mapApiKey) {
