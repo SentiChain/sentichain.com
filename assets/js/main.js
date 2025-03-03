@@ -751,16 +751,30 @@ function doBlockExplorerFetch(network, blockNumber, apiKey) {
         });
 }
 
-function formatApiUtcToLocal(inputUtc) {
-    return inputUtc.replace('T', ' ').replace('Z', '');
+function formatApiUtcToLocal(apiUtcString) {
+    const dateObj = new Date(apiUtcString);
+    if (isNaN(dateObj.getTime())) {
+        return apiUtcString;
+    }
+    const yyyy = dateObj.getFullYear();
+    const mm = String(dateObj.getMonth() + 1).padStart(2, '0');
+    const dd = String(dateObj.getDate()).padStart(2, '0');
+    const hh = String(dateObj.getHours()).padStart(2, '0');
+    const min = String(dateObj.getMinutes()).padStart(2, '0');
+    const ss = String(dateObj.getSeconds()).padStart(2, '0');
+    return `${yyyy}-${mm}-${dd} ${hh}:${min}:${ss}`;
 }
 
-function parseUserTimestamp(input) {
+function parseUserLocalTimestamp(localString) {
     const re = /^(\d{4})-(\d{2})-(\d{2})\s+(\d{2}):(\d{2}):(\d{2})$/;
-    const match = input.match(re);
+    const match = localString.match(re);
     if (!match) return null;
-    const [_, yyyy, mm, dd, hh, min, ss] = match;
-    return `${yyyy}-${mm}-${dd}T${hh}:${min}:${ss}Z`;
+    const [, yyyy, mm, dd, hh, min, ss] = match.map(Number);
+    const dateObj = new Date(yyyy, mm - 1, dd, hh, min, ss);
+    if (isNaN(dateObj.getTime())) {
+        return null;
+    }
+    return dateObj.toISOString();
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -781,7 +795,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (maybeTimestamp) {
                 const isoString = (() => {
                     const re = /^(\d{4})-(\d{2})-(\d{2})\s+(\d{2}):(\d{2}):(\d{2})$/;
-                    return re.test(maybeTimestamp) ? parseUserTimestamp(maybeTimestamp) : null;
+                    return re.test(maybeTimestamp) ? parseUserLocalTimestamp(maybeTimestamp) : null;
                 })();
                 if (isoString) {
                     try {
@@ -800,7 +814,7 @@ document.addEventListener('DOMContentLoaded', () => {
         } else {
             blockExplorerModeButton.classList.remove('block-mode');
             blockExplorerModeButton.title = 'Switch to Block Number input';
-            blockExplorerInput.placeholder = 'UTC Timestamp: e.g. 2025-01-01 13:00:00';
+            blockExplorerInput.placeholder = 'Local Timestamp: e.g. 2025-01-01 13:00:00';
             blockExplorerSubmitBtn.textContent = 'Get Block (≤ Timestamp)';
             const maybeBlockNumber = blockExplorerInput.value.trim();
             if (/^\d+$/.test(maybeBlockNumber)) {
@@ -866,9 +880,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 doBlockExplorerFetch(network, bn, apiKey);
 
             } else {
-                const isoString = parseUserTimestamp(userInput);
+                const isoString = parseUserLocalTimestamp(userInput);
                 if (!isoString) {
-                    alert('Please enter a valid UTC Timestamp: YYYY-MM-DD HH:MM:SS');
+                    alert('Please enter a valid local Timestamp: YYYY-MM-DD HH:MM:SS');
                     return;
                 }
                 try {
@@ -889,14 +903,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }
         });
-    }
-
-    function parseUserTimestamp(input) {
-        const re = /^(\d{4})-(\d{2})-(\d{2})\s+(\d{2}):(\d{2}):(\d{2})$/;
-        const match = input.match(re);
-        if (!match) return null;
-        const [_, yyyy, mm, dd, hh, min, ss] = match;
-        return `${yyyy}-${mm}-${dd}T${hh}:${min}:${ss}`;
     }
 });
 
@@ -2309,7 +2315,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const observationInput = document.getElementById('observationInput');
     const modeButton = document.getElementById('observationModeButton');
     const observationSubmitBtn = document.getElementById('observationSubmitBtn');
+
     let isBlockMode = true;
+
     modeButton.classList.add('block-mode');
     observationInput.placeholder = 'Block Number: e.g. 100';
     observationSubmitBtn.textContent = "Get Observation";
@@ -2331,12 +2339,12 @@ document.addEventListener('DOMContentLoaded', () => {
         isBlockMode = !isBlockMode;
         if (isBlockMode) {
             observationModeButton.classList.add('block-mode');
-            observationModeButton.title = 'Switch to Timestamp input';
+            observationModeButton.title = 'Switch to local Timestamp input';
             observationInput.placeholder = 'Block Number: e.g. 100';
             observationSubmitBtn.textContent = 'Get Observation';
             const maybeTimestamp = observationInput.value.trim();
             if (maybeTimestamp) {
-                const isoString = parseUserTimestamp(maybeTimestamp);
+                const isoString = parseUserLocalTimestamp(maybeTimestamp);
                 if (isoString) {
                     try {
                         const resp = await fetch(
@@ -2354,7 +2362,7 @@ document.addEventListener('DOMContentLoaded', () => {
         } else {
             observationModeButton.classList.remove('block-mode');
             observationModeButton.title = 'Switch to Block Number input';
-            observationInput.placeholder = 'UTC Timestamp: e.g. 2025-01-01 13:00:00';
+            observationInput.placeholder = 'Local Timestamp: e.g. 2025-01-01 13:00:00';
             observationSubmitBtn.textContent = 'Get Observation (≤ Timestamp)';
             const maybeBlockNumber = observationInput.value.trim();
             if (/^\d+$/.test(maybeBlockNumber)) {
@@ -2398,9 +2406,9 @@ document.addEventListener('DOMContentLoaded', () => {
             doObservationFetch(ticker, bn, apiKey);
 
         } else {
-            const isoString = parseUserTimestamp(userInput);
+            const isoString = parseUserLocalTimestamp(userInput);
             if (!isoString) {
-                alert('Please enter a valid UTC Timestamp: YYYY-MM-DD HH:MM:SS');
+                alert('Please enter a valid local Timestamp: YYYY-MM-DD HH:MM:SS');
                 return;
             }
             try {
@@ -2421,24 +2429,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
     });
-
-    function parseUserTimestamp(input) {
-        // Ex: "2025-01-01 13:00:00"
-        const re = /^(\d{4})-(\d{2})-(\d{2})\s+(\d{2}):(\d{2}):(\d{2})$/;
-        const match = input.match(re);
-        if (!match) return null;
-        const [_, yyyy, mm, dd, hh, min, ss] = match;
-        return `${yyyy}-${mm}-${dd}T${hh}:${min}:${ss}`;
-    }
 });
-
-function parseUserTimestamp(input) {
-    const re = /^(\d{4})-(\d{2})-(\d{2})\s+(\d{2}):(\d{2}):(\d{2})$/;
-    const match = input.match(re);
-    if (!match) return null;
-    const [_, yyyy, mm, dd, hh, min, ss] = match;
-    return `${yyyy}-${mm}-${dd}T${hh}:${min}:${ss}`;
-}
 
 function formatBulletPoints(originalText) {
     const lines = originalText.split('\n');
