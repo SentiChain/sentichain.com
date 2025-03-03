@@ -1740,7 +1740,7 @@ function doObservationFetch(ticker, blockNumber, apiKey) {
             if (!data.reasoning) {
                 throw new Error(`"consideration_public" missing 'reasoning' field.`);
             }
-            return data.reasoning; // This is your consideration text
+            return data.reasoning;
         });
     const chunkOffsets = [0, 50, 100, 150];
     const chunkEnds = chunkOffsets.map((off) => bn - off).filter((x) => x >= 0);
@@ -1882,7 +1882,7 @@ function doObservationFetch(ticker, blockNumber, apiKey) {
                 <table id="marketAnalysisTable" style="width:100%; border-collapse:collapse; margin-bottom:20px;">
                     <thead>
                         <tr style="background:#00FFC8; color:#121212;">
-                            <th style="padding:10px; text-align:left; width:180px;">Timestamp</th>
+                            <th style="padding:10px; text-align:left; width:220px;">Timestamp</th>
                             <th style="padding:10px; text-align:left;">Reasoning</th>
                         </tr>
                     </thead>
@@ -1916,7 +1916,7 @@ function doObservationFetch(ticker, blockNumber, apiKey) {
                 <table id="sentimentAnalysisTable" style="width:100%; border-collapse:collapse; margin-bottom:20px;">
                     <thead>
                         <tr style="background:#00FFC8; color:#121212;">
-                            <th style="padding:10px; text-align:left; width:180px;">Timestamp</th>
+                            <th style="padding:10px; text-align:left; width:220px;">Timestamp</th>
                             <th style="padding:10px; text-align:left;">Reasoning</th>
                         </tr>
                     </thead>
@@ -1950,7 +1950,7 @@ function doObservationFetch(ticker, blockNumber, apiKey) {
                 <table id="eventAnalysisTable" style="width:100%; border-collapse:collapse; margin-bottom:20px;">
                     <thead>
                         <tr style="background:#00FFC8; color:#121212;">
-                            <th style="padding:10px; text-align:left; width:180px;">Timestamp</th>
+                            <th style="padding:10px; text-align:left; width:220px;">Timestamp</th>
                             <th style="padding:10px; text-align:left;">Reasoning</th>
                         </tr>
                     </thead>
@@ -1984,7 +1984,7 @@ function doObservationFetch(ticker, blockNumber, apiKey) {
                 <table id="quantAnalysisTable" style="width:100%; border-collapse:collapse;">
                     <thead>
                         <tr style="background:#00FFC8; color:#121212;">
-                            <th style="padding:10px; text-align:left; width:180px;">Timestamp</th>
+                            <th style="padding:10px; text-align:left; width:220px;">Timestamp</th>
                             <th style="padding:10px; text-align:left;">Reasoning</th>
                         </tr>
                     </thead>
