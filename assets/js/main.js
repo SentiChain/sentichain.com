@@ -480,7 +480,13 @@ function copyToClipboard(elementId) {
 
 function formatTimestamp(timestamp) {
     const date = new Date(timestamp * 1000);
-    return date.toLocaleString();
+    const year = date.getUTCFullYear();
+    const month = String(date.getUTCMonth() + 1).padStart(2, '0');
+    const day = String(date.getUTCDate()).padStart(2, '0');
+    const hours = String(date.getUTCHours()).padStart(2, '0');
+    const minutes = String(date.getUTCMinutes()).padStart(2, '0');
+    const seconds = String(date.getUTCSeconds()).padStart(2, '0');
+    return `${year}-${month}-${day} ${hours}:${minutes}:${seconds} (UTC)`;
 }
 
 function safeValue(val) {
@@ -638,6 +644,8 @@ function doBlockExplorerFetch(network, blockNumber, apiKey) {
                                 <tr>
                                     <td><strong>Nonce:</strong> ${tx.nonce}</td>
                                 </tr>
+
+                                <!--
                                 <tr>
                                     <td><strong>Post Content:</strong>
                                         <div
@@ -650,9 +658,14 @@ function doBlockExplorerFetch(network, blockNumber, apiKey) {
                                         </div>
                                     </td>
                                 </tr>
+                                -->
+
+                                <!--
                                 <tr>
                                     <td><strong>Post Link:</strong> ${postLinkHtml}</td>
                                 </tr>
+                                -->
+
                                 <tr>
                                     <td><strong>Sender:</strong> ${tx.sender}</td>
                                 </tr>
@@ -1641,6 +1654,20 @@ if (eventMapCanvas) {
 /**********************************************************************
  *  OBSERVATION FETCH FUNCTION
  **********************************************************************/
+function formatTimestampUtcString(isoString) {
+    const dt = new Date(isoString);
+    if (isNaN(dt.getTime())) {
+        return isoString;
+    }
+    const year = dt.getUTCFullYear();
+    const month = String(dt.getUTCMonth() + 1).padStart(2, '0');
+    const day = String(dt.getUTCDate()).padStart(2, '0');
+    const hours = String(dt.getUTCHours()).padStart(2, '0');
+    const minutes = String(dt.getUTCMinutes()).padStart(2, '0');
+    const seconds = String(dt.getUTCSeconds()).padStart(2, '0');
+    return `${year}-${month}-${day} ${hours}:${minutes}:${seconds} (UTC)`;
+}
+
 function doObservationFetch(ticker, blockNumber, apiKey) {
     const resultDiv = document.getElementById('observationResult');
     const processingMessage = document.getElementById('observationProcessingMessage');
@@ -1871,10 +1898,15 @@ function doObservationFetch(ticker, blockNumber, apiKey) {
             } else {
                 marketRows.forEach((item) => {
                     finalHTML += `
-                        <tr style="border-bottom:1px solid #333;">
-                            <td style="padding:10px;">${item.timestamp}</td>
-                            <td style="padding:10px;">${item.reasoning}</td>
-                        </tr>
+                      <tr style="border-bottom:1px solid #333;">
+                        <td style="padding:10px;">
+                          ${(item.timestamp === "A valid API Key is required")
+                            ? "A valid API Key is required"
+                            : formatTimestampUtcString(item.timestamp)
+                        }
+                        </td>
+                        <td style="padding:10px;">${item.reasoning}</td>
+                      </tr>
                     `;
                 });
             }
@@ -1900,10 +1932,15 @@ function doObservationFetch(ticker, blockNumber, apiKey) {
             } else {
                 sentimentRows.forEach((item) => {
                     finalHTML += `
-                        <tr style="border-bottom:1px solid #333;">
-                            <td style="padding:10px;">${item.timestamp}</td>
-                            <td style="padding:10px;">${item.reasoning}</td>
-                        </tr>
+                      <tr style="border-bottom:1px solid #333;">
+                        <td style="padding:10px;">
+                          ${(item.timestamp === "A valid API Key is required")
+                            ? "A valid API Key is required"
+                            : formatTimestampUtcString(item.timestamp)
+                        }
+                        </td>
+                        <td style="padding:10px;">${item.reasoning}</td>
+                      </tr>
                     `;
                 });
             }
@@ -1929,10 +1966,15 @@ function doObservationFetch(ticker, blockNumber, apiKey) {
             } else {
                 eventRows.forEach((item) => {
                     finalHTML += `
-                        <tr style="border-bottom:1px solid #333;">
-                            <td style="padding:10px;">${item.timestamp}</td>
-                            <td style="padding:10px;">${item.reasoning}</td>
-                        </tr>
+                      <tr style="border-bottom:1px solid #333;">
+                        <td style="padding:10px;">
+                          ${(item.timestamp === "A valid API Key is required")
+                            ? "A valid API Key is required"
+                            : formatTimestampUtcString(item.timestamp)
+                        }
+                        </td>
+                        <td style="padding:10px;">${item.reasoning}</td>
+                      </tr>
                     `;
                 });
             }
@@ -1958,10 +2000,15 @@ function doObservationFetch(ticker, blockNumber, apiKey) {
             } else {
                 quantRows.forEach((item) => {
                     finalHTML += `
-                        <tr style="border-bottom:1px solid #333;">
-                            <td style="padding:10px;">${item.timestamp}</td>
-                            <td style="padding:10px;">${item.reasoning}</td>
-                        </tr>
+                      <tr style="border-bottom:1px solid #333;">
+                        <td style="padding:10px;">
+                          ${(item.timestamp === "A valid API Key is required")
+                            ? "A valid API Key is required"
+                            : formatTimestampUtcString(item.timestamp)
+                        }
+                        </td>
+                        <td style="padding:10px;">${item.reasoning}</td>
+                      </tr>
                     `;
                 });
             }
