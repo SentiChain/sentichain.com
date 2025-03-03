@@ -751,24 +751,24 @@ function doBlockExplorerFetch(network, blockNumber, apiKey) {
         });
 }
 
+function formatApiUtcToLocal(inputUtc) {
+    return inputUtc.replace('T', ' ').replace('Z', '');
+}
+
+function parseUserTimestamp(input) {
+    const re = /^(\d{4})-(\d{2})-(\d{2})\s+(\d{2}):(\d{2}):(\d{2})$/;
+    const match = input.match(re);
+    if (!match) return null;
+    const [_, yyyy, mm, dd, hh, min, ss] = match;
+    return `${yyyy}-${mm}-${dd}T${hh}:${min}:${ss}Z`;
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     const blockExplorerForm = document.getElementById('blockExplorerForm');
     const blockExplorerInput = document.getElementById('blockExplorerInput');
     const blockExplorerModeButton = document.getElementById('blockExplorerModeButton');
     const blockExplorerSubmitBtn = document.getElementById('blockExplorerSubmitBtn');
     let isBlockMode = true;
-
-    function formatApiUtcToLocal(inputUtc) {
-        return inputUtc.replace('T', ' ').replace('Z', '');
-    }
-
-    function parseUserTimestamp(input) {
-        const re = /^(\d{4})-(\d{2})-(\d{2})\s+(\d{2}):(\d{2}):(\d{2})$/;
-        const match = input.match(re);
-        if (!match) return null;
-        const [_, yyyy, mm, dd, hh, min, ss] = match;
-        return `${yyyy}-${mm}-${dd}T${hh}:${min}:${ss}Z`;
-    }
 
     blockExplorerModeButton.addEventListener('click', async () => {
         isBlockMode = !isBlockMode;
@@ -2327,18 +2327,49 @@ document.addEventListener('DOMContentLoaded', () => {
             });
     }
 
-    modeButton.addEventListener('click', () => {
+    observationModeButton.addEventListener('click', async () => {
         isBlockMode = !isBlockMode;
         if (isBlockMode) {
-            modeButton.classList.add('block-mode');
+            observationModeButton.classList.add('block-mode');
+            observationModeButton.title = 'Switch to Timestamp input';
             observationInput.placeholder = 'Block Number: e.g. 100';
-            modeButton.title = 'Switch to Timestamp input';
-            observationSubmitBtn.textContent = "Get Observation";
+            observationSubmitBtn.textContent = 'Get Observation';
+            const maybeTimestamp = observationInput.value.trim();
+            if (maybeTimestamp) {
+                const isoString = parseUserTimestamp(maybeTimestamp);
+                if (isoString) {
+                    try {
+                        const resp = await fetch(
+                            `https://api.sentichain.com/blockchain/get_block_number_from_timestamp?network=mainnet&timestamp=${encodeURIComponent(isoString)}`
+                        );
+                        if (!resp.ok) throw new Error(`Timestamp→Block fetch error (${resp.status})`);
+                        const data = await resp.json();
+                        if (!data.block_number) throw new Error('No block_number in response.');
+                        observationInput.value = data.block_number;
+                    } catch (err) {
+                        console.error('Error auto-fetching block number:', err);
+                    }
+                }
+            }
         } else {
-            modeButton.classList.remove('block-mode');
+            observationModeButton.classList.remove('block-mode');
+            observationModeButton.title = 'Switch to Block Number input';
             observationInput.placeholder = 'UTC Timestamp: e.g. 2025-01-01 13:00:00';
-            modeButton.title = 'Switch to Block Number input';
-            observationSubmitBtn.textContent = "Get Observation (≤ Timestamp)";
+            observationSubmitBtn.textContent = 'Get Observation (≤ Timestamp)';
+            const maybeBlockNumber = observationInput.value.trim();
+            if (/^\d+$/.test(maybeBlockNumber)) {
+                try {
+                    const resp = await fetch(
+                        `https://api.sentichain.com/blockchain/get_timestamp_from_block_number?network=mainnet&block_number=${encodeURIComponent(maybeBlockNumber)}`
+                    );
+                    if (!resp.ok) throw new Error(`Block→Timestamp fetch error (${resp.status})`);
+                    const data = await resp.json();
+                    if (!data.timestamp) throw new Error('No timestamp in response.');
+                    observationInput.value = formatApiUtcToLocal(data.timestamp);
+                } catch (err) {
+                    console.error('Error auto-fetching timestamp:', err);
+                }
+            }
         }
     });
 
