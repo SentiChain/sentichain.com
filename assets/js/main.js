@@ -757,6 +757,69 @@ document.addEventListener('DOMContentLoaded', () => {
     const blockExplorerModeButton = document.getElementById('blockExplorerModeButton');
     const blockExplorerSubmitBtn = document.getElementById('blockExplorerSubmitBtn');
     let isBlockMode = true;
+
+    function formatApiUtcToLocal(inputUtc) {
+        return inputUtc.replace('T', ' ').replace('Z', '');
+    }
+
+    function parseUserTimestamp(input) {
+        const re = /^(\d{4})-(\d{2})-(\d{2})\s+(\d{2}):(\d{2}):(\d{2})$/;
+        const match = input.match(re);
+        if (!match) return null;
+        const [_, yyyy, mm, dd, hh, min, ss] = match;
+        return `${yyyy}-${mm}-${dd}T${hh}:${min}:${ss}Z`;
+    }
+
+    blockExplorerModeButton.addEventListener('click', async () => {
+        isBlockMode = !isBlockMode;
+        if (isBlockMode) {
+            blockExplorerModeButton.classList.add('block-mode');
+            blockExplorerModeButton.title = 'Switch to Timestamp input';
+            blockExplorerInput.placeholder = 'Block Number: e.g. 100';
+            blockExplorerSubmitBtn.textContent = 'Get Block';
+            const maybeTimestamp = blockExplorerInput.value.trim();
+            if (maybeTimestamp) {
+                const isoString = (() => {
+                    const re = /^(\d{4})-(\d{2})-(\d{2})\s+(\d{2}):(\d{2}):(\d{2})$/;
+                    return re.test(maybeTimestamp) ? parseUserTimestamp(maybeTimestamp) : null;
+                })();
+                if (isoString) {
+                    try {
+                        const resp = await fetch(
+                            `https://api.sentichain.com/blockchain/get_block_number_from_timestamp?network=mainnet&timestamp=${encodeURIComponent(isoString)}`
+                        );
+                        if (!resp.ok) throw new Error(`Timestamp→Block fetch error (${resp.status})`);
+                        const data = await resp.json();
+                        if (!data.block_number) throw new Error('No block_number in response.');
+                        blockExplorerInput.value = data.block_number;
+                    } catch (err) {
+                        console.error('Error auto-fetching block number:', err);
+                    }
+                }
+            }
+        } else {
+            blockExplorerModeButton.classList.remove('block-mode');
+            blockExplorerModeButton.title = 'Switch to Block Number input';
+            blockExplorerInput.placeholder = 'UTC Timestamp: e.g. 2025-01-01 13:00:00';
+            blockExplorerSubmitBtn.textContent = 'Get Block (≤ Timestamp)';
+            const maybeBlockNumber = blockExplorerInput.value.trim();
+            if (/^\d+$/.test(maybeBlockNumber)) {
+                try {
+                    const resp = await fetch(
+                        `https://api.sentichain.com/blockchain/get_timestamp_from_block_number?network=mainnet&block_number=${encodeURIComponent(maybeBlockNumber)}`
+                    );
+                    if (!resp.ok) throw new Error(`Block→Timestamp fetch error (${resp.status})`);
+                    const data = await resp.json();
+                    if (!data.timestamp) throw new Error('No timestamp in response.');
+                    const newTimestamp = formatApiUtcToLocal(data.timestamp);
+                    blockExplorerInput.value = newTimestamp;
+                } catch (err) {
+                    console.error('Error auto-fetching timestamp:', err);
+                }
+            }
+        }
+    });
+
     blockExplorerModeButton.classList.add('block-mode');
     blockExplorerInput.placeholder = 'Block Number: e.g. 100';
     blockExplorerSubmitBtn.textContent = "Get Block";
@@ -772,23 +835,6 @@ document.addEventListener('DOMContentLoaded', () => {
             .catch((err) => {
                 console.error('Error fetching chain length for Block Explorer:', err);
             });
-    }
-
-    if (blockExplorerModeButton) {
-        blockExplorerModeButton.addEventListener('click', () => {
-            isBlockMode = !isBlockMode;
-            if (isBlockMode) {
-                blockExplorerModeButton.classList.add('block-mode');
-                blockExplorerInput.placeholder = 'Block Number: e.g. 100';
-                blockExplorerModeButton.title = 'Switch to Timestamp input';
-                blockExplorerSubmitBtn.textContent = "Get Block";
-            } else {
-                blockExplorerModeButton.classList.remove('block-mode');
-                blockExplorerInput.placeholder = 'UTC Timestamp: e.g. 2025-01-01 13:00:00';
-                blockExplorerModeButton.title = 'Switch to Block Number input';
-                blockExplorerSubmitBtn.textContent = "Get Block (≤ TImestamp)";
-            }
-        });
     }
 
     if (blockExplorerForm) {
