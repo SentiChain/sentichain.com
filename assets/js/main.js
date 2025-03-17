@@ -946,6 +946,22 @@ const endMapToggleButton = document.getElementById('endMapToggleButton');
 const fetchRangeButton = document.getElementById('fetchRangeButton');
 
 function updateEventMapToggleUI() {
+    const startMapToggleButton = document.getElementById('startMapToggleButton');
+    const endMapToggleButton = document.getElementById('endMapToggleButton');
+    const startBlockInput = document.getElementById('startBlockInput');
+    const endBlockInput = document.getElementById('endBlockInput');
+    const fetchRangeButton = document.getElementById('fetchRangeButton');
+
+    if (
+        !startMapToggleButton ||
+        !endMapToggleButton ||
+        !startBlockInput ||
+        !endBlockInput ||
+        !fetchRangeButton
+    ) {
+        return;
+    }
+
     if (isEventMapBlockMode) {
         startMapToggleButton.classList.add('block-mode');
         startMapToggleButton.title = 'Switch to Timestamp input';
