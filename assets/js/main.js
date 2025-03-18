@@ -638,9 +638,9 @@ function doObservationFetch(ticker, blockNumber, apiKey) {
                 if (tB === null) return -1;
                 return tA - tB;
             });
-            marketRows = deduplicateByTimestamp(marketRows);
             sentimentRows = deduplicateByTimestamp(sentimentRows);
             eventRows = deduplicateByTimestamp(eventRows);
+            marketRows = deduplicateByTimestamp(marketRows);
             quantRows = deduplicateByTimestamp(quantRows);
             let finalHTML = '';
             finalHTML += `
@@ -658,8 +658,8 @@ function doObservationFetch(ticker, blockNumber, apiKey) {
                 </div>
             `;
             finalHTML += `
-                <h3 style="color:#00FFC8;">Market Observations</h3>
-                <table id="marketAnalysisTable" style="width:100%; border-collapse:collapse; margin-bottom:20px;">
+                <h3 style="color:#00FFC8;">Event Observations</h3>
+                <table id="eventAnalysisTable" style="width:100%; border-collapse:collapse; margin-bottom:20px;">
                     <thead>
                         <tr style="background:#00FFC8; color:#121212;">
                             <th style="padding:10px; text-align:left; width:220px;">Timestamp</th>
@@ -669,14 +669,14 @@ function doObservationFetch(ticker, blockNumber, apiKey) {
                     <tbody>
             `;
 
-            if (marketRows.length === 0) {
+            if (eventRows.length === 0) {
                 finalHTML += `
                     <tr>
-                        <td colspan="2" style="padding:10px;">No market analysis data found. A valid API Key is required.</td>
+                        <td colspan="2" style="padding:10px;">No event analysis data found. A valid API Key is required.</td>
                     </tr>
                 `;
             } else {
-                marketRows.forEach((item) => {
+                eventRows.forEach((item) => {
                     finalHTML += `
                       <tr style="border-bottom:1px solid #333;">
                         <td style="padding:10px;">
@@ -726,8 +726,8 @@ function doObservationFetch(ticker, blockNumber, apiKey) {
             }
             finalHTML += `</tbody></table>`;
             finalHTML += `
-                <h3 style="color:#00FFC8;">Event Observations</h3>
-                <table id="eventAnalysisTable" style="width:100%; border-collapse:collapse; margin-bottom:20px;">
+                <h3 style="color:#00FFC8;">Market Observations</h3>
+                <table id="marketAnalysisTable" style="width:100%; border-collapse:collapse; margin-bottom:20px;">
                     <thead>
                         <tr style="background:#00FFC8; color:#121212;">
                             <th style="padding:10px; text-align:left; width:220px;">Timestamp</th>
@@ -737,14 +737,14 @@ function doObservationFetch(ticker, blockNumber, apiKey) {
                     <tbody>
             `;
 
-            if (eventRows.length === 0) {
+            if (marketRows.length === 0) {
                 finalHTML += `
                     <tr>
-                        <td colspan="2" style="padding:10px;">No event analysis data found. A valid API Key is required.</td>
+                        <td colspan="2" style="padding:10px;">No market analysis data found. A valid API Key is required.</td>
                     </tr>
                 `;
             } else {
-                eventRows.forEach((item) => {
+                marketRows.forEach((item) => {
                     finalHTML += `
                       <tr style="border-bottom:1px solid #333;">
                         <td style="padding:10px;">
