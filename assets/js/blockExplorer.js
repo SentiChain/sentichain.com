@@ -64,6 +64,11 @@ function serializeMatrix(mat) {
     if (!Array.isArray(mat)) {
         return "A valid API Key is required";
     }
+    if (mat.length > 0 && Array.isArray(mat[0])) {
+        return `[${mat.map(row => 
+            `[${row.map(n => (Number.isInteger(n) ? n.toFixed(1) : n)).join(', ')}]`
+        ).join(', ')}]`;
+    }
     return `[${mat.map((n) => (Number.isInteger(n) ? n.toFixed(1) : n)).join(', ')}]`;
 }
 
