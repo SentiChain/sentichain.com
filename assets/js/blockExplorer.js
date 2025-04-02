@@ -60,11 +60,11 @@ function safeValue(val) {
     return val === "A valid API Key is required" ? "A valid API Key is required" : val;
 }
 
-function serializeVector(vec) {
-    if (!Array.isArray(vec)) {
+function serializeMatrix(mat) {
+    if (!Array.isArray(mat)) {
         return "A valid API Key is required";
     }
-    return `[${vec.map((n) => (Number.isInteger(n) ? n.toFixed(1) : n)).join(', ')}]`;
+    return `[${mat.map((n) => (Number.isInteger(n) ? n.toFixed(1) : n)).join(', ')}]`;
 }
 
 function doBlockExplorerFetch(network, blockNumber, apiKey) {
@@ -184,20 +184,20 @@ function doBlockExplorerFetch(network, blockNumber, apiKey) {
                         const detailsCell = document.createElement('td');
                         detailsCell.colSpan = 3;
 
-                        const serializedVector = serializeVector(tx.vector);
+                        const serializedMatrix = serializeMatrix(tx.post_matrix);
 
                         const sanitizedTxHash = txHash.replace(/[^a-zA-Z0-9]/g, '_');
-                        const vectorId = `transactionVector_${sanitizedTxHash}`;
+                        const matrixId = `transactionMatrix_${sanitizedTxHash}`;
                         const signatureId = `transactionSignature_${sanitizedTxHash}`;
                         const sourceId = `transactionSource_${sanitizedTxHash}`;
                         const publicKeyId = `transactionPublicKey_${sanitizedTxHash}`;
-                        const vectorSignatureId = `transactionVectorSignature_${sanitizedTxHash}`;
+                        const matrixSignatureId = `transactionMatrixSignature_${sanitizedTxHash}`;
 
-                        const copyFeedbackVectorId = `copyFeedbackVector_${sanitizedTxHash}`;
+                        const copyFeedbackMatrixId = `copyFeedbackMatrix_${sanitizedTxHash}`;
                         const copyFeedbackSignatureId = `copyFeedbackSignature_${sanitizedTxHash}`;
                         const copyFeedbackSourceId = `copyFeedbackSource_${sanitizedTxHash}`;
                         const copyFeedbackPublicKeyId = `copyFeedbackPublicKey_${sanitizedTxHash}`;
-                        const copyFeedbackVectorSignatureId = `copyFeedbackVectorSignature_${sanitizedTxHash}`;
+                        const copyFeedbackMatrixSignatureId = `copyFeedbackMatrixSignature_${sanitizedTxHash}`;
 
                         let postLinkHtml = '';
                         if (tx.post_link === 'A valid privileged API Key is required') {
@@ -249,14 +249,14 @@ function doBlockExplorerFetch(network, blockNumber, apiKey) {
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td><strong>Vector:</strong>
+                                    <td><strong>Matrix:</strong>
                                         <div
                                             class="copyable-output"
-                                            id="${vectorId}"
-                                            onclick="copyToClipboard('${vectorId}')"
+                                            id="${matrixId}"
+                                            onclick="copyToClipboard('${matrixId}')"
                                             title="Click to copy"
                                         >
-                                            ${serializedVector}
+                                            ${serializedMatrix}
                                         </div>
                                     </td>
                                 </tr>
@@ -273,23 +273,23 @@ function doBlockExplorerFetch(network, blockNumber, apiKey) {
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td><strong>Vector Signature:</strong>
+                                    <td><strong>Matrix Signature:</strong>
                                         <div
                                             class="copyable-output"
-                                            id="${vectorSignatureId}"
-                                            onclick="copyToClipboard('${vectorSignatureId}')"
+                                            id="${matrixSignatureId}"
+                                            onclick="copyToClipboard('${matrixSignatureId}')"
                                             title="Click to copy"
                                         >
-                                            ${tx.vector_signature}
+                                            ${tx.matrix_signature}
                                         </div>
                                     </td>
                                 </tr>
                             </table>
-                            <div class="copy-feedback" id="${copyFeedbackVectorId}">Copied!</div>
+                            <div class="copy-feedback" id="${copyFeedbackMatrixId}">Copied!</div>
                             <div class="copy-feedback" id="${copyFeedbackSignatureId}">Copied!</div>
                             <div class="copy-feedback" id="${copyFeedbackSourceId}">Copied!</div>
                             <div class="copy-feedback" id="${copyFeedbackPublicKeyId}">Copied!</div>
-                            <div class="copy-feedback" id="${copyFeedbackVectorSignatureId}">Copied!</div>
+                            <div class="copy-feedback" id="${copyFeedbackMatrixSignatureId}">Copied!</div>
                         `;
                         detailsRow.appendChild(detailsCell);
 
