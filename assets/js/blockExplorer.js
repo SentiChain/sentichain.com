@@ -140,7 +140,7 @@ function doBlockExplorerFetch(network, blockNumber, apiKey) {
                 'consensus_root',
                 'hash',
                 'previous_hash',
-                'timestamp',
+                'block_timestamp',
                 'validator',
             ];
             for (let field of requiredFields) {
@@ -153,7 +153,7 @@ function doBlockExplorerFetch(network, blockNumber, apiKey) {
             blockHashSpan.innerText = block.hash;
             blockPreviousHashSpan.innerText = block.previous_hash;
             blockConsensusRootSpan.innerText = block.consensus_root;
-            blockTimestampSpan.innerText = formatTimestamp(block.timestamp);
+            blockTimestampSpan.innerText = formatTimestamp(block.block_timestamp);
             blockValidatorSpan.innerText = block.validator;
 
             if ('transactions' in block) {
@@ -189,13 +189,13 @@ function doBlockExplorerFetch(network, blockNumber, apiKey) {
                         const sanitizedTxHash = txHash.replace(/[^a-zA-Z0-9]/g, '_');
                         const vectorId = `transactionVector_${sanitizedTxHash}`;
                         const signatureId = `transactionSignature_${sanitizedTxHash}`;
-                        const postContentId = `transactionPostContent_${sanitizedTxHash}`;
+                        const sourceId = `transactionSource_${sanitizedTxHash}`;
                         const publicKeyId = `transactionPublicKey_${sanitizedTxHash}`;
                         const vectorSignatureId = `transactionVectorSignature_${sanitizedTxHash}`;
 
                         const copyFeedbackVectorId = `copyFeedbackVector_${sanitizedTxHash}`;
                         const copyFeedbackSignatureId = `copyFeedbackSignature_${sanitizedTxHash}`;
-                        const copyFeedbackPostContentId = `copyFeedbackPostContent_${sanitizedTxHash}`;
+                        const copyFeedbackSourceId = `copyFeedbackSource_${sanitizedTxHash}`;
                         const copyFeedbackPublicKeyId = `copyFeedbackPublicKey_${sanitizedTxHash}`;
                         const copyFeedbackVectorSignatureId = `copyFeedbackVectorSignature_${sanitizedTxHash}`;
 
@@ -217,11 +217,11 @@ function doBlockExplorerFetch(network, blockNumber, apiKey) {
                                     <td><strong>Post Content:</strong>
                                         <div
                                             class="copyable-output"
-                                            id="${postContentId}"
-                                            onclick="copyToClipboard('${postContentId}')"
+                                            id="${sourceId}"
+                                            onclick="copyToClipboard('${sourceId}')"
                                             title="Click to copy"
                                         >
-                                            ${tx.post_content}
+                                            ${tx.source}
                                         </div>
                                     </td>
                                 </tr>
@@ -287,7 +287,7 @@ function doBlockExplorerFetch(network, blockNumber, apiKey) {
                             </table>
                             <div class="copy-feedback" id="${copyFeedbackVectorId}">Copied!</div>
                             <div class="copy-feedback" id="${copyFeedbackSignatureId}">Copied!</div>
-                            <div class="copy-feedback" id="${copyFeedbackPostContentId}">Copied!</div>
+                            <div class="copy-feedback" id="${copyFeedbackSourceId}">Copied!</div>
                             <div class="copy-feedback" id="${copyFeedbackPublicKeyId}">Copied!</div>
                             <div class="copy-feedback" id="${copyFeedbackVectorSignatureId}">Copied!</div>
                         `;
