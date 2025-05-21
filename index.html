@@ -19,6 +19,7 @@
 
   <link rel="icon" href="favicon.svg" type="image/svg+xml" />
   <link rel="stylesheet" href="assets/css/main.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
 
 </head>
 
@@ -47,40 +48,55 @@
       into insights, and culminates in investible foresight.
     </p>
 
-    <div class="rocket-wrapper">
-      <svg class="rocket" viewBox="0 0 100 300" xmlns="http://www.w3.org/2000/svg">
-        <path class="layer3" d="M50 10 C45 10 35 30 35 50 L35 90 L65 90 L65 50 C65 30 55 10 50 10 Z" fill="#111"
-          stroke="#00FFC8" stroke-width="2" />
-        <rect class="layer2" x="30" y="90" width="40" height="120" fill="#111" stroke="#00FFC8" stroke-width="2"
-          rx="8" />
-        <path class="layer1" d="M30 210 L70 210 L70 230 C70 250 60 270 50 270 C40 270 30 250 30 230 Z" fill="#111"
-          stroke="#00FFC8" stroke-width="2" />
-      </svg>
-
-      <div class="layer-box layer3-box">
-        <h3>Layer 3</h3>
-        <strong>Markets</strong>: Bet on tomorrow’s sentiment shifts—from presidential outcomes to crypto surges—using a
-        <i>Prediction Market</i> that integrates the wisdom of the crowd to quantify the impact of events on markets.
+      <div class="how-wrapper">
+        <h3 class="how-title">How It Works</h3>
+        <div class="how-grid">
+          <div class="flip-card">
+            <div class="flip-inner">
+              <div class="flip-front">
+                <i class="fas fa-brain icon" aria-hidden="true"></i>
+                <h4>Vectorize</h4>
+              </div>
+              <div class="flip-back">
+                <p>Transformer models turn posts into dense matrices, then sign them for authenticity.</p>
+              </div>
+            </div>
+          </div>
+          <div class="flip-card">
+            <div class="flip-inner">
+              <div class="flip-front">
+                <i class="fas fa-shield-halved icon" aria-hidden="true"></i>
+                <h4>Verify on Chain</h4>
+              </div>
+              <div class="flip-back">
+                <p>Signed matrices become immutable transactions stored with a Merkle-based Consensus Root.</p>
+              </div>
+            </div>
+          </div>
+          <div class="flip-card">
+            <div class="flip-inner">
+              <div class="flip-front">
+                <i class="fas fa-route icon" aria-hidden="true"></i>
+                <h4>Query the API</h4>
+              </div>
+              <div class="flip-back">
+                <p>Retrieve sentiment and market correlations via our RESTful endpoints.</p>
+              </div>
+            </div>
+          </div>
+          <div class="flip-card">
+            <div class="flip-inner">
+              <div class="flip-front">
+                <i class="fas fa-wand-magic-sparkles icon" aria-hidden="true"></i>
+                <h4>Aparecium</h4>
+              </div>
+              <div class="flip-back">
+                <p>Experience reversible embeddings that reveal text from vectors while keeping data private.</p>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
-      <div class="layer-line layer3-line"></div>
-      <div class="layer-point layer3-point"></div>
-
-      <div class="layer-box layer2-box" onclick="window.location.href='/app?tab=EventMap'" style="cursor:pointer;">
-        <h3>Layer 2</h3>
-        <strong>Analytics</strong>: Extract market sentiment without digging through millions of data points by using a
-        2D <i>Event Map</i> of live sentiment that displays trending market sentiments block by block.
-      </div>
-      <div class="layer-line layer2-line"></div>
-      <div class="layer-point layer2-point"></div>
-
-      <div class="layer-box layer1-box" onclick="window.location.href='/app?tab=BlockExplorer'" style="cursor:pointer;">
-        <h3>Layer 1</h3>
-        <strong>Blockchain</strong>: SentiChain uses <i>Proof of Verification</i> to ensure sentiment data integrity,
-        with each block stored as a Merkle tree and its Merkle root published as the verifiable <i>Consensus Root</i>.
-      </div>
-      <div class="layer-line layer1-line"></div>
-      <div class="layer-point layer1-point"></div>
-    </div>
   </section>
 
   <section class="metrics-section">
