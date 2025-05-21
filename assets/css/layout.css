@@ -417,3 +417,38 @@ h2 .senti-link {
     padding: 0 20px;
     line-height: 1.6;
 }
+
+/* SentiChain explanation cards */
+.how-wrapper {
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.how-title {
+    font-size: 2rem;
+    color: #00FFC8;
+    margin-bottom: 30px;
+    text-shadow: 0 0 10px #00FFC8;
+    text-transform: uppercase;
+}
+
+.how-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 20px;
+}
+
+.how-card {
+    background: rgba(0, 255, 200, 0.1);
+    border: 1px solid #00FFC8;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px #00FFC8;
+    text-align: left;
+    line-height: 1.6;
+}
+
+.how-card h4 {
+    margin-bottom: 10px;
+    color: #00FFC8;
+}
